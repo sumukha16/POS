@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Bill #{{ bill.bill_number }}
+    </title>
+
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+
+            margin: 0;
+
+            background: #f5f5f5;
+
+            color: #111;
+
+            font-family:
+                Arial,
+                sans-serif;
+
+        }
+
+
+        .bill-page {
+
+            max-width: 760px;
+
+            margin: 40px auto;
+
+            padding: 0 20px;
+
+        }
+
+
+        .bill-card {
+
+            background: #fff;
+
+            border: 1px solid #ddd;
+
+            border-radius: 10px;
+
+            padding: 32px;
+
+            box-shadow:
+                0 3px 12px rgba(0, 0, 0, 0.06);
+
+        }
+
+
+        .bill-header {
+
+            display: flex;
+
+            justify-content:
+                space-between;
+
+            align-items:
+                flex-start;
+
+            padding-bottom: 22px;
+
+            border-bottom:
+                1px solid #ddd;
+
+        }
+
+
+        .brand {
+
+            font-size: 20px;
+
+            font-weight: 700;
+
+            letter-spacing: 1px;
+
+        }
+
+
+        .bill-number {
+
+            margin-top: 6px;
+
+            font-size: 13px;
+
+            color: #666;
+
+        }
+
+
+        .bill-meta {
+
+            text-align: right;
+
+            font-size: 13px;
+
+            line-height: 1.7;
+
+            color: #555;
+
+        }
+
+
+        .status-badge {
+
+            display: inline-block;
+
+            margin-top: 8px;
+
+            padding: 6px 12px;
+
+            border-radius: 20px;
+
+            font-size: 11px;
+
+            font-weight: 700;
+
+        }
+
+
+        .paid {
+
+            background: #e8f7ed;
+
+            color: #16733a;
+
+        }
+
+
+        .cancelled {
+
+            background: #fdecec;
+
+            color: #b42318;
+
+        }
+
+
+        .bill-section {
+
+            margin-top: 28px;
+
+        }
+
+
+        .section-title {
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+            letter-spacing: 1px;
+
+            margin-bottom: 10px;
+
+            padding-bottom: 8px;
+
+            border-bottom:
+                1px solid #ddd;
+
+        }
+
+
+        .bill-row {
+
+            display: flex;
+
+            justify-content:
+                space-between;
+
+            align-items:
+                center;
+
+            padding: 8px 0;
+
+            font-size: 14px;
+
+        }
+
+
+        .bill-item-name {
+
+            color: #222;
+
+        }
+
+
+        .bill-item-price {
+
+            font-weight: 500;
+
+        }
+
+
+        .section-subtotal {
+
+            display: flex;
+
+            justify-content:
+                space-between;
+
+            margin-top: 8px;
+
+            padding-top: 10px;
+
+            border-top:
+                1px solid #eee;
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+        }
+
+
+        .totals {
+
+            margin-top: 28px;
+
+            padding-top: 18px;
+
+            border-top:
+                1px solid #222;
+
+        }
+
+
+        .total-row {
+
+            display: flex;
+
+            justify-content:
+                space-between;
+
+            padding: 7px 0;
+
+            font-size: 14px;
+
+        }
+
+
+        .grand-total {
+
+            margin-top: 10px;
+
+            padding-top: 14px;
+
+            border-top:
+                2px solid #111;
+
+            font-size: 20px;
+
+            font-weight: 700;
+
+        }
+
+
+        .actions {
+
+            display: flex;
+
+            justify-content:
+                flex-end;
+
+            gap: 10px;
+
+            margin-top: 24px;
+
+        }
+
+
+        .action-button {
+
+            display: inline-flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            min-height: 38px;
+
+            padding: 0 16px;
+
+            border: 1px solid #ccc;
+
+            border-radius: 6px;
+
+            background: #fff;
+
+            color: #111;
+
+            text-decoration: none;
+
+            font-size: 12px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+
+        }
+
+
+        .action-button:hover {
+
+            background: #f1f1f1;
+
+        }
+
+
+        .primary-button {
+
+            background: #111;
+
+            color: #fff;
+
+            border-color: #111;
+
+        }
+
+
+        .primary-button:hover {
+
+            background: #222;
+
+        }
+
+
+        @media (max-width: 600px) {
+
+            .bill-page {
+
+                margin: 20px auto;
+
+                padding:
+                    0 12px;
+
+            }
+
+
+            .bill-card {
+
+                padding: 20px;
+
+            }
+
+
+            .bill-header {
+
+                flex-direction:
+                    column;
+
+                gap: 14px;
+
+            }
+
+
+            .bill-meta {
+
+                text-align: left;
+
+            }
+
+
+            .actions {
+
+                flex-direction:
+                    column;
+
+            }
+
+
+            .action-button {
+
+                width: 100%;
+
+            }
+
+        }
+
+
+        @media print {
+
+            body {
+
+                background: #fff;
+
+            }
+
+
+            .bill-page {
+
+                margin: 0;
+
+                max-width: none;
+
+                padding: 0;
+
+            }
+
+
+            .bill-card {
+
+                border: none;
+
+                box-shadow: none;
+
+                padding: 0;
+
+            }
+
+
+            .actions {
+
+                display: none;
+
+            }
+
+        }
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <div class="bill-page">
+
+
+        <div class="bill-card">
+
+
+            <!-- HEADER -->
+
+            <div class="bill-header">
+
+                <div>
+
+                    <div class="brand">
+                        {{ hotel_name }}
+                    </div>
+
+                    <div class="bill-number">
+
+                        Bill #{{ bill.bill_number }}
+
+                    </div>
+                    <div>
+                        Date:
+                        {{ bill.bill_date|date:"d/m/Y" }}
+                    </div>
+
+                    <div>
+                        Time:
+                        {{ bill.paid_at|date:"h:i A" }}
+                    </div>
+
+                    <div>
+                        Table No:
+                        {{ bill.table.name }}
+                    </div>
+
+                </div>
+
+
+                <div class="bill-meta">
+
+                    <div>
+
+                        Table:
+                        <strong>
+                            {{ bill.table.name }}
+                        </strong>
+
+                    </div>
+
+
+                    <div>
+
+                        {{ bill.paid_at|date:"d M Y, h:i A" }}
+
+                    </div>
+
+
+                    {% if bill.status == "PAID" %}
+
+                    <span class="status-badge paid">
+                        PAID
+                    </span>
+
+                    {% else %}
+
+                    <span class="status-badge cancelled">
+                        CANCELLED
+                    </span>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            <!-- FOOD -->
+
+            <div class="bill-section">
+
+                <div class="section-title">
+                    FOOD
+                </div>
+
+
+                {% for item in food_items %}
+
+                <div class="bill-row">
+
+                    <span class="bill-item-name">
+
+                        {{ item.item_name }}
+                        × {{ item.quantity }}
+
+                    </span>
+
+
+                    <span class="bill-item-price">
+
+                        ₹{{ item.line_total|floatformat:2 }}
+
+                    </span>
+
+                </div>
+
+                {% empty %}
+
+                <div class="bill-row">
+
+                    <span>
+                        No food items.
+                    </span>
+
+                </div>
+
+                {% endfor %}
+
+
+                <div class="section-subtotal">
+
+                    <span>
+                        Food Subtotal
+                    </span>
+
+                    <span>
+                        ₹{{ food_subtotal|floatformat:2 }}
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- DRINKS -->
+
+            <div class="bill-section">
+
+                <div class="section-title">
+                    DRINKS
+                </div>
+
+
+                {% for item in drink_items %}
+
+                <div class="bill-row">
+
+                    <span class="bill-item-name">
+
+                        {{ item.item_name }}
+                        × {{ item.quantity }}
+
+                    </span>
+
+
+                    <span class="bill-item-price">
+
+                        ₹{{ item.line_total|floatformat:2 }}
+
+                    </span>
+
+                </div>
+
+                {% empty %}
+
+                <div class="bill-row">
+
+                    <span>
+                        No drink items.
+                    </span>
+
+                </div>
+
+                {% endfor %}
+
+
+                <div class="section-subtotal">
+
+                    <span>
+                        Drinks Subtotal
+                    </span>
+
+                    <span>
+                        ₹{{ drink_subtotal|floatformat:2 }}
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- TOTALS -->
+
+            <div class="totals">
+
+                <div class="total-row">
+
+                    <span>
+                        Subtotal
+                    </span>
+
+                    <span>
+                        ₹{{ bill.subtotal|floatformat:2 }}
+                    </span>
+
+                </div>
+
+
+                {% if bill.tax_enabled %}
+
+                <div class="total-row">
+
+                    <span>
+
+                        Tax
+                        {{ bill.tax_rate|floatformat:2 }}%
+
+                    </span>
+
+                    <span>
+
+                        ₹{{ bill.tax_amount|floatformat:2 }}
+
+                    </span>
+
+                </div>
+
+                {% endif %}
+
+
+                <div class="total-row grand-total">
+
+                    <span>
+                        Grand Total
+                    </span>
+
+                    <span>
+                        ₹{{ bill.total|floatformat:2 }}
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- ACTIONS -->
+
+            <div class="actions">
+
+                <a href="{% url 'pos:bill_history' %}" class="action-button">
+                    Back
+                </a>
+
+
+                <button type="button" onclick="window.print()" class="action-button primary-button">
+                    Print / Duplicate
+                </button>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+</body>
+
+</html>

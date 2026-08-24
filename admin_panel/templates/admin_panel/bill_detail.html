@@ -1,0 +1,467 @@
+{% load nexova_filters %}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>
+        NEXOVA - Bill {{ bill.bill_number }}
+    </title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: #f5f5f5;
+        }
+
+        header {
+            background: #111;
+            color: white;
+            padding: 20px 30px;
+        }
+
+        .container {
+            padding: 30px;
+        }
+
+        .bill {
+            background: white;
+            max-width: 800px;
+            margin: auto;
+            padding: 30px;
+        }
+
+        .bill-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+        }
+
+        .bill-info {
+            line-height: 1.7;
+        }
+
+        h2 {
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #eee;
+        }
+
+        .right {
+            text-align: right;
+        }
+
+        .totals {
+            margin-left: auto;
+            width: 300px;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 7px 0;
+        }
+
+        .grand-total {
+            font-size: 20px;
+            font-weight: bold;
+            border-top: 2px solid #111;
+            padding-top: 10px;
+        }
+
+        .actions {
+            max-width: 800px;
+            margin: 20px auto;
+        }
+
+        .button {
+            display: inline-block;
+            background: #111;
+            color: white;
+            padding: 10px 16px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+
+        .subtotal-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+
+        .cancel-button {
+            background: #b91c1c;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .cancelled-label {
+            display: inline-block;
+            background: #eee;
+            color: #b91c1c;
+            padding: 10px 16px;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <header>
+
+        <h1>NEXOVA ADMIN</h1>
+
+    </header>
+
+
+    <div class="container">
+
+
+        <div class="bill">
+
+
+            <div class="bill-header">
+
+                <div>
+
+                    <h1>NEXOVA</h1>
+
+                    <p>
+                        Bill No. {{ bill.bill_number }}
+                    </p>
+
+                </div>
+
+
+                <div class="bill-info">
+
+                    <strong>
+                        Table:
+                    </strong>
+
+                    {{ bill.table_name }}
+
+                    <br>
+
+                    <strong>
+                        Date:
+                    </strong>
+
+                    {{ bill.paid_at|date:"d M Y" }}
+
+                    <br>
+
+                    <strong>
+                        Time:
+                    </strong>
+
+                    {{ bill.paid_at|date:"h:i A" }}
+
+                    <strong>
+                        Status:
+                    </strong>
+
+                    {% if bill.status == "PAID" %}
+
+                    <span style="color: green;">
+                        Paid
+                    </span>
+
+                    {% else %}
+
+                    <span style="color: #b91c1c;">
+                        Cancelled
+                    </span>
+
+                    {% endif %}
+
+                </div>
+
+
+            </div>
+
+
+            <!-- FOOD -->
+
+
+            {% if food_items %}
+
+            <h2>
+                Food
+            </h2>
+
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Item
+                        </th>
+
+                        <th>
+                            Qty
+                        </th>
+
+                        <th>
+                            Price
+                        </th>
+
+                        <th class="right">
+                            Total
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for item in food_items %}
+
+                    <tr>
+
+                        <td>
+                            {{ item.item_name }}
+                        </td>
+
+                        <td>
+                            {{ item.quantity }}
+                        </td>
+
+                        <td>
+                            ₹{{ item.unit_price|money }}
+                        </td>
+
+                        <td class="right">
+                            ₹{{ item.line_total|money }}
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+            {% endif %}
+
+
+            <!-- DRINKS -->
+
+
+            {% if drink_items %}
+
+            <h2>
+                Drinks
+            </h2>
+
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Item
+                        </th>
+
+                        <th>
+                            Qty
+                        </th>
+
+                        <th>
+                            Price
+                        </th>
+
+                        <th class="right">
+                            Total
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for item in drink_items %}
+
+                    <tr>
+
+                        <td>
+                            {{ item.item_name }}
+                        </td>
+
+                        <td>
+                            {{ item.quantity }}
+                        </td>
+
+                        <td>
+                            ₹{{ item.unit_price|money }}
+                        </td>
+
+                        <td class="right">
+                            ₹{{ item.line_total|money }}
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+            {% endif %}
+
+
+            <!-- TOTALS -->
+
+
+            <div class="totals">
+
+                <div class="subtotal-row">
+
+                    <strong>
+                        Food Subtotal
+                    </strong>
+
+                    <strong>
+                        ₹{{ food_subtotal|money }}
+                    </strong>
+
+                </div>
+
+                <div class="subtotal-row">
+
+                    <strong>
+                        Drink Subtotal
+                    </strong>
+
+                    <strong>
+                        ₹{{ drink_subtotal|money }}
+                    </strong>
+
+                </div>
+
+                <div class="total-row">
+
+                    <span>
+                        Subtotal
+                    </span>
+
+                    <span>
+                        ₹{{ bill.subtotal|money }}
+                    </span>
+
+                </div>
+
+
+                {% if bill.tax_enabled %}
+
+                <div class="total-row">
+
+                    <span>
+                        Tax ({{ bill.tax_rate }}%)
+                    </span>
+
+                    <span>
+                        ₹{{ bill.tax_amount|money }}
+                    </span>
+
+                </div>
+
+                {% endif %}
+
+
+                <div class="total-row grand-total">
+
+                    <span>
+                        Grand Total
+                    </span>
+
+                    <span>
+                        ₹{{ bill.total|money }}
+                    </span>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        <div class="actions">
+
+            <a class="button" href="{% url 'admin_panel:bill_history' %}">
+                ← Bill History
+            </a>
+
+
+            {% if bill.status == "PAID" %}
+
+            <form method="post" action="{% url 'admin_panel:cancel_bill' bill.id %}" style="display: inline;"
+                onsubmit="return confirm('Are you sure you want to cancel this bill?');">
+
+                {% csrf_token %}
+
+                <button type="submit" class="cancel-button">
+                    Cancel Bill
+                </button>
+
+            </form>
+
+            {% else %}
+
+            <span class="cancelled-label">
+                CANCELLED
+            </span>
+
+            {% endif %}
+
+        </div>
+
+
+    </div>
+
+
+</body>
+
+</html>

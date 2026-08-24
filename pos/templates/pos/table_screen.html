@@ -1,0 +1,3329 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>NEXOVA POS</title>
+
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            color: #111;
+        }
+
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        .pos-header {
+            height: 64px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 22px;
+
+            background: #111;
+            color: #fff;
+        }
+
+        .brand {
+            font-size: 17px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .pos-header-right {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .header-link {
+            color: #fff;
+            text-decoration: none;
+
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .header-link:hover {
+            text-decoration: underline;
+        }
+
+        .header-date {
+            font-size: 12px;
+            color: #ccc;
+        }
+
+        .logout-button {
+            color: #fff;
+            text-decoration: none;
+
+            border: 1px solid #555;
+            border-radius: 5px;
+
+            padding: 7px 12px;
+
+            font-size: 12px;
+        }
+
+        .logout-button:hover {
+            background: #222;
+        }
+
+
+        /* =========================
+           MAIN
+        ========================= */
+
+        .main {
+            padding: 30px;
+        }
+
+
+        /* =========================
+           SECTION SELECTOR
+        ========================= */
+
+        .section-selector {
+            display: flex;
+            gap: 12px;
+
+            margin-bottom: 30px;
+
+            overflow-x: auto;
+        }
+
+
+        .section-button {
+            border: none;
+            background: white;
+
+            padding: 14px 24px;
+
+            border-radius: 8px;
+
+            font-size: 15px;
+            font-weight: 600;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+
+        .section-button:hover {
+            background: #eee;
+        }
+
+
+        .section-button.active {
+            background: #111;
+            color: white;
+        }
+
+
+        /* =========================
+           SECTION CONTENT
+        ========================= */
+
+        .section-content {
+            display: none;
+        }
+
+
+        .section-content.active {
+            display: block;
+        }
+
+
+        .section-title {
+            font-size: 22px;
+            margin-bottom: 20px;
+        }
+
+
+        /* =========================
+           TABLE GRID
+        ========================= */
+
+        .table-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(auto-fill,
+                    minmax(180px, 1fr));
+
+            gap: 20px;
+        }
+
+
+        /* =========================
+           TABLE CARD
+        ========================= */
+
+        .table-card {
+            background: white;
+
+            min-height: 150px;
+
+            border-radius: 10px;
+
+            padding: 20px;
+
+            display: flex;
+            flex-direction: column;
+
+            justify-content: center;
+            align-items: center;
+
+            text-align: center;
+
+            text-decoration: none;
+            color: #111;
+
+            border: 2px solid transparent;
+
+            box-shadow:
+                0 3px 10px rgba(0, 0, 0, 0.08);
+
+            transition:
+                transform 0.15s,
+                box-shadow 0.15s;
+        }
+
+
+        .table-card:hover {
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 5px 15px rgba(0, 0, 0, 0.12);
+        }
+
+
+        .table-name {
+            font-size: 20px;
+            font-weight: bold;
+
+            margin-bottom: 15px;
+        }
+
+
+        .table-status {
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+
+        /* =========================
+           VACANT
+        ========================= */
+
+        .table-card.vacant {
+            border-color: #d1d5db;
+        }
+
+
+        .table-card.vacant .table-status {
+            color: #16803c;
+        }
+
+
+        /* =========================
+           OCCUPIED
+        ========================= */
+
+        .table-card.occupied {
+            border-color: #f59e0b;
+        }
+
+
+        .table-card.occupied .table-status {
+            color: #c2410c;
+        }
+
+
+        /* =========================
+           EMPTY SECTION
+        ========================= */
+
+        .empty-section {
+            background: white;
+
+            padding: 30px;
+
+            border-radius: 8px;
+
+            text-align: center;
+
+            color: #777;
+        }
+
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 700px) {
+
+            .main {
+                padding: 15px;
+            }
+
+
+            .header {
+                padding: 0 15px;
+            }
+
+
+            .header-right {
+                gap: 10px;
+            }
+
+
+            .table-grid {
+                grid-template-columns:
+                    repeat(2,
+                        minmax(0, 1fr));
+            }
+
+        }
+
+        /* =========================
+   ORDER DRAWER
+========================= */
+
+        .order-overlay {
+            position: fixed;
+            inset: 0;
+
+            background: rgba(0, 0, 0, 0.35);
+
+            opacity: 0;
+            visibility: hidden;
+
+            transition: 0.2s;
+
+            z-index: 1000;
+        }
+
+
+        .order-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+
+        .order-drawer {
+            position: absolute;
+
+            top: 0;
+            right: 0;
+
+            width: 430px;
+            max-width: 95vw;
+            height: 100%;
+
+            background: white;
+
+            display: flex;
+            flex-direction: column;
+
+            transform: translateX(100%);
+
+            transition: transform 0.25s;
+
+            box-shadow:
+                -5px 0 20px rgba(0, 0, 0, 0.15);
+        }
+
+
+        .order-overlay.open .order-drawer {
+            transform: translateX(0);
+        }
+
+
+        /* Header */
+
+        .drawer-header {
+            display: flex;
+
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 20px;
+
+            border-bottom: 1px solid #ddd;
+        }
+
+
+        .drawer-label,
+        .modal-label {
+            font-size: 11px;
+
+            font-weight: bold;
+
+            color: #777;
+
+            letter-spacing: 0.8px;
+        }
+
+
+        .drawer-header h2 {
+            margin: 5px 0 0;
+
+            font-size: 22px;
+        }
+
+
+        .drawer-close,
+        .modal-close {
+            border: none;
+
+            background: transparent;
+
+            font-size: 28px;
+
+            cursor: pointer;
+
+            color: #555;
+        }
+
+
+        /* Current order */
+
+        .current-order {
+            flex: 1;
+
+            overflow-y: auto;
+
+            padding: 20px;
+        }
+
+
+        .empty-current-order {
+            text-align: center;
+
+            color: #777;
+
+            padding: 60px 20px;
+        }
+
+
+        .current-order-section {
+            margin-bottom: 25px;
+        }
+
+
+        .order-section-title {
+            font-size: 12px;
+
+            font-weight: bold;
+
+            letter-spacing: 0.8px;
+
+            border-bottom: 1px solid #ddd;
+
+            padding-bottom: 9px;
+
+            margin-bottom: 8px;
+        }
+
+
+        .current-order-row {
+            padding: 12px 0;
+
+            border-bottom: 1px solid #eee;
+        }
+
+
+        .current-order-top {
+            display: flex;
+
+            justify-content: space-between;
+
+            gap: 10px;
+        }
+
+
+        .current-item-name {
+            font-weight: 600;
+
+            font-size: 14px;
+        }
+
+
+        .current-line-total {
+            font-weight: 600;
+
+            white-space: nowrap;
+        }
+
+
+        .current-order-bottom {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-top: 8px;
+        }
+
+
+        .quantity-controls {
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+        }
+
+
+        .quantity-controls button {
+            width: 27px;
+            height: 27px;
+
+            border: 1px solid #ccc;
+
+            background: white;
+
+            border-radius: 4px;
+
+            cursor: pointer;
+        }
+
+
+        .current-quantity {
+            min-width: 20px;
+
+            text-align: center;
+        }
+
+
+        .remove-item {
+            border: none;
+
+            background: transparent;
+
+            color: #b91c1c;
+
+            font-size: 12px;
+
+            cursor: pointer;
+        }
+
+
+        .order-subtotal {
+            display: flex;
+
+            justify-content: space-between;
+
+            font-size: 13px;
+
+            font-weight: bold;
+
+            padding-top: 10px;
+        }
+
+
+        /* Total */
+
+        .drawer-total {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            padding: 18px 20px;
+
+            border-top: 2px solid #111;
+
+            font-size: 20px;
+        }
+
+
+        /* Actions */
+
+        .drawer-actions {
+            padding: 15px 20px 20px;
+
+            border-top: 1px solid #ddd;
+        }
+
+
+        .add-item-button,
+        .generate-bill-button {
+            width: 100%;
+
+            border: none;
+
+            padding: 14px;
+
+            border-radius: 6px;
+
+            font-size: 14px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            margin-bottom: 10px;
+        }
+
+
+        .add-item-button {
+            background: #eee;
+
+            color: #111;
+        }
+
+
+        .generate-bill-button {
+            background: #111;
+
+            color: white;
+        }
+
+
+        .cancel-order-button {
+            width: 100%;
+
+            border: none;
+
+            background: transparent;
+
+            color: #b91c1c;
+
+            padding: 8px;
+
+            cursor: pointer;
+
+            font-size: 13px;
+        }
+
+
+        /* =========================
+   MODALS
+========================= */
+
+        .modal-overlay {
+            position: fixed;
+
+            inset: 0;
+
+            background: rgba(0, 0, 0, 0.45);
+
+            display: none;
+
+            align-items: center;
+
+            justify-content: center;
+
+            z-index: 2000;
+
+            padding: 20px;
+        }
+
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+
+        .add-item-modal {
+            width: 900px;
+
+            max-width: 100%;
+
+            height: 80vh;
+
+            background: white;
+
+            border-radius: 10px;
+
+            display: flex;
+
+            flex-direction: column;
+
+            overflow: hidden;
+        }
+
+
+        .bill-preview-modal {
+            width: 650px;
+
+            max-width: 100%;
+
+            max-height: 85vh;
+
+            background: white;
+
+            border-radius: 10px;
+
+            display: flex;
+
+            flex-direction: column;
+
+            overflow: hidden;
+        }
+
+
+        .modal-header {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            padding: 18px 22px;
+
+            border-bottom: 1px solid #ddd;
+        }
+
+
+        .modal-header h2 {
+            margin: 5px 0 0;
+
+            font-size: 20px;
+        }
+
+
+        /* Search */
+
+        .menu-search {
+            padding: 15px 20px 10px;
+        }
+
+
+        .menu-search input {
+            width: 100%;
+
+            padding: 12px 14px;
+
+            border: 1px solid #ccc;
+
+            border-radius: 6px;
+
+            font-size: 14px;
+
+            outline: none;
+        }
+
+
+        .menu-search input:focus {
+            border-color: #111;
+        }
+
+
+        /* Category filter */
+
+        .menu-category-filter {
+            display: flex;
+
+            gap: 8px;
+
+            padding: 0 20px 15px;
+
+            overflow-x: auto;
+        }
+
+
+        .menu-filter {
+            border: 1px solid #ccc;
+
+            background: white;
+
+            padding: 8px 14px;
+
+            border-radius: 20px;
+
+            white-space: nowrap;
+
+            cursor: pointer;
+        }
+
+
+        .menu-filter.active {
+            background: #111;
+
+            color: white;
+
+            border-color: #111;
+        }
+
+
+        /* Menu table */
+
+        .menu-table-header,
+        .menu-list-row {
+            display: grid;
+
+            grid-template-columns:
+                110px minmax(0, 1fr) 100px 130px;
+
+            align-items: center;
+
+            gap: 10px;
+
+            padding: 0 20px;
+        }
+
+
+        .menu-table-header {
+            min-height: 40px;
+
+            background: #f5f5f5;
+
+            border-top: 1px solid #ddd;
+
+            border-bottom: 1px solid #ddd;
+
+            font-size: 11px;
+
+            font-weight: bold;
+
+            color: #777;
+        }
+
+
+        .menu-list {
+            flex: 1;
+
+            overflow-y: auto;
+        }
+
+
+        .menu-list-row {
+            min-height: 65px;
+
+            border-bottom: 1px solid #eee;
+        }
+
+
+        .item-code {
+            font-size: 12px;
+
+            color: #777;
+        }
+
+
+        .item-name {
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 4px;
+        }
+
+
+        .item-name strong {
+            font-size: 14px;
+        }
+
+
+        .item-name small {
+            font-size: 11px;
+
+            color: #888;
+        }
+
+
+        .item-price {
+            font-size: 13px;
+
+            font-weight: 600;
+        }
+
+
+        .item-quantity {
+            display: flex;
+
+            align-items: center;
+
+            justify-content: flex-start;
+
+            gap: 8px;
+        }
+
+
+        .item-quantity button {
+            width: 28px;
+
+            height: 28px;
+
+            border: 1px solid #ccc;
+
+            background: white;
+
+            border-radius: 4px;
+
+            cursor: pointer;
+        }
+
+
+        .item-quantity span {
+            width: 22px;
+
+            text-align: center;
+
+            font-size: 13px;
+        }
+
+
+        .no-menu-results {
+            padding: 40px;
+
+            text-align: center;
+
+            color: #777;
+        }
+
+
+        /* Modal footer */
+
+        .modal-footer,
+        .bill-preview-footer {
+            display: flex;
+
+            justify-content: flex-end;
+
+            gap: 10px;
+
+            padding: 15px 20px;
+
+            border-top: 1px solid #ddd;
+        }
+
+
+        .modal-secondary-button {
+            position: relative;
+            left: -650px;
+            border: none;
+
+            padding: 11px 18px;
+
+            border-radius: 5px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+        .modal-primary-button,
+        .generate-final-button {
+            border: none;
+
+            padding: 11px 18px;
+
+            border-radius: 5px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+
+        .modal-secondary-button {
+            background: #eee;
+
+            color: #111;
+        }
+
+
+        .modal-primary-button,
+        .generate-final-button {
+            background: #111;
+
+            color: white;
+        }
+
+
+        /* Bill preview */
+
+        .bill-preview-content {
+            overflow-y: auto;
+
+            padding: 25px;
+        }
+
+
+        .bill-preview-section {
+            margin-bottom: 20px;
+        }
+
+
+        .bill-preview-section-title {
+            font-size: 13px;
+
+            font-weight: bold;
+
+            border-bottom: 1px solid #ddd;
+
+            padding-bottom: 8px;
+
+            margin-bottom: 10px;
+        }
+
+
+        .bill-preview-row {
+            display: flex;
+
+            justify-content: space-between;
+
+            padding: 7px 0;
+
+            font-size: 14px;
+        }
+
+
+        .bill-preview-subtotal {
+            display: flex;
+
+            justify-content: space-between;
+
+            padding-top: 10px;
+
+            font-weight: bold;
+        }
+
+
+        .bill-grand-total {
+            display: flex;
+
+            justify-content: space-between;
+
+            border-top: 2px solid #111;
+
+            padding-top: 15px;
+
+            margin-top: 15px;
+
+            font-size: 20px;
+
+            font-weight: bold;
+        }
+
+
+        @media (max-width: 700px) {
+
+            .order-drawer {
+                width: 100%;
+            }
+
+
+            .menu-table-header,
+            .menu-list-row {
+                grid-template-columns:
+                    70px minmax(0, 1fr) 70px 115px;
+
+                padding-left: 12px;
+                padding-right: 12px;
+            }
+
+        }
+
+        .admin-link {
+            color: #fff;
+            text-decoration: none;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .admin-link:hover {
+            text-decoration: underline;
+        }
+
+        .admin-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 7px 12px;
+
+            border: 1px solid #555;
+            border-radius: 5px;
+
+            color: #fff;
+            background: transparent;
+
+            text-decoration: none;
+
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .admin-button:hover {
+            background: #222;
+        }
+    </style>
+    <link rel="manifest" href="{% static 'pos/manifest.json' %}">
+
+    <meta name="theme-color" content="#111111">
+
+    <meta name="mobile-web-app-capable" content="yes">
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================
+         HEADER
+    ========================= -->
+
+    <header class="pos-header">
+
+        <div class="brand">
+            NEXOVA POS
+        </div>
+
+        <div class="pos-header-right">
+
+            <a href="{% url 'admin_panel:dashboard' %}" class="header-link">
+                Admin
+            </a>
+
+            <a href="{% url 'pos:bill_history' %}" class="header-link">
+                Bill History
+            </a>
+
+            <span class="header-date">
+                {% now "d M Y" %}
+            </span>
+
+            <a href="{% url 'admin_panel:logout' %}" class="logout-button">
+                Logout
+            </a>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =========================
+         MAIN
+    ========================= -->
+
+    <main class="main">
+
+
+        <!-- SECTION BUTTONS -->
+
+        <div class="section-selector">
+
+
+            {% for section in sections %}
+
+            <button type="button" class="section-button {% if forloop.first %}active{% endif %}"
+                onclick="showSection('{{ section.id }}')">
+
+                {{ section.name }}
+
+            </button>
+
+            {% endfor %}
+
+
+        </div>
+
+
+
+        <!-- SECTION CONTENT -->
+
+        {% for section in sections %}
+
+        <section id="section-{{ section.id }}" class="section-content {% if forloop.first %}active{% endif %}">
+
+
+            <h2 class="section-title">
+
+                {{ section.name }}
+
+            </h2>
+
+
+            <div class="table-grid">
+
+
+                {% for table in section.tables.all %}
+
+
+                {% if table.is_active %}
+
+
+                <a href="#" class="table-card {% if table.status == 'VACANT' %}vacant{% else %}occupied{% endif %}"
+                    onclick="openOrderPanel(event, '{{ table.id }}')">
+
+
+                    <div class="table-name">
+
+                        {{ table.name }}
+
+                    </div>
+
+
+                    <div class="table-status">
+
+
+                        {% if table.status == "VACANT" %}
+
+                        VACANT
+
+                        {% else %}
+
+                        OCCUPIED
+
+                        {% endif %}
+
+
+                    </div>
+
+
+                </a>
+
+
+                {% endif %}
+
+
+                {% empty %}
+
+
+                <div class="empty-section">
+
+                    No active tables in this section.
+
+                </div>
+
+
+                {% endfor %}
+
+
+            </div>
+
+
+        </section>
+
+        {% endfor %}
+
+
+    </main>
+    <!-- =========================
+     ORDER DRAWER
+========================= -->
+
+    <div id="order-overlay" class="order-overlay" onclick="closeOrderPanel(event)">
+
+
+        <aside id="order-drawer" class="order-drawer" onclick="event.stopPropagation()">
+
+            <!-- HEADER -->
+
+            <div class="drawer-header">
+
+                <div>
+
+                    <div class="drawer-label">
+                        CURRENT ORDER
+                    </div>
+
+                    <h2 id="drawer-table-name">
+                        Table
+                    </h2>
+
+                </div>
+
+
+                <button type="button" class="drawer-close" onclick="closeOrderPanel()">
+                    ×
+                </button>
+
+            </div>
+
+
+            <!-- CURRENT ORDER -->
+
+            <div id="current-order" class="current-order">
+
+                <div id="empty-current-order" class="empty-current-order">
+
+                    No items added yet.
+
+                    <br>
+
+                    Click <strong>Add Item</strong>
+                    to start the order.
+
+                </div>
+
+
+                <!-- FOOD -->
+
+                <div id="current-food-section" class="current-order-section" style="display: none;">
+
+                    <div class="order-section-title">
+                        FOOD
+                    </div>
+
+                    <div id="current-food-items"></div>
+
+                    <div class="order-subtotal">
+
+                        <span>
+                            Food Subtotal
+                        </span>
+
+                        <span id="current-food-subtotal">
+                            ₹0.00
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- DRINKS -->
+
+                <div id="current-drink-section" class="current-order-section" style="display: none;">
+
+                    <div class="order-section-title">
+                        DRINKS
+                    </div>
+
+                    <div id="current-drink-items"></div>
+
+                    <div class="order-subtotal">
+
+                        <span>
+                            Drinks Subtotal
+                        </span>
+
+                        <span id="current-drink-subtotal">
+                            ₹0.00
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- TOTAL -->
+
+            <div class="drawer-total">
+
+                <span>
+                    Total
+                </span>
+
+                <strong id="current-total">
+                    ₹0.00
+                </strong>
+
+            </div>
+
+
+            <!-- ACTIONS -->
+
+            <div class="drawer-actions">
+
+                <button type="button" class="add-item-button" onclick="openAddItemModal()">
+                    + Add Item
+                </button>
+
+
+                <button type="button" class="generate-bill-button" onclick="openBillPreview()">
+                    Generate Bill
+                </button>
+
+
+                <button type="button" class="cancel-order-button" onclick="confirmCancelOrder()">
+                    Cancel Order
+                </button>
+
+            </div>
+
+        </aside>
+
+    </div>
+
+
+
+    <!-- =========================
+     ADD ITEM MODAL
+========================= -->
+
+    <div id="add-item-modal" class="modal-overlay" onclick="closeAddItemModal(event)">
+
+        <div class="add-item-modal" onclick="event.stopPropagation()">
+
+            <div class="modal-header">
+
+                <div>
+
+                    <div class="modal-label">
+                        ADD ITEM
+                    </div>
+
+                    <h2>
+                        Menu
+                    </h2>
+
+                </div>
+
+
+                <button type="button" class="modal-close" onclick="closeAddItemModal()">
+                    ×
+                </button>
+
+            </div>
+
+
+            <!-- SEARCH -->
+
+            <div class="menu-search">
+
+                <input type="text" id="menu-search-input" placeholder="Search menu items..."
+                    oninput="filterMenuItems()">
+
+            </div>
+
+
+            <!-- CATEGORY FILTER -->
+
+            <div class="menu-category-filter">
+
+                <button type="button" class="menu-filter active" onclick="filterMenuCategory('ALL', this)">
+                    All
+                </button>
+
+
+                {% for category in categories %}
+
+                <button type="button" class="menu-filter" data-category="{{ category.id }}"
+                    onclick="filterMenuCategory('{{ category.id }}', this)">
+                    {{ category.name }}
+                </button>
+
+                {% endfor %}
+
+            </div>
+
+
+            <!-- TABLE HEADER -->
+
+            <div class="menu-table-header">
+
+                <span>
+                    CODE
+                </span>
+
+                <span>
+                    NAME
+                </span>
+
+                <span>
+                    PRICE
+                </span>
+
+                <span>
+                    QUANTITY
+                </span>
+
+            </div>
+
+
+            <!-- MENU ITEMS -->
+
+            <div id="menu-list" class="menu-list">
+
+                {% for item in menu_items %}
+
+                <div class="menu-list-row" data-item-id="{{ item.id }}" data-category="{{ item.category_id }}"
+                    data-type="{{ item.category_type }}" data-name="{{ item.name|lower }}"
+                    data-code="{{ item.code|lower }}">
+
+                    <div class="item-code">
+                        {{ item.code }}
+                    </div>
+
+
+                    <div class="item-name">
+
+                        <strong>
+                            {{ item.name }}
+                        </strong>
+
+                        <small>
+                            {{ item.category_name }}
+                        </small>
+
+                    </div>
+
+
+                    <div class="item-price">
+
+                        ₹{{ item.price|floatformat:2 }}
+
+                    </div>
+
+
+                    <div class="item-quantity">
+
+                        <button type="button" onclick="changeTemporaryQuantity('{{ item.id }}', -1)">
+                            −
+                        </button>
+
+
+                        <span id="temp-qty-{{ item.id }}">
+                            0
+                        </span>
+
+
+                        <button type="button" onclick="changeTemporaryQuantity('{{ item.id }}', 1)">
+                            +
+                        </button>
+
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+
+                <div id="no-menu-results" class="no-menu-results" style="display: none;">
+                    No menu items found.
+                </div>
+
+            </div>
+
+
+            <!-- MODAL FOOTER -->
+
+            <div class="modal-footer">
+
+                <button type="button" class="modal-secondary-button" onclick="closeAddItemModal()">
+                    Close
+                </button>
+
+
+                <button type="button" class="modal-primary-button" onclick="sendTemporaryItemsToOrder()">
+                    Send to Kitchen
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =========================
+     BILL PREVIEW
+========================= -->
+
+    <div id="bill-preview-modal" class="modal-overlay" onclick="closeBillPreview(event)">
+
+        <div class="bill-preview-modal" onclick="event.stopPropagation()">
+
+            <div class="modal-header">
+
+                <div>
+
+                    <div class="modal-label">
+                        BILL PREVIEW
+                    </div>
+
+                    <h2 id="bill-preview-table">
+                        Table
+                    </h2>
+
+                </div>
+
+
+                <button type="button" class="modal-close" onclick="closeBillPreview()">
+                    ×
+                </button>
+
+            </div>
+
+
+            <div id="bill-preview-content" class="bill-preview-content">
+            </div>
+
+
+            <div class="bill-preview-footer">
+
+                <button type="button" class="modal-secondary-button" onclick="closeBillPreview()">
+                    Back
+                </button>
+
+
+                <button type="button" class="generate-final-button" onclick="generateBill()">
+                    Generate Bill
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =========================
+         SECTION SWITCHING
+    ========================= -->
+
+    <script>
+
+        function showSection(sectionId) {
+
+            const sections =
+                document.querySelectorAll(
+                    ".section-content"
+                );
+
+            const buttons =
+                document.querySelectorAll(
+                    ".section-button"
+                );
+
+
+            sections.forEach(
+                function (section) {
+
+                    section.classList.remove(
+                        "active"
+                    );
+
+                }
+            );
+
+
+            buttons.forEach(
+                function (button) {
+
+                    button.classList.remove(
+                        "active"
+                    );
+
+                }
+            );
+
+
+            const selectedSection =
+                document.getElementById(
+                    "section-" + sectionId
+                );
+
+
+            selectedSection.classList.add(
+                "active"
+            );
+
+
+            event.currentTarget.classList.add(
+                "active"
+            );
+
+        }
+
+
+
+        /*
+         * =========================
+         * ORDER STATE
+         * =========================
+         */
+
+        let currentTableId = null;
+
+        let currentTableName = "";
+
+        let currentOrder = {};
+
+        let temporaryOrder = {};
+
+
+
+        /*
+         * =========================
+         * TABLE DRAWER
+         * =========================
+         */
+
+        async function openOrderPanel(
+            event,
+            tableId,
+            tableName
+        ) {
+
+            event.preventDefault();
+
+            currentTableId =
+                tableId;
+
+            currentTableName =
+                tableName;
+
+
+            document.getElementById(
+                "drawer-table-name"
+            ).textContent =
+                currentTableName;
+
+
+            document.getElementById(
+                "order-overlay"
+            ).classList.add(
+                "open"
+            );
+
+
+            /*
+             * Clear the old browser state
+             * before loading the database
+             * order.
+             */
+            currentOrder = {};
+
+
+            renderCurrentOrder();
+
+
+            /*
+             * Build the current-order URL.
+             *
+             * Django generates:
+             *
+             * /pos/table/0/current-order/
+             *
+             * and JavaScript replaces 0
+             * with the selected table ID.
+             */
+
+            const currentOrderUrl =
+                "{% url 'pos:current_order' 0 %}"
+                    .replace(
+                        "/0/",
+                        "/" + currentTableId + "/"
+                    );
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        currentOrderUrl,
+                        {
+                            method: "GET",
+                            headers: {
+                                "X-Requested-With":
+                                    "XMLHttpRequest",
+                            },
+                        }
+                    );
+
+
+                const result =
+                    await response.json();
+
+                if (result.table_name) {
+
+                    currentTableName =
+                        result.table_name;
+
+                    document.getElementById(
+                        "drawer-table-name"
+                    ).textContent =
+                        currentTableName;
+                }
+
+                if (!response.ok) {
+
+                    console.error(
+                        result
+                    );
+
+                    alert(
+                        "Could not load the current order."
+                    );
+
+                    return;
+
+                }
+
+
+                /*
+                 * Load database items
+                 * into currentOrder.
+                 */
+
+                currentOrder = {};
+
+
+                result.items.forEach(
+                    function (item) {
+
+                        const id =
+                            String(item.id);
+
+
+                        currentOrder[id] = {
+
+                            id: id,
+
+                            name: item.name,
+
+                            price: Number(
+                                item.price
+                            ),
+
+                            type: item.type,
+
+                            quantity:
+                                Number(
+                                    item.quantity
+                                ),
+
+                        };
+
+                    }
+                );
+
+
+                renderCurrentOrder();
+
+
+            } catch (error) {
+
+                console.error(
+                    "Current order error:",
+                    error
+                );
+
+
+                alert(
+                    "Could not connect to the server."
+                );
+
+            }
+
+        }
+
+
+        function closeOrderPanel(event) {
+
+            if (
+                event
+                && event.target
+                !== document.getElementById(
+                    "order-overlay"
+                )
+            ) {
+
+                return;
+
+            }
+
+
+            document.getElementById(
+                "order-overlay"
+            ).classList.remove(
+                "open"
+            );
+
+        }
+
+
+
+        /*
+         * =========================
+         * ADD ITEM MODAL
+         * =========================
+         */
+
+        function openAddItemModal() {
+
+            /*
+             * Start with a clean
+             * temporary selection.
+             */
+            temporaryOrder = {};
+
+
+            resetTemporaryQuantities();
+
+
+            document.getElementById(
+                "menu-search-input"
+            ).value = "";
+
+
+            filterMenuItems();
+
+
+            document.getElementById(
+                "add-item-modal"
+            ).classList.add(
+                "open"
+            );
+
+        }
+
+
+
+        function closeAddItemModal(event) {
+
+            if (
+                event
+                && event.target
+                !== document.getElementById(
+                    "add-item-modal"
+                )
+            ) {
+
+                return;
+
+            }
+
+
+            /*
+             * IMPORTANT:
+             *
+             * Closing discards the
+             * temporary selection.
+             */
+            temporaryOrder = {};
+
+
+            resetTemporaryQuantities();
+
+
+            document.getElementById(
+                "add-item-modal"
+            ).classList.remove(
+                "open"
+            );
+
+        }
+
+
+
+        /*
+         * =========================
+         * TEMPORARY QUANTITY
+         * =========================
+         */
+
+        function changeTemporaryQuantity(
+            itemId,
+            change
+        ) {
+
+            const id =
+                String(itemId);
+
+
+            if (
+                !temporaryOrder[id]
+            ) {
+
+                temporaryOrder[id] = {
+                    quantity: 0
+                };
+
+            }
+
+
+            temporaryOrder[id].quantity +=
+                change;
+
+
+            if (
+                temporaryOrder[id].quantity
+                < 0
+            ) {
+
+                temporaryOrder[id].quantity =
+                    0;
+
+            }
+
+
+            const quantityElement =
+                document.getElementById(
+                    "temp-qty-" + id
+                );
+
+
+            if (quantityElement) {
+
+                quantityElement.textContent =
+                    temporaryOrder[id].quantity;
+
+            }
+
+        }
+
+
+
+        function resetTemporaryQuantities() {
+
+            document
+                .querySelectorAll(
+                    "[id^='temp-qty-']"
+                )
+                .forEach(
+                    function (element) {
+
+                        element.textContent =
+                            "0";
+
+                    }
+                );
+
+        }
+
+
+
+        /*
+         * =========================
+         * SEND TO KITCHEN
+         * =========================
+         */
+
+        async function sendTemporaryItemsToOrder() {
+
+            const items = [];
+
+
+            Object.keys(
+                temporaryOrder
+            ).forEach(
+                function (itemId) {
+
+                    const quantity =
+                        temporaryOrder[itemId].quantity;
+
+
+                    if (
+                        quantity > 0
+                    ) {
+
+                        items.push(
+                            {
+                                menu_item_id:
+                                    Number(itemId),
+
+                                quantity:
+                                    quantity,
+                            }
+                        );
+
+                    }
+
+                }
+            );
+
+
+            if (items.length === 0) {
+
+                closeAddItemModal();
+
+                return;
+
+            }
+
+
+            try {
+                const sendToKitchenUrl =
+                    "{% url 'pos:send_to_kitchen' 0 %}"
+                        .replace(
+                            "/0/",
+                            "/" + currentTableId + "/"
+                        );
+
+
+                const response =
+                    await fetch(
+                        sendToKitchenUrl,
+                        {
+
+                            method: "POST",
+
+                            headers: {
+
+                                "Content-Type":
+                                    "application/json",
+
+                                "X-CSRFToken":
+                                    getCookie("csrftoken"),
+
+                            },
+
+                            body:
+                                JSON.stringify(
+                                    {
+                                        items: items,
+                                    }
+                                ),
+
+                        }
+                    );
+
+
+                const result =
+                    await response.json();
+
+
+                if (!response.ok) {
+
+                    alert(
+                        result.error
+                        || "Could not send the order."
+                    );
+
+                    return;
+
+                }
+
+
+                /*
+                 * Add the newly committed
+                 * items to the current
+                 * display.
+                 */
+
+                items.forEach(
+                    function (selectedItem) {
+
+                        const id =
+                            String(
+                                selectedItem.menu_item_id
+                            );
+
+
+                        const menuRow =
+                            document.querySelector(
+                                `.menu-list-row[data-item-id="${id}"]`
+                            );
+
+
+                        if (!menuRow) {
+
+                            return;
+
+                        }
+
+
+                        const name =
+                            menuRow.querySelector(
+                                ".item-name strong"
+                            ).textContent.trim();
+
+
+                        const price =
+                            parseFloat(
+                                menuRow
+                                    .querySelector(
+                                        ".item-price"
+                                    )
+                                    .textContent
+                                    .replace("₹", "")
+                                    .trim()
+                            );
+
+
+                        const type =
+                            menuRow.dataset.type;
+
+
+                        if (
+                            !currentOrder[id]
+                        ) {
+
+                            currentOrder[id] = {
+
+                                id: id,
+
+                                name: name,
+
+                                price: price,
+
+                                type: type,
+
+                                quantity:
+                                    selectedItem.quantity,
+
+                            };
+
+                        } else {
+
+                            currentOrder[id].quantity +=
+                                selectedItem.quantity;
+
+                        }
+
+                    }
+                );
+
+
+                temporaryOrder = {};
+
+                resetTemporaryQuantities();
+
+
+                document.getElementById(
+                    "add-item-modal"
+                ).classList.remove(
+                    "open"
+                );
+
+
+                renderCurrentOrder();
+
+
+                temporaryOrder = {};
+
+                resetTemporaryQuantities();
+
+
+                document.getElementById(
+                    "add-item-modal"
+                ).classList.remove(
+                    "open"
+                );
+
+
+                renderCurrentOrder();
+
+
+            } catch (error) {
+
+                console.error(error);
+
+                alert(
+                    "Could not connect to the server."
+                );
+
+            }
+
+        }
+
+
+
+        /*
+         * =========================
+         * CURRENT ORDER
+         * =========================
+         */
+
+        function renderCurrentOrder() {
+
+            const foodContainer =
+                document.getElementById(
+                    "current-food-items"
+                );
+
+
+            const drinkContainer =
+                document.getElementById(
+                    "current-drink-items"
+                );
+
+
+            foodContainer.innerHTML =
+                "";
+
+
+            drinkContainer.innerHTML =
+                "";
+
+
+            let foodSubtotal = 0;
+
+            let drinkSubtotal = 0;
+
+            let totalItems = 0;
+
+
+            Object.keys(
+                currentOrder
+            ).forEach(
+                function (itemId) {
+
+                    const item =
+                        currentOrder[itemId];
+
+
+                    if (
+                        item.quantity <= 0
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    totalItems++;
+
+
+                    const lineTotal =
+                        item.price
+                        * item.quantity;
+
+
+                    const row =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    row.className =
+                        "current-order-row";
+
+
+                    row.innerHTML = `
+
+                    <div class="current-order-top">
+
+                        <span class="current-item-name">
+                            ${item.name}
+                        </span>
+
+                        <span class="current-line-total">
+                            ₹${lineTotal.toFixed(2)}
+                        </span>
+
+                    </div>
+
+
+                    <div class="current-order-bottom">
+
+                        <div class="quantity-controls">
+
+                            <button
+                                type="button"
+                                onclick="changeCurrentQuantity('${itemId}', -1)"
+                            >
+                                −
+                            </button>
+
+
+                            <span class="current-quantity">
+                                ${item.quantity}
+                            </span>
+
+
+                            <button
+                                type="button"
+                                onclick="changeCurrentQuantity('${itemId}', 1)"
+                            >
+                                +
+                            </button>
+
+                        </div>
+
+
+                        <button
+                            type="button"
+                            class="remove-item"
+                            onclick="removeCurrentItem('${itemId}')"
+                        >
+                            Remove
+                        </button>
+
+                    </div>
+
+                `;
+
+
+                    if (
+                        item.type
+                        === "FOOD"
+                    ) {
+
+                        foodContainer.appendChild(
+                            row
+                        );
+
+
+                        foodSubtotal +=
+                            lineTotal;
+
+                    } else {
+
+                        drinkContainer.appendChild(
+                            row
+                        );
+
+
+                        drinkSubtotal +=
+                            lineTotal;
+
+                    }
+
+                }
+            );
+
+
+            const total =
+                foodSubtotal
+                + drinkSubtotal;
+
+
+            document.getElementById(
+                "current-food-subtotal"
+            ).textContent =
+                "₹"
+                + foodSubtotal.toFixed(2);
+
+
+            document.getElementById(
+                "current-drink-subtotal"
+            ).textContent =
+                "₹"
+                + drinkSubtotal.toFixed(2);
+
+
+            document.getElementById(
+                "current-total"
+            ).textContent =
+                "₹"
+                + total.toFixed(2);
+
+
+            document.getElementById(
+                "empty-current-order"
+            ).style.display =
+                totalItems === 0
+                    ? "block"
+                    : "none";
+
+
+            document.getElementById(
+                "current-food-section"
+            ).style.display =
+                foodSubtotal > 0
+                    ? "block"
+                    : "none";
+
+
+            document.getElementById(
+                "current-drink-section"
+            ).style.display =
+                drinkSubtotal > 0
+                    ? "block"
+                    : "none";
+
+        }
+
+
+
+        function changeCurrentQuantity(
+            itemId,
+            change
+        ) {
+
+            const item =
+                currentOrder[itemId];
+
+
+            if (!item) {
+
+                return;
+
+            }
+
+
+            item.quantity +=
+                change;
+
+
+            if (
+                item.quantity <= 0
+            ) {
+
+                delete currentOrder[
+                    itemId
+                ];
+
+            }
+
+
+            renderCurrentOrder();
+
+        }
+
+
+
+        function removeCurrentItem(
+            itemId
+        ) {
+
+            delete currentOrder[
+                itemId
+            ];
+
+
+            renderCurrentOrder();
+
+        }
+
+
+
+        /*
+         * =========================
+         * SEARCH
+         * =========================
+         */
+
+        function filterMenuItems() {
+
+            const search =
+                document.getElementById(
+                    "menu-search-input"
+                ).value
+                    .toLowerCase()
+                    .trim();
+
+
+            let visibleCount = 0;
+
+
+            document
+                .querySelectorAll(
+                    ".menu-list-row"
+                )
+                .forEach(
+                    function (row) {
+
+                        const name =
+                            row.dataset.name;
+
+
+                        const code =
+                            row.dataset.code;
+
+
+                        const matches =
+                            name.includes(search)
+                            ||
+                            code.includes(search);
+
+
+                        row.style.display =
+                            matches
+                                ? "grid"
+                                : "none";
+
+
+                        if (matches) {
+
+                            visibleCount++;
+
+                        }
+
+                    }
+                );
+
+
+            document.getElementById(
+                "no-menu-results"
+            ).style.display =
+                visibleCount === 0
+                    ? "block"
+                    : "none";
+
+        }
+
+
+
+        /*
+         * =========================
+         * CATEGORY FILTER
+         * =========================
+         */
+
+        function filterMenuCategory(
+            categoryId,
+            button
+        ) {
+
+            document
+                .querySelectorAll(
+                    ".menu-filter"
+                )
+                .forEach(
+                    function (item) {
+
+                        item.classList.remove(
+                            "active"
+                        );
+
+                    }
+                );
+
+
+            button.classList.add(
+                "active"
+            );
+
+
+            const search =
+                document.getElementById(
+                    "menu-search-input"
+                ).value
+                    .toLowerCase()
+                    .trim();
+
+
+            let visibleCount = 0;
+
+
+            document
+                .querySelectorAll(
+                    ".menu-list-row"
+                )
+                .forEach(
+                    function (row) {
+
+                        const matchesCategory =
+                            categoryId === "ALL"
+                            ||
+                            row.dataset.category
+                            === String(categoryId);
+
+
+                        const matchesSearch =
+                            row.dataset.name
+                                .includes(search)
+                            ||
+                            row.dataset.code
+                                .includes(search);
+
+
+                        const visible =
+                            matchesCategory
+                            &&
+                            matchesSearch;
+
+
+                        row.style.display =
+                            visible
+                                ? "grid"
+                                : "none";
+
+
+                        if (visible) {
+
+                            visibleCount++;
+
+                        }
+
+                    }
+                );
+
+
+            document.getElementById(
+                "no-menu-results"
+            ).style.display =
+                visibleCount === 0
+                    ? "block"
+                    : "none";
+
+        }
+
+
+
+        /*
+         * =========================
+         * BILL PREVIEW
+         * =========================
+         */
+
+        function openBillPreview() {
+
+            if (
+                Object.keys(
+                    currentOrder
+                ).length === 0
+            ) {
+
+                alert(
+                    "Add at least one item before generating the bill."
+                );
+
+                return;
+
+            }
+
+
+            buildBillPreview();
+
+
+            document.getElementById(
+                "bill-preview-modal"
+            ).classList.add(
+                "open"
+            );
+
+        }
+
+
+
+        function closeBillPreview(event) {
+
+            if (
+                event
+                && event.target
+                !== document.getElementById(
+                    "bill-preview-modal"
+                )
+            ) {
+
+                return;
+
+            }
+
+
+            document.getElementById(
+                "bill-preview-modal"
+            ).classList.remove(
+                "open"
+            );
+
+        }
+
+
+
+        function buildBillPreview() {
+
+            let foodHtml = "";
+
+            let drinkHtml = "";
+
+            let foodSubtotal = 0;
+
+            let drinkSubtotal = 0;
+
+
+            Object.keys(
+                currentOrder
+            ).forEach(
+                function (itemId) {
+
+                    const item =
+                        currentOrder[itemId];
+
+
+                    const lineTotal =
+                        item.price
+                        * item.quantity;
+
+
+                    const html = `
+
+                <div class="bill-preview-row">
+
+                    <span>
+                        ${item.name}
+                        × ${item.quantity}
+                    </span>
+
+                    <span>
+                        ₹${lineTotal.toFixed(2)}
+                    </span>
+
+                </div>
+
+            `;
+
+
+                    if (
+                        item.type === "FOOD"
+                    ) {
+
+                        foodHtml += html;
+
+                        foodSubtotal +=
+                            lineTotal;
+
+                    } else {
+
+                        drinkHtml += html;
+
+                        drinkSubtotal +=
+                            lineTotal;
+
+                    }
+
+                }
+            );
+
+
+            /*
+             * -------------------------
+             * Subtotal
+             * -------------------------
+             */
+
+            const subtotal =
+                foodSubtotal
+                + drinkSubtotal;
+
+
+            /*
+             * -------------------------
+             * Tax
+             * -------------------------
+             */
+            const taxEnabled =
+                {% if tax_enabled %} true{% else %} false{% endif %};
+
+        const taxRate =
+            Number(
+                "{{ tax_rate|default:'0' }}"
+            );
+
+
+        let taxAmount = 0;
+
+
+        if (
+            taxEnabled &&
+            taxRate > 0
+        ) {
+
+            taxAmount =
+                subtotal
+                * taxRate
+                / 100;
+
+        }
+
+
+        /*
+        * -------------------------
+        * Grand Total
+        * -------------------------
+        */
+
+        const grandTotal =
+            subtotal
+            + taxAmount;
+
+
+        /*
+        * -------------------------
+        * Table name
+        * -------------------------
+        */
+
+        document.getElementById(
+            "bill-preview-table"
+        ).textContent =
+            currentTableName;
+
+
+        /*
+        * -------------------------
+        * Bill Preview
+        * -------------------------
+        */
+
+        document.getElementById(
+            "bill-preview-content"
+        ).innerHTML = `
+
+                <div class="bill-preview-section">
+
+                    <div class="bill-preview-section-title">
+                        FOOD
+                    </div>
+
+                    ${foodHtml || "<p>No food items.</p>"}
+
+                    <div class="bill-preview-subtotal">
+
+                        <span>
+                            Food Subtotal
+                        </span>
+
+                        <span>
+                            ₹${foodSubtotal.toFixed(2)}
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="bill-preview-section">
+
+                    <div class="bill-preview-section-title">
+                        DRINKS
+                    </div>
+
+                    ${drinkHtml || "<p>No drink items.</p>"}
+
+                    <div class="bill-preview-subtotal">
+
+                        <span>
+                            Drinks Subtotal
+                        </span>
+
+                        <span>
+                            ₹${drinkSubtotal.toFixed(2)}
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="bill-preview-subtotal">
+
+                    <span>
+                        Subtotal
+                    </span>
+
+                    <span>
+                        ₹${subtotal.toFixed(2)}
+                    </span>
+
+                </div>
+
+
+                ${taxEnabled && taxRate > 0
+                ? `
+                        <div class="bill-preview-subtotal">
+
+                            <span>
+                                Tax ${taxRate.toFixed(2)}%
+                            </span>
+
+                            <span>
+                                ₹${taxAmount.toFixed(2)}
+                            </span>
+
+                        </div>
+                    `
+                : ""
+            }
+
+
+                <div class="bill-grand-total">
+
+                    <span>
+                        Grand Total
+                    </span>
+
+                    <span>
+                        ₹${grandTotal.toFixed(2)}
+                    </span>
+
+                </div>
+
+                `;
+
+        }
+
+
+
+        /*
+         * =========================
+         * CANCEL ORDER
+         * =========================
+         */
+
+        async function confirmCancelOrder() {
+
+            if (
+                Object.keys(currentOrder).length === 0
+            ) {
+
+                closeOrderPanel();
+
+                return;
+
+            }
+
+
+            const confirmed =
+                confirm(
+                    "Cancel this order?\n\nThe current order will be cancelled."
+                );
+
+
+            if (!confirmed) {
+
+                return;
+
+            }
+
+
+            const cancelOrderUrl =
+                "{% url 'pos:cancel_order' 0 %}"
+                    .replace(
+                        "/0/",
+                        "/" + currentTableId + "/"
+                    );
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        cancelOrderUrl,
+                        {
+
+                            method: "POST",
+
+                            headers: {
+
+                                "Content-Type":
+                                    "application/json",
+
+                                "X-CSRFToken":
+                                    getCookie("csrftoken"),
+
+                            },
+
+                        }
+                    );
+
+
+                const result =
+                    await response.json();
+
+
+                if (!response.ok) {
+
+                    alert(
+                        result.error ||
+                        "Could not cancel the order."
+                    );
+
+                    return;
+
+                }
+
+
+                /*
+                 * Clear the browser order.
+                 */
+
+                currentOrder = {};
+
+                temporaryOrder = {};
+
+                resetTemporaryQuantities();
+
+
+                /*
+                 * Close the drawer.
+                 */
+
+                closeOrderPanel();
+
+
+                /*
+                 * Refresh the table screen so
+                 * the table changes from
+                 * OCCUPIED → VACANT.
+                 */
+
+                location.reload();
+
+
+            } catch (error) {
+
+                console.error(
+                    "Cancel order error:",
+                    error
+                );
+
+
+                alert(
+                    "Could not connect to the server."
+                );
+
+            }
+
+        }
+
+
+
+        /*
+         * =========================
+         * GENERATE BILL
+         * =========================
+         */
+
+        async function generateBill() {
+
+            if (
+                Object.keys(currentOrder).length === 0
+            ) {
+
+                alert(
+                    "There are no items to bill."
+                );
+
+                return;
+
+            }
+
+
+            const confirmed =
+                confirm(
+                    "Generate this bill and mark it as PAID?"
+                );
+
+
+            if (!confirmed) {
+
+                return;
+
+            }
+
+
+            const generateBillUrl =
+                "{% url 'pos:generate_bill' 0 %}"
+                    .replace(
+                        "/0/",
+                        "/" + currentTableId + "/"
+                    );
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        generateBillUrl,
+                        {
+
+                            method: "POST",
+
+                            headers: {
+
+                                "Content-Type":
+                                    "application/json",
+
+                                "X-CSRFToken":
+                                    getCookie("csrftoken"),
+
+                            },
+
+                        }
+                    );
+
+
+                const result =
+                    await response.json();
+
+
+                if (!response.ok) {
+
+                    alert(
+                        result.error ||
+                        "Could not generate the bill."
+                    );
+
+                    return;
+
+                }
+
+
+                /*
+                 * Bill successfully created.
+                 */
+
+                alert(
+                    "Bill #" +
+                    result.bill_number +
+                    " generated successfully."
+                );
+
+
+                /*
+                 * Close bill preview.
+                 */
+
+                document.getElementById(
+                    "bill-preview-modal"
+                ).classList.remove(
+                    "open"
+                );
+
+
+                /*
+                 * Clear current browser order.
+                 */
+
+                currentOrder = {};
+
+                temporaryOrder = {};
+
+                resetTemporaryQuantities();
+
+
+                /*
+                 * Close drawer.
+                 */
+
+                closeOrderPanel();
+
+
+                /*
+                 * Refresh table screen.
+                 *
+                 * Table will now show VACANT.
+                 */
+
+                location.reload();
+
+
+            } catch (error) {
+
+                console.error(
+                    "Generate bill error:",
+                    error
+                );
+
+
+                alert(
+                    "Could not connect to the server."
+                );
+
+            }
+
+        }
+
+        function getCookie(name) {
+
+            let cookieValue = null;
+
+
+            if (
+                document.cookie
+                &&
+                document.cookie !== ""
+            ) {
+
+                const cookies =
+                    document.cookie.split(";");
+
+
+                for (
+                    let i = 0;
+                    i < cookies.length;
+                    i++
+                ) {
+
+                    const cookie =
+                        cookies[i].trim();
+
+
+                    if (
+                        cookie.substring(
+                            0,
+                            name.length + 1
+                        )
+                        ===
+                        (name + "=")
+                    ) {
+
+                        cookieValue =
+                            decodeURIComponent(
+                                cookie.substring(
+                                    name.length + 1
+                                )
+                            );
+
+                        break;
+
+                    }
+
+                }
+
+            }
+
+
+            return cookieValue;
+
+        }
+
+    </script>
+    <script>
+
+        if ("serviceWorker" in navigator) {
+
+            window.addEventListener(
+                "load",
+                function () {
+
+                    navigator.serviceWorker
+                        .register(
+                            "{% url 'pos:service_worker' %}",
+                            {
+                                scope: "/pos/"
+                            }
+                        )
+                        .then(
+                            function (registration) {
+
+                                console.log(
+                                    "NEXOVA POS Service Worker registered:",
+                                    registration.scope
+                                );
+
+                            }
+                        )
+                        .catch(
+                            function (error) {
+
+                                console.error(
+                                    "Service Worker registration failed:",
+                                    error
+                                );
+
+                            }
+                        );
+
+                }
+            );
+
+        }
+
+    </script>
+
+</body>
+
+</html>
+{% load static %}

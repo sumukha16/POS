@@ -1,0 +1,317 @@
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #f5f5f5;
+        color: #111;
+    }
+
+    .bill-history-page {
+        min-height: 100vh;
+        padding: 32px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .page-header {
+        margin-bottom: 28px;
+    }
+
+    .page-label {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        color: #777;
+        margin-bottom: 6px;
+    }
+
+    .page-header h1 {
+        margin: 0;
+        font-size: 30px;
+    }
+
+    .bill-history-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .bill-history-card {
+        display: grid;
+        grid-template-columns: 1.2fr 1fr 1fr auto auto;
+        align-items: center;
+        gap: 24px;
+
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+
+        padding: 18px 20px;
+
+        box-shadow:
+            0 2px 6px rgba(0, 0, 0, 0.04);
+    }
+
+    .bill-number {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+
+    .bill-table {
+        font-size: 14px;
+        color: #555;
+    }
+
+    .bill-date {
+        font-size: 13px;
+        color: #777;
+    }
+
+    .bill-history-amount {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 4px;
+    }
+
+    .bill-history-amount span {
+        font-size: 11px;
+        color: #777;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+    }
+
+    .bill-history-amount strong {
+        font-size: 18px;
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
+        min-width: 82px;
+        padding: 7px 12px;
+
+        border-radius: 20px;
+
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.6px;
+    }
+
+    .status-badge.paid {
+        background: #e8f7ed;
+        color: #16733a;
+    }
+
+    .status-badge.cancelled {
+        background: #fdecec;
+        color: #b42318;
+    }
+
+    .bill-history-actions {
+        display: flex;
+        gap: 8px;
+    }
+
+    .bill-action-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
+        min-height: 36px;
+        padding: 0 14px;
+
+        border-radius: 6px;
+
+        border: 1px solid #ccc;
+
+        background: #fff;
+        color: #111;
+
+        text-decoration: none;
+
+        font-size: 12px;
+        font-weight: 600;
+
+        cursor: pointer;
+
+        transition:
+            background 0.15s ease,
+            border-color 0.15s ease;
+    }
+
+    .bill-action-button:hover {
+        background: #f2f2f2;
+        border-color: #999;
+    }
+
+    .empty-state {
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+
+        padding: 60px 20px;
+        text-align: center;
+    }
+
+    .empty-state h3 {
+        margin: 0 0 8px;
+    }
+
+    .empty-state p {
+        margin: 0;
+        color: #777;
+    }
+
+    @media (max-width: 900px) {
+
+        .bill-history-card {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .bill-history-amount {
+            align-items: flex-start;
+        }
+
+        .bill-history-actions {
+            grid-column: 1 / -1;
+        }
+    }
+
+    @media (max-width: 600px) {
+
+        .bill-history-page {
+            padding: 18px;
+        }
+
+        .bill-history-card {
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        .bill-history-amount {
+            align-items: flex-start;
+        }
+
+        .bill-history-actions {
+            width: 100%;
+        }
+
+        .bill-action-button {
+            flex: 1;
+        }
+    }
+</style>
+<div class="bill-history-page">
+
+    <div class="page-header">
+
+        <div>
+            <div class="page-label">
+                BILL HISTORY
+            </div>
+
+            <h1>
+                Bills
+            </h1>
+        </div>
+
+    </div>
+
+
+    <div class="bill-history-list">
+
+        {% for bill in bills %}
+
+        <div class="bill-history-card">
+
+            <div class="bill-history-main">
+
+                <div class="bill-number">
+                    #{{ bill.bill_number }}
+                </div>
+
+                <div class="bill-table">
+                    {{ bill.table.name }}
+                </div>
+
+                <div class="bill-date">
+                    {{ bill.paid_at|date:"d M Y, h:i A" }}
+                </div>
+
+            </div>
+
+
+            <div class="bill-history-amount">
+
+                <span>
+                    Total
+                </span>
+
+                <strong>
+                    ₹{{ bill.total|floatformat:2 }}
+                </strong>
+
+            </div>
+
+
+            <div class="bill-history-status">
+
+                {% if bill.status == "PAID" %}
+
+                <span class="status-badge paid">
+                    PAID
+                </span>
+
+                {% else %}
+
+                <span class="status-badge cancelled">
+                    CANCELLED
+                </span>
+
+                {% endif %}
+
+            </div>
+
+
+            <div class="bill-history-actions">
+
+                <a href="{% url 'pos:bill_detail' bill.id %}" class="bill-action-button">
+                    View
+                </a>
+
+
+                <a href="{% url 'pos:bill_detail' bill.id %}?print=1" class="bill-action-button">
+                    Print / Duplicate
+                </a>
+
+            </div>
+
+        </div>
+
+        {% empty %}
+
+        <div class="empty-state">
+
+            <h3>
+                No bills yet
+            </h3>
+
+            <p>
+                Generated bills will appear here.
+            </p>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>

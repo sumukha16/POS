@@ -1,0 +1,13 @@
+# Ignore the virtual environment folder
+venv/
+.venv/
+
+# Ignore all .pyc files
+*.pyc
+
+# Ignore a specific config file
+.env
+config.json
+
+# Ignore all logs
+*.log   

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>NEXOVA - Tables</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: #f5f5f5;
+        }
+
+        header {
+            background: #111;
+            color: white;
+            padding: 20px 30px;
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
+        .container {
+            padding: 30px;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .button {
+            background: #111;
+            color: white;
+            padding: 10px 16px;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th,
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #eee;
+        }
+
+        .active {
+            color: green;
+            font-weight: bold;
+        }
+
+        .inactive {
+            color: #888;
+            font-weight: bold;
+        }
+
+        .vacant {
+            color: green;
+            font-weight: bold;
+        }
+
+        .occupied {
+            color: #d97706;
+            font-weight: bold;
+        }
+
+        .action {
+            margin-right: 10px;
+        }
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <header>
+
+        <h1>NEXOVA ADMIN</h1>
+
+    </header>
+
+
+    <div class="container">
+
+
+        <div class="top-bar">
+
+            <h2>Tables</h2>
+
+            <a class="button" href="{% url 'admin_panel:table_add' %}">
+                + Add Table
+            </a>
+
+        </div>
+
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Order
+                    </th>
+
+                    <th>
+                        Table
+                    </th>
+
+                    <th>
+                        Section
+                    </th>
+
+                    <th>
+                        Status
+                    </th>
+
+                    <th>
+                        Active
+                    </th>
+
+                    <th>
+                        Actions
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for table in tables %}
+
+                <tr>
+
+                    <td>
+                        {{ table.display_order }}
+                    </td>
+
+                    <td>
+                        {{ table.name }}
+                    </td>
+
+                    <td>
+                        {{ table.section.name }}
+                    </td>
+
+                    <td>
+
+                        {% if table.status == "VACANT" %}
+
+                        <span class="vacant">
+                            Vacant
+                        </span>
+
+                        {% else %}
+
+                        <span class="occupied">
+                            Occupied
+                        </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+
+                        {% if table.is_active %}
+
+                        <span class="active">
+                            Active
+                        </span>
+
+                        {% else %}
+
+                        <span class="inactive">
+                            Inactive
+                        </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+
+                        <a class="action" href="{% url 'admin_panel:table_edit' table.id %}">
+                            Edit
+                        </a>
+
+
+                        <a class="action" href="{% url 'admin_panel:table_toggle' table.id %}">
+
+                            {% if table.is_active %}
+                            Deactivate
+                            {% else %}
+                            Activate
+                            {% endif %}
+
+                        </a>
+
+                    </td>
+
+                </tr>
+
+                {% empty %}
+
+                <tr>
+
+                    <td colspan="6">
+                        No tables found.
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+
+        <br>
+
+        <a href="{% url 'admin_panel:dashboard' %}">
+            ← Back to Dashboard
+        </a>
+
+
+    </div>
+
+
+</body>
+
+</html>

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>NEXOVA - Categories</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: #f5f5f5;
+        }
+
+        header {
+            background: #111;
+            color: white;
+            padding: 20px 30px;
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
+        .container {
+            padding: 30px;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .button {
+            background: #111;
+            color: white;
+            padding: 10px 16px;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th,
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #eee;
+        }
+
+        .active {
+            color: green;
+            font-weight: bold;
+        }
+
+        .inactive {
+            color: #888;
+            font-weight: bold;
+        }
+
+        .action {
+            margin-right: 10px;
+        }
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <header>
+
+        <h1>NEXOVA ADMIN</h1>
+
+    </header>
+
+
+    <div class="container">
+
+
+        <div class="top-bar">
+
+            <h2>Categories</h2>
+
+            <a class="button" href="{% url 'admin_panel:category_add' %}">
+                + Add Category
+            </a>
+
+        </div>
+
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Name
+                    </th>
+
+                    <th>
+                        Type
+                    </th>
+
+                    <th>
+                        Status
+                    </th>
+
+                    <th>
+                        Actions
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for category in categories %}
+
+                <tr>
+
+                    <td>
+                        {{ category.name }}
+                    </td>
+
+                    <td>
+                        {{ category.get_category_type_display }}
+                    </td>
+
+                    <td>
+
+                        {% if category.is_active %}
+
+                        <span class="active">
+                            Active
+                        </span>
+
+                        {% else %}
+
+                        <span class="inactive">
+                            Inactive
+                        </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+
+                        <a class="action" href="{% url 'admin_panel:category_edit' category.id %}">
+                            Edit
+                        </a>
+
+
+                        <a class="action" href="{% url 'admin_panel:category_toggle' category.id %}">
+
+                            {% if category.is_active %}
+                            Deactivate
+                            {% else %}
+                            Activate
+                            {% endif %}
+
+                        </a>
+
+                    </td>
+
+                </tr>
+
+                {% empty %}
+
+                <tr>
+
+                    <td colspan="4">
+                        No categories found.
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+
+        <br>
+
+        <a href="{% url 'admin_panel:dashboard' %}">
+            ← Back to Dashboard
+        </a>
+
+
+    </div>
+
+
+</body>
+
+</html>

@@ -1,0 +1,1391 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>
+        NEXOVA POS - {{ table.name }}
+    </title>
+
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+            margin: 0;
+
+            font-family: Arial, sans-serif;
+
+            background: #f4f4f4;
+
+            color: #111;
+
+            height: 100vh;
+
+            overflow: hidden;
+        }
+
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        .header {
+            height: 68px;
+
+            background: #111;
+
+            color: white;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            padding: 0 25px;
+        }
+
+
+        .header-left {
+            display: flex;
+
+            align-items: center;
+
+            gap: 20px;
+        }
+
+
+        .back-button {
+            color: white;
+
+            text-decoration: none;
+
+            font-size: 15px;
+
+            padding: 8px 12px;
+
+            border: 1px solid #555;
+
+            border-radius: 5px;
+        }
+
+
+        .logo {
+            font-size: 22px;
+
+            font-weight: bold;
+        }
+
+
+        .table-title {
+            font-size: 18px;
+
+            font-weight: bold;
+        }
+
+
+        .header-right {
+            display: flex;
+
+            align-items: center;
+
+            gap: 20px;
+
+            font-size: 14px;
+        }
+
+
+        .bill-button {
+            background: white;
+
+            color: #111;
+
+            text-decoration: none;
+
+            padding: 9px 16px;
+
+            border-radius: 5px;
+
+            font-weight: bold;
+        }
+
+
+        /* =========================
+           MAIN LAYOUT
+        ========================= */
+
+        .main {
+            height: calc(100vh - 68px);
+
+            display: grid;
+
+            grid-template-columns:
+                190px minmax(0, 1fr) 360px;
+        }
+
+
+        /* =========================
+           CATEGORY PANEL
+        ========================= */
+
+        .category-panel {
+            background: white;
+
+            border-right: 1px solid #ddd;
+
+            padding: 20px;
+
+            overflow-y: auto;
+        }
+
+
+        .panel-title {
+            font-size: 13px;
+
+            font-weight: bold;
+
+            color: #777;
+
+            margin-bottom: 15px;
+
+            text-transform: uppercase;
+        }
+
+
+        .category-button {
+            width: 100%;
+
+            border: none;
+
+            background: #f5f5f5;
+
+            padding: 14px 12px;
+
+            margin-bottom: 10px;
+
+            border-radius: 7px;
+
+            text-align: left;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+        }
+
+
+        .category-button:hover {
+            background: #e8e8e8;
+        }
+
+
+        .category-button.active {
+            background: #111;
+
+            color: white;
+        }
+
+
+        .drinks-divider {
+            margin: 25px 0 15px;
+
+            border-top: 1px solid #ddd;
+
+            padding-top: 18px;
+        }
+
+
+        /* =========================
+           MENU PANEL
+        ========================= */
+
+        .menu-panel {
+            padding: 25px;
+
+            overflow-y: auto;
+        }
+
+
+        .menu-title {
+            margin: 0 0 20px;
+
+            font-size: 22px;
+        }
+
+
+        .menu-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(auto-fill,
+                    minmax(180px, 1fr));
+
+            gap: 18px;
+        }
+
+
+        .menu-item {
+            background: white;
+
+            border: 2px solid transparent;
+
+            border-radius: 9px;
+
+            padding: 20px;
+
+            min-height: 130px;
+
+            cursor: pointer;
+
+            text-align: left;
+
+            box-shadow:
+                0 2px 8px rgba(0, 0, 0, 0.07);
+
+            transition:
+                transform 0.12s,
+                box-shadow 0.12s;
+        }
+
+
+        .menu-item:hover {
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 5px 13px rgba(0, 0, 0, 0.12);
+        }
+
+
+        .menu-item-name {
+            font-size: 17px;
+
+            font-weight: bold;
+
+            margin-bottom: 12px;
+        }
+
+
+        .menu-item-price {
+            font-size: 15px;
+
+            font-weight: 600;
+
+            color: #555;
+        }
+
+
+        .menu-item-type {
+            margin-top: 8px;
+
+            font-size: 11px;
+
+            color: #888;
+
+            text-transform: uppercase;
+        }
+
+
+        .empty-menu {
+            background: white;
+
+            padding: 35px;
+
+            text-align: center;
+
+            color: #777;
+
+            border-radius: 8px;
+        }
+
+
+        /* =========================
+           ORDER PANEL
+        ========================= */
+
+        .order-panel {
+            background: white;
+
+            border-left: 1px solid #ddd;
+
+            display: flex;
+
+            flex-direction: column;
+
+            min-width: 0;
+        }
+
+
+        .order-header {
+            padding: 20px;
+
+            border-bottom: 1px solid #ddd;
+        }
+
+
+        .order-header h2 {
+            margin: 0;
+
+            font-size: 19px;
+        }
+
+
+        .round-label {
+            font-size: 12px;
+
+            color: #777;
+
+            margin-top: 5px;
+        }
+
+
+        .order-content {
+            flex: 1;
+
+            overflow-y: auto;
+
+            padding: 18px;
+        }
+
+
+        /* =========================
+           ORDER SECTIONS
+        ========================= */
+
+        .order-section {
+            margin-bottom: 25px;
+        }
+
+
+        .order-section-title {
+            font-size: 13px;
+
+            font-weight: bold;
+
+            text-transform: uppercase;
+
+            padding-bottom: 8px;
+
+            border-bottom: 1px solid #ddd;
+
+            margin-bottom: 10px;
+        }
+
+
+        .order-row {
+            padding: 10px 0;
+
+            border-bottom: 1px solid #eee;
+        }
+
+
+        .order-row-top {
+            display: flex;
+
+            justify-content: space-between;
+
+            gap: 10px;
+        }
+
+
+        .order-item-name {
+            font-size: 14px;
+
+            font-weight: 600;
+        }
+
+
+        .order-line-total {
+            font-size: 14px;
+
+            font-weight: 600;
+
+            white-space: nowrap;
+        }
+
+
+        .order-row-bottom {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-top: 7px;
+        }
+
+
+        .quantity-controls {
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+        }
+
+
+        .quantity-button {
+            width: 26px;
+
+            height: 26px;
+
+            border: 1px solid #ccc;
+
+            background: white;
+
+            border-radius: 4px;
+
+            cursor: pointer;
+        }
+
+
+        .quantity {
+            min-width: 18px;
+
+            text-align: center;
+
+            font-size: 13px;
+        }
+
+
+        .remove-button {
+            border: none;
+
+            background: transparent;
+
+            color: #b91c1c;
+
+            cursor: pointer;
+
+            font-size: 12px;
+        }
+
+
+        .subtotal-row {
+            display: flex;
+
+            justify-content: space-between;
+
+            margin-top: 10px;
+
+            font-size: 13px;
+
+            font-weight: bold;
+        }
+
+
+        .empty-order {
+            text-align: center;
+
+            color: #888;
+
+            padding: 50px 15px;
+        }
+
+
+        /* =========================
+           ORDER FOOTER
+        ========================= */
+
+        .order-footer {
+            border-top: 1px solid #ddd;
+
+            padding: 15px 18px;
+
+            background: white;
+        }
+
+
+        .total-row {
+            display: flex;
+
+            justify-content: space-between;
+
+            font-size: 15px;
+
+            margin-bottom: 12px;
+        }
+
+
+        .total-row.grand {
+            font-size: 20px;
+
+            font-weight: bold;
+
+            padding-top: 10px;
+
+            border-top: 2px solid #111;
+        }
+
+
+        .footer-buttons {
+            display: grid;
+
+            grid-template-columns:
+                1fr 1fr;
+
+            gap: 10px;
+
+            margin-top: 15px;
+        }
+
+
+        .footer-button {
+            border: none;
+
+            padding: 13px;
+
+            border-radius: 6px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            font-size: 13px;
+        }
+
+
+        .kitchen-button {
+            background: #111;
+
+            color: white;
+        }
+
+
+        .view-bill-button {
+            background: #e8e8e8;
+
+            color: #111;
+        }
+
+
+        .new-round-button {
+            width: 100%;
+
+            margin-bottom: 10px;
+
+            padding: 11px;
+
+            background: white;
+
+            border: 1px solid #ccc;
+
+            border-radius: 6px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 1100px) {
+
+            .main {
+                grid-template-columns:
+                    160px minmax(0, 1fr) 320px;
+            }
+
+            .menu-grid {
+                grid-template-columns:
+                    repeat(auto-fill,
+                        minmax(150px, 1fr));
+            }
+
+        }
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================
+         HEADER
+    ========================= -->
+
+    <header class="header">
+
+
+        <div class="header-left">
+
+            <a href="{% url 'pos:table_screen' %}" class="back-button">
+                ← Tables
+            </a>
+
+
+            <div class="logo">
+                NEXOVA POS
+            </div>
+
+
+            <div class="table-title">
+
+                {{ table.name }}
+
+            </div>
+
+        </div>
+
+
+        <div class="header-right">
+
+            <span>
+                Admin
+            </span>
+
+
+            <a href="#" class="bill-button">
+                Bill ₹0.00
+            </a>
+
+        </div>
+
+
+    </header>
+
+
+
+    <!-- =========================
+         MAIN
+    ========================= -->
+
+    <main class="main">
+
+
+        <!-- =========================
+             CATEGORIES
+        ========================= -->
+
+        <aside class="category-panel">
+
+
+            <div class="panel-title">
+                Food Categories
+            </div>
+
+
+            {% for category in categories %}
+
+
+            {% if category.category_type == "FOOD" %}
+
+            <button type="button" class="category-button {% if forloop.first %}active{% endif %}"
+                data-category="{{ category.id }}" onclick="selectCategory('{{ category.id }}', this)">
+
+                {{ category.name }}
+
+            </button>
+
+            {% endif %}
+
+
+            {% endfor %}
+
+
+
+            <div class="drinks-divider">
+
+                <div class="panel-title">
+                    Drinks
+                </div>
+
+
+                {% for category in categories %}
+
+
+                {% if category.category_type == "DRINK" %}
+
+                <button type="button" class="category-button" data-category="{{ category.id }}"
+                    onclick="selectCategory('{{ category.id }}', this)">
+
+                    {{ category.name }}
+
+                </button>
+
+                {% endif %}
+
+
+                {% endfor %}
+
+            </div>
+
+
+        </aside>
+
+
+
+        <!-- =========================
+             MENU
+        ========================= -->
+
+        <section class="menu-panel">
+
+
+            <h1 class="menu-title" id="menu-title">
+                Menu
+            </h1>
+
+
+            <div class="menu-grid" id="menu-grid">
+
+
+                {% for item in menu_items %}
+
+
+                <button type="button" class="menu-item" data-category="{{ item.category.id }}"
+                    data-type="{{ item.category.category_type }}">
+
+
+                    <div class="menu-item-name">
+
+                        {{ item.name }}
+
+                    </div>
+
+
+                    <div class="menu-item-price">
+
+                        ₹{{ item.price|floatformat:2 }}
+
+                    </div>
+
+
+                    <div class="menu-item-type">
+
+                        {{ item.category.name }}
+
+                    </div>
+
+
+                </button>
+
+
+                {% endfor %}
+
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =========================
+             CURRENT ORDER
+        ========================= -->
+
+        <aside class="order-panel">
+
+
+            <div class="order-header">
+
+                <h2>
+                    Current Order
+                </h2>
+
+                <div class="round-label">
+                    Round 1
+                </div>
+
+            </div>
+
+
+            <div class="order-content">
+
+
+                <div id="empty-order" class="empty-order">
+
+                    No items added yet.
+
+                    <br><br>
+
+                    Select an item from the menu.
+
+                </div>
+
+
+                <div id="food-order-section" class="order-section" style="display: none;">
+
+                    <div class="order-section-title">
+                        Food
+                    </div>
+
+
+                    <div id="food-order-items">
+                    </div>
+
+
+                    <div class="subtotal-row">
+
+                        <span>
+                            Food Subtotal
+                        </span>
+
+                        <span id="food-subtotal">
+                            ₹0.00
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+
+                <div id="drink-order-section" class="order-section" style="display: none;">
+
+                    <div class="order-section-title">
+                        Drinks
+                    </div>
+
+
+                    <div id="drink-order-items">
+                    </div>
+
+
+                    <div class="subtotal-row">
+
+                        <span>
+                            Drinks Subtotal
+                        </span>
+
+                        <span id="drink-subtotal">
+                            ₹0.00
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- =========================
+                 FOOTER
+            ========================= -->
+
+            <div class="order-footer">
+
+
+                <div class="total-row">
+
+                    <span>
+                        Subtotal
+                    </span>
+
+                    <span id="overall-subtotal">
+                        ₹0.00
+                    </span>
+
+                </div>
+
+
+                <div class="total-row grand">
+
+                    <span>
+                        Total
+                    </span>
+
+                    <span id="grand-total">
+                        ₹0.00
+                    </span>
+
+                </div>
+
+
+                <button type="button" class="new-round-button">
+                    + New Round
+                </button>
+
+
+                <div class="footer-buttons">
+
+
+                    <button type="button" class="footer-button kitchen-button">
+                        Send Food to Kitchen
+                    </button>
+
+
+                    <a href="#" class="footer-button view-bill-button"
+                        style="text-align: center; text-decoration: none;">
+                        View Bill
+                    </a>
+
+
+                </div>
+
+
+            </div>
+
+
+        </aside>
+
+
+    </main>
+
+
+
+    <!-- =========================
+         JAVASCRIPT
+    ========================= -->
+
+    <script>
+
+        const menuItems =
+            document.querySelectorAll(
+                ".menu-item"
+            );
+
+
+        const menuTitle =
+            document.getElementById(
+                "menu-title"
+            );
+
+
+        /*
+         * Select category
+         */
+
+        function selectCategory(
+            categoryId,
+            button
+        ) {
+
+
+            const buttons =
+                document.querySelectorAll(
+                    ".category-button"
+                );
+
+
+            buttons.forEach(
+                function (item) {
+
+                    item.classList.remove(
+                        "active"
+                    );
+
+                }
+            );
+
+
+            button.classList.add(
+                "active"
+            );
+
+
+            let visibleCount = 0;
+
+
+            menuItems.forEach(
+                function (item) {
+
+                    if (
+                        item.dataset.category
+                        === String(categoryId)
+                    ) {
+
+                        item.style.display =
+                            "block";
+
+                        visibleCount++;
+
+                    } else {
+
+                        item.style.display =
+                            "none";
+
+                    }
+
+                }
+            );
+
+
+            menuTitle.textContent =
+                button.textContent.trim();
+
+
+            /*
+             * If category contains
+             * no menu items.
+             */
+
+            if (visibleCount === 0) {
+
+                menuTitle.textContent =
+                    button.textContent.trim()
+                    + " — No items";
+
+            }
+
+        }
+
+
+        /*
+         * Initial category
+         */
+
+        const firstCategory =
+            document.querySelector(
+                ".category-button"
+            );
+
+
+        if (firstCategory) {
+
+            selectCategory(
+                firstCategory.dataset.category,
+                firstCategory
+            );
+
+        }
+
+
+        /*
+         * Menu item click
+         *
+         * For now this only creates
+         * the front-end order display.
+         *
+         * Database saving will be added
+         * after we connect Round and
+         * RoundItem.
+         */
+
+        const order = {};
+
+
+        menuItems.forEach(
+            function (item) {
+
+                item.addEventListener(
+                    "click",
+                    function () {
+
+                        const name =
+                            item.querySelector(
+                                ".menu-item-name"
+                            ).textContent.trim();
+
+
+                        const priceText =
+                            item.querySelector(
+                                ".menu-item-price"
+                            ).textContent
+                                .replace("₹", "")
+                                .trim();
+
+
+                        const price =
+                            parseFloat(
+                                priceText
+                            );
+
+
+                        const categoryType =
+                            item.dataset.type;
+
+
+                        const itemKey =
+                            name + "-"
+                            + categoryType;
+
+
+                        if (!order[itemKey]) {
+
+                            order[itemKey] = {
+
+                                name: name,
+
+                                price: price,
+
+                                quantity: 1,
+
+                                type:
+                                    categoryType
+
+                            };
+
+                        } else {
+
+                            order[itemKey].quantity++;
+
+                        }
+
+
+                        renderOrder();
+
+                    }
+                );
+
+            }
+        );
+
+
+        /*
+         * Render current order
+         */
+
+        function renderOrder() {
+
+
+            const foodContainer =
+                document.getElementById(
+                    "food-order-items"
+                );
+
+
+            const drinkContainer =
+                document.getElementById(
+                    "drink-order-items"
+                );
+
+
+            foodContainer.innerHTML =
+                "";
+
+            drinkContainer.innerHTML =
+                "";
+
+
+            let foodSubtotal = 0;
+
+            let drinkSubtotal = 0;
+
+            let itemCount = 0;
+
+
+            Object.keys(order).forEach(
+                function (key) {
+
+
+                    const item =
+                        order[key];
+
+
+                    const lineTotal =
+                        item.price
+                        * item.quantity;
+
+
+                    itemCount++;
+
+
+                    const row =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    row.className =
+                        "order-row";
+
+
+                    row.innerHTML = `
+
+                        <div class="order-row-top">
+
+                            <span class="order-item-name">
+                                ${item.name}
+                            </span>
+
+                            <span class="order-line-total">
+                                ₹${lineTotal.toFixed(2)}
+                            </span>
+
+                        </div>
+
+                        <div class="order-row-bottom">
+
+                            <div class="quantity-controls">
+
+                                <button
+                                    type="button"
+                                    class="quantity-button"
+                                    onclick="decreaseItem('${key}')"
+                                >
+                                    −
+                                </button>
+
+                                <span class="quantity">
+                                    ${item.quantity}
+                                </span>
+
+                                <button
+                                    type="button"
+                                    class="quantity-button"
+                                    onclick="increaseItem('${key}')"
+                                >
+                                    +
+                                </button>
+
+                            </div>
+
+                            <button
+                                type="button"
+                                class="remove-button"
+                                onclick="removeItem('${key}')"
+                            >
+                                Remove
+                            </button>
+
+                        </div>
+
+                    `;
+
+
+                    if (
+                        item.type
+                        === "FOOD"
+                    ) {
+
+                        foodContainer.appendChild(
+                            row
+                        );
+
+                        foodSubtotal +=
+                            lineTotal;
+
+                    } else {
+
+                        drinkContainer.appendChild(
+                            row
+                        );
+
+                        drinkSubtotal +=
+                            lineTotal;
+
+                    }
+
+                }
+            );
+
+
+            const overallSubtotal =
+                foodSubtotal
+                + drinkSubtotal;
+
+
+            document.getElementById(
+                "food-subtotal"
+            ).textContent =
+                "₹"
+                + foodSubtotal.toFixed(2);
+
+
+            document.getElementById(
+                "drink-subtotal"
+            ).textContent =
+                "₹"
+                + drinkSubtotal.toFixed(2);
+
+
+            document.getElementById(
+                "overall-subtotal"
+            ).textContent =
+                "₹"
+                + overallSubtotal.toFixed(2);
+
+
+            document.getElementById(
+                "grand-total"
+            ).textContent =
+                "₹"
+                + overallSubtotal.toFixed(2);
+
+
+            document.getElementById(
+                "empty-order"
+            ).style.display =
+                itemCount === 0
+                    ? "block"
+                    : "none";
+
+
+            document.getElementById(
+                "food-order-section"
+            ).style.display =
+                foodSubtotal > 0
+                    ? "block"
+                    : "none";
+
+
+            document.getElementById(
+                "drink-order-section"
+            ).style.display =
+                drinkSubtotal > 0
+                    ? "block"
+                    : "none";
+
+        }
+
+
+        /*
+         * Increase quantity
+         */
+
+        function increaseItem(key) {
+
+            order[key].quantity++;
+
+            renderOrder();
+
+        }
+
+
+        /*
+         * Decrease quantity
+         */
+
+        function decreaseItem(key) {
+
+            if (
+                order[key].quantity > 1
+            ) {
+
+                order[key].quantity--;
+
+            } else {
+
+                delete order[key];
+
+            }
+
+
+            renderOrder();
+
+        }
+
+
+        /*
+         * Remove item
+         */
+
+        function removeItem(key) {
+
+            delete order[key];
+
+            renderOrder();
+
+        }
+
+    </script>
+
+
+</body>
+
+</html>

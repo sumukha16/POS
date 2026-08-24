@@ -1,0 +1,236 @@
+{% load nexova_filters %}
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>NEXOVA - Menu Items</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: #f5f5f5;
+        }
+
+        header {
+            background: #111;
+            color: white;
+            padding: 20px 30px;
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
+        .container {
+            padding: 30px;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .button {
+            background: #111;
+            color: white;
+            padding: 10px 16px;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th,
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #eee;
+        }
+
+        .active {
+            color: green;
+            font-weight: bold;
+        }
+
+        .inactive {
+            color: #888;
+            font-weight: bold;
+        }
+
+        .action {
+            margin-right: 10px;
+        }
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <header>
+
+        <h1>NEXOVA ADMIN</h1>
+
+    </header>
+
+
+    <div class="container">
+
+
+        <div class="top-bar">
+
+            <h2>Menu Items</h2>
+
+            <a class="button" href="{% url 'admin_panel:menu_item_add' %}">
+                + Add Menu Item
+            </a>
+
+        </div>
+
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Item
+                    </th>
+
+                    <th>
+                        Category
+                    </th>
+
+                    <th>
+                        Type
+                    </th>
+
+                    <th>
+                        Code
+                    </th>
+
+                    <th>
+                        Price
+                    </th>
+
+                    <th>
+                        Status
+                    </th>
+
+                    <th>
+                        Actions
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for item in items %}
+
+                <tr>
+
+                    <td>
+                        {{ item.name }}
+                    </td>
+
+                    <td>
+                        {{ item.category.name }}
+                    </td>
+
+                    <td>
+                        {{ item.category.get_category_type_display }}
+                    </td>
+
+                    <td>
+                        {{ item.code }}
+                    </td>
+
+                    <td>
+                        ₹{{ item.price|money }}
+                    </td>
+
+                    <td>
+
+                        {% if item.is_active %}
+
+                        <span class="active">
+                            Active
+                        </span>
+
+                        {% else %}
+
+                        <span class="inactive">
+                            Inactive
+                        </span>
+
+                        {% endif %}
+
+                    </td>
+
+                    <td>
+
+                        <a class="action" href="{% url 'admin_panel:menu_item_edit' item.id %}">
+                            Edit
+                        </a>
+
+                        <a class="action" href="{% url 'admin_panel:menu_item_toggle' item.id %}">
+
+                            {% if item.is_active %}
+                            Deactivate
+                            {% else %}
+                            Activate
+                            {% endif %}
+
+                        </a>
+
+                    </td>
+
+                </tr>
+
+                {% empty %}
+
+                <tr>
+
+                    <td colspan="7">
+                        No menu items found.
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+
+        <br>
+
+        <a href="{% url 'admin_panel:dashboard' %}">
+            ← Back to Dashboard
+        </a>
+
+
+    </div>
+
+
+</body>
+
+</html>

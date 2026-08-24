@@ -1,0 +1,11 @@
+{
+    "name": "NEXOVA POS",
+    "short_name": "NEXOVA POS",
+    "description": "Restaurant Point of Sale System",
+    "start_url": "/pos/",
+    "scope": "/pos/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#111111",
+    "orientation": "landscape"
+}
