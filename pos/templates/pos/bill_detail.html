@@ -564,7 +564,7 @@
                     </span>
 
                     <span>
-                        ₹{{ food_subtotal|floatformat:2 }}
+                         ₹{{ subtotal|floatformat:2 }}
                     </span>
 
                 </div>
@@ -621,7 +621,7 @@
                     </span>
 
                     <span>
-                        ₹{{ drink_subtotal|floatformat:2 }}
+                        ₹{{ bill.drink_subtotal|floatformat:2 }}
                     </span>
 
                 </div>
@@ -640,7 +640,7 @@
                     </span>
 
                     <span>
-                        ₹{{ bill.subtotal|floatformat:2 }}
+                        ₹{{ subtotal|floatformat:2 }}
                     </span>
 
                 </div>
@@ -659,8 +659,7 @@
 
                     <span>
 
-                        ₹{{ bill.tax_amount|floatformat:2 }}
-
+                      ₹{{ tax_amount|floatformat:2 }}
                     </span>
 
                 </div>
@@ -675,7 +674,7 @@
                     </span>
 
                     <span>
-                        ₹{{ bill.total|floatformat:2 }}
+                        ₹{{ total|floatformat:2 }}
                     </span>
 
                 </div>

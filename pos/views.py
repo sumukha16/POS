@@ -5,11 +5,18 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import require_GET
 from django.views.decorators.http import require_POST
-from django.views.decorators.http import require_POST
 from decimal import Decimal, InvalidOperation
 from django.db.models import Sum, Count
+from django.contrib import messages
+from .forms import CategoryForm, MenuItemForm
 
+from django.shortcuts import (
+    get_object_or_404,
+    redirect,
+    render,
+)
 
+from .models import Category, MenuItem
 from .models import (
     Bill,
     CancelledItem,
@@ -21,7 +28,9 @@ from .models import (
     Section,
     Table,
     BillItem,
-    Setting
+    Setting,
+    Category,
+    MenuItem,
 )
 
 
@@ -143,6 +152,44 @@ def table_screen(request):
             tax_rate,
     },
 )
+
+@require_GET
+def menu_items_api(request):
+
+    menu_items = (
+        MenuItem.objects
+        .filter(is_active=True)
+        .select_related("category")
+        .order_by(
+            "category__display_order",
+            "category__name",
+            "name",
+        )
+    )
+
+    items = []
+
+    for item in menu_items:
+
+        items.append({
+            "id": item.id,
+            "code": item.code or "",
+            "name": item.name,
+            "price": float(
+                Decimal(item.price)
+                / Decimal("100")
+            ),
+            "category_id": item.category.id,
+            "category_name": item.category.name,
+            "category_type": item.category.category_type,
+        })
+
+    return JsonResponse(
+        {
+            "success": True,
+            "items": items,
+        }
+    )
 
 @require_GET
 def current_order(request, table_id):
@@ -875,6 +922,7 @@ def generate_bill(request, table_id):
         }
     )
 
+
 def bill_history(request):
 
     bills = (
@@ -883,11 +931,31 @@ def bill_history(request):
         .order_by("-bill_number")
     )
 
+    bill_list = []
+
+    for bill in bills:
+
+        bill_list.append({
+            "bill": bill,
+
+            # Database stores paise.
+            # Convert to rupees only for display.
+
+            "display_total":
+                Decimal(bill.total) / Decimal("100"),
+
+            "display_subtotal":
+                Decimal(bill.subtotal) / Decimal("100"),
+
+            "display_tax":
+                Decimal(bill.tax_amount) / Decimal("100"),
+        })
+
     return render(
         request,
         "pos/bill_history.html",
         {
-            "bills": bills,
+            "bills": bill_list,
         },
     )
 
@@ -898,7 +966,7 @@ def bill_detail(request, bill_id):
         id=bill_id,
     )
 
-    items = (
+    bill_items = (
         BillItem.objects
         .filter(bill=bill)
         .order_by("id")
@@ -907,31 +975,59 @@ def bill_detail(request, bill_id):
     food_items = []
     drink_items = []
 
-    food_subtotal = 0
-    drink_subtotal = 0
+    food_subtotal = Decimal("0")
+    drink_subtotal = Decimal("0")
 
-    for item in items:
+    for item in bill_items:
+
+        display_item = {
+            "item": item,
+
+            "unit_price":
+                Decimal(item.unit_price) / Decimal("100"),
+
+            "line_total":
+                Decimal(item.line_total) / Decimal("100"),
+        }
 
         if item.category_type == "FOOD":
 
-            food_items.append(item)
+            food_items.append(display_item)
 
-            food_subtotal += item.line_total
+            food_subtotal += (
+                Decimal(item.line_total)
+                / Decimal("100")
+            )
 
         else:
 
-            drink_items.append(item)
+            drink_items.append(display_item)
 
-            drink_subtotal += item.line_total
+            drink_subtotal += (
+                Decimal(item.line_total)
+                / Decimal("100")
+            )
+
+    subtotal = (
+        Decimal(bill.subtotal)
+        / Decimal("100")
+    )
+
+    tax_amount = (
+        Decimal(bill.tax_amount)
+        / Decimal("100")
+    )
+
+    total = (
+        Decimal(bill.total)
+        / Decimal("100")
+    )
 
     return render(
         request,
         "pos/bill_detail.html",
         {
             "bill": bill,
-
-            "hotel_name":
-                "HOTEL VARAAD INTERNATIONAL",
 
             "food_items":
                 food_items,
@@ -944,145 +1040,159 @@ def bill_detail(request, bill_id):
 
             "drink_subtotal":
                 drink_subtotal,
+
+            "subtotal":
+                subtotal,
+
+            "tax_amount":
+                tax_amount,
+
+            "total":
+                total,
         },
     )
 
+def management_dashboard(request):
 
-
-def dashboard(request):
-
-    today = timezone.localdate()
-
-    # -----------------------------
-    # Today's bills
-    # -----------------------------
-
-    todays_bills = (
-        Bill.objects
-        .filter(
-            bill_date=today
-        )
-        .order_by("-bill_number")
-    )
-
-
-    # -----------------------------
-    # Paid / Cancelled
-    # -----------------------------
-
-    paid_bills = todays_bills.filter(
-        status=Bill.Status.PAID
-    )
-
-    cancelled_bills = todays_bills.filter(
-        status=Bill.Status.CANCELLED
-    )
-
-
-    # -----------------------------
-    # Today's sales
-    # -----------------------------
-
-    sales_data = (
-        paid_bills.aggregate(
-            total=Sum("total")
+    categories = (
+        Category.objects
+        .order_by(
+            "category_type",
+            "display_order",
+            "name",
         )
     )
 
-    today_sales = (
-        sales_data["total"]
-        or 0
-    )
-
-
-    # -----------------------------
-    # Tax collected
-    # -----------------------------
-
-    tax_data = (
-        paid_bills.aggregate(
-            total=Sum("tax_amount")
+    menu_queryset = (
+        MenuItem.objects
+        .select_related("category")
+        .order_by(
+            "category__category_type",
+            "category__display_order",
+            "name",
         )
     )
 
-    today_tax = (
-        tax_data["total"]
-        or 0
-    )
+    management_menu_items = []
 
+    for item in menu_queryset:
 
-    # -----------------------------
-    # Food / Drinks sales
-    # -----------------------------
+        management_menu_items.append({
 
-    paid_items = (
-        BillItem.objects
-        .filter(
-            bill__in=paid_bills
-        )
-    )
+            "item": item,
 
+            "display_price":
+                Decimal(item.price)
+                / Decimal("100"),
 
-    food_data = (
-        paid_items
-        .filter(
-            category_type="FOOD"
-        )
-        .aggregate(
-            total=Sum("line_total")
-        )
-    )
+        })
 
-    food_sales = (
-        food_data["total"]
-        or 0
-    )
+    category_form = CategoryForm()
 
-
-    drink_data = (
-        paid_items
-        .filter(
-            category_type="DRINK"
-        )
-        .aggregate(
-            total=Sum("line_total")
-        )
-    )
-
-    drink_sales = (
-        drink_data["total"]
-        or 0
-    )
-
+    menu_item_form = MenuItemForm()
 
     return render(
         request,
-        "pos/dashboard.html",
+        "pos/management_dashboard.html",
         {
-            "today": today,
+            "categories":
+                categories,
 
-            "today_sales":
-                today_sales,
+            "menu_items":
+                management_menu_items,
 
-            "today_tax":
-                today_tax,
+            "category_form":
+                category_form,
 
-            "food_sales":
-                food_sales,
-
-            "drink_sales":
-                drink_sales,
-
-            "total_bills":
-                todays_bills.count(),
-
-            "paid_bills":
-                paid_bills.count(),
-
-            "cancelled_bills":
-                cancelled_bills.count(),
-
-            "recent_bills":
-                todays_bills[:10],
+            "menu_item_form":
+                menu_item_form,
         },
+    )
+
+@require_POST
+def management_create_category(request):
+
+    form = CategoryForm(
+        request.POST
+    )
+
+    if form.is_valid():
+
+        form.save()
+
+        messages.success(
+            request,
+            "Category created successfully.",
+        )
+
+    else:
+
+        messages.error(
+            request,
+            "Could not create category.",
+        )
+
+    return redirect(
+        "pos:management_dashboard"
+    )
+
+
+@require_POST
+def management_toggle_category(
+    request,
+    category_id,
+):
+
+    category = get_object_or_404(
+        Category,
+        id=category_id,
+    )
+
+    category.is_active = (
+        not category.is_active
+    )
+
+    category.save(
+        update_fields=["is_active"]
+    )
+
+    return redirect(
+        "pos:management_dashboard"
+    )
+
+
+@require_POST
+def management_edit_category(
+    request,
+    category_id,
+):
+
+    category = get_object_or_404(
+        Category,
+        id=category_id,
+    )
+
+    form = CategoryForm(
+        request.POST,
+        instance=category,
+    )
+
+    if form.is_valid():
+
+        form.save()
+
+        messages.success(
+            request,
+            "Category updated successfully.",
+        )
+
+    else:
+
+        messages.error(
+            request,
+            "Could not update category.",
+        )
+
+    return redirect(
+        "pos:management_dashboard"
     )

@@ -28,6 +28,33 @@
         color: #777;
         margin-bottom: 6px;
     }
+    .pos-header {
+        min-height: 64px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 22px;
+        background: #111;
+        color: #fff;
+        margin-bottom: 28px;
+    }
+
+    .pos-header-right {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+    }
+
+    .header-link {
+        color: #fff;
+        text-decoration: none;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .header-link:hover {
+        text-decoration: underline;
+    }
 
     .page-header h1 {
         margin: 0;
@@ -207,43 +234,64 @@
         .bill-action-button {
             flex: 1;
         }
+               .pos-header {
+            height: 64px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 22px;
+
+            background: #111;
+            color: #fff;
+        }
+
+    
+
     }
 </style>
 <div class="bill-history-page">
 
-    <div class="page-header">
+<header class="pos-header">
 
-        <div>
-            <div class="page-label">
-                BILL HISTORY
-            </div>
+    <div class="page-label">
+        BILL HISTORY
+    </div>
 
-            <h1>
-                Bills
-            </h1>
-        </div>
+    <h1>
+        Bills
+    </h1>
+
+    <div class="pos-header-right">
+
+        <a href="{% url 'pos:table_screen' %}" class="header-link">
+            Home
+        </a>
 
     </div>
+
+</header>
 
 
     <div class="bill-history-list">
 
-        {% for bill in bills %}
+        {% for item in bills %}
 
         <div class="bill-history-card">
 
             <div class="bill-history-main">
 
                 <div class="bill-number">
-                    #{{ bill.bill_number }}
+                    #{{ item.bill.bill_number }}
                 </div>
 
                 <div class="bill-table">
-                    {{ bill.table.name }}
+                    {{ item.bill.table.name }}
                 </div>
 
                 <div class="bill-date">
-                    {{ bill.paid_at|date:"d M Y, h:i A" }}
+                    {{ item.bill.paid_at|date:"d M Y, h:i A" }}
                 </div>
 
             </div>
@@ -256,7 +304,7 @@
                 </span>
 
                 <strong>
-                    ₹{{ bill.total|floatformat:2 }}
+                   ₹{{ item.display_total|floatformat:2 }}
                 </strong>
 
             </div>
@@ -264,7 +312,7 @@
 
             <div class="bill-history-status">
 
-                {% if bill.status == "PAID" %}
+                {% if item.bill.status == "PAID" %}
 
                 <span class="status-badge paid">
                     PAID
@@ -283,12 +331,12 @@
 
             <div class="bill-history-actions">
 
-                <a href="{% url 'pos:bill_detail' bill.id %}" class="bill-action-button">
+                <a href="{% url 'pos:bill_detail' item.bill.id %}" class="bill-action-button">
                     View
                 </a>
 
 
-                <a href="{% url 'pos:bill_detail' bill.id %}?print=1" class="bill-action-button">
+                <a href="{% url 'pos:bill_detail' item.bill.id %}?print=1" class="bill-action-button">
                     Print / Duplicate
                 </a>
 

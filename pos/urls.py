@@ -52,14 +52,31 @@ urlpatterns = [
         name="bill_detail",
     ),
     path(
-        "dashboard/",
-        views.dashboard,
-        name="dashboard",
-    ),
-    path(
         "sw.js",
         sw.service_worker,
         name="service_worker",
     ),
+    path(
+        "management/",
+        views.management_dashboard,
+        name="management_dashboard",
+    ),
 
+    path(
+        "management/menu/category/create/",
+        views.management_create_category,
+        name="management_create_category",
+    ),
+
+    path(
+        "management/menu/category/<int:category_id>/toggle/",
+        views.management_toggle_category,
+        name="management_toggle_category",
+    ),
+
+    path(
+        "management/menu/category/<int:category_id>/edit/",
+        views.management_edit_category,
+        name="management_edit_category",
+    ),
 ]

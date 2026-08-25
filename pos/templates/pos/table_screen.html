@@ -1099,8 +1099,8 @@
 
         <div class="pos-header-right">
 
-            <a href="{% url 'admin_panel:dashboard' %}" class="header-link">
-                Admin
+            <a href="{% url 'pos:management_dashboard' %}" class="header-link">
+                Management
             </a>
 
             <a href="{% url 'pos:bill_history' %}" class="header-link">
@@ -1172,9 +1172,12 @@
                 {% if table.is_active %}
 
 
-                <a href="#" class="table-card {% if table.status == 'VACANT' %}vacant{% else %}occupied{% endif %}"
-                    onclick="openOrderPanel(event, '{{ table.id }}')">
-
+                <a
+                    href="#"
+                    class="table-card {% if table.status == 'VACANT' %}vacant{% else %}occupied{% endif %}"
+                    data-table-id="{{ table.id }}"
+                    onclick="openOrderPanel(event, '{{ table.id }}', '{{ table.name|escapejs }}')"
+                >
 
                     <div class="table-name">
 
@@ -1859,21 +1862,179 @@
         }
 
 
+        function renderLatestMenuItems(items) {
 
+            const menuList =
+                document.querySelector(
+                    ".menu-list"
+                );
+
+
+            if (!menuList) {
+
+                console.error(
+                    "Menu list not found."
+                );
+
+                return;
+
+            }
+
+
+            /*
+            * Remove the old menu rows.
+            */
+
+            menuList
+                .querySelectorAll(
+                    ".menu-list-row"
+                )
+                .forEach(
+                    function (row) {
+
+                        row.remove();
+
+                    }
+                );
+
+
+            /*
+            * Add the latest menu rows.
+            */
+
+            items.forEach(
+                function (item) {
+
+                    const row =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    row.className =
+                        "menu-list-row";
+
+
+                    row.dataset.itemId =
+                        item.id;
+
+
+                    row.dataset.category =
+                        item.category_id;
+
+
+                    row.dataset.type =
+                        item.category_type;
+
+
+                    row.dataset.name =
+                        item.name.toLowerCase();
+
+
+                    row.dataset.code =
+                        item.code.toLowerCase();
+
+
+                    row.innerHTML = `
+
+                        <div class="item-code">
+                            ${item.code}
+                        </div>
+
+
+                        <div class="item-name">
+
+                            <strong>
+                                ${item.name}
+                            </strong>
+
+                            <small>
+                                ${item.category_name}
+                            </small>
+
+                        </div>
+
+
+                        <div class="item-price">
+
+                            ₹${Number(
+                                item.price
+                            ).toFixed(2)}
+
+                        </div>
+
+
+                        <div class="item-quantity">
+
+                            <button
+                                type="button"
+                                onclick="changeTemporaryQuantity('${item.id}', -1)"
+                            >
+                                −
+                            </button>
+
+
+                            <span
+                                id="temp-qty-${item.id}"
+                            >
+                                0
+                            </span>
+
+
+                            <button
+                                type="button"
+                                onclick="changeTemporaryQuantity('${item.id}', 1)"
+                            >
+                                +
+                            </button>
+
+                        </div>
+
+                    `;
+
+
+                    menuList.appendChild(
+                        row
+                    );
+
+                }
+            );
+
+
+            /*
+            * Keep the "No menu items found"
+            * element at the bottom.
+            */
+
+            const noResults =
+                document.getElementById(
+                    "no-menu-results"
+                );
+
+
+            if (noResults) {
+
+                menuList.appendChild(
+                    noResults
+                );
+
+            }
+
+        }
         /*
          * =========================
          * ADD ITEM MODAL
          * =========================
          */
 
-        function openAddItemModal() {
+        async function openAddItemModal() {
 
             /*
-             * Start with a clean
-             * temporary selection.
-             */
-            temporaryOrder = {};
+            * Start with a clean
+            * temporary selection.
+            */
 
+            temporaryOrder = {};
 
             resetTemporaryQuantities();
 
@@ -1883,14 +2044,85 @@
             ).value = "";
 
 
-            filterMenuItems();
+            try {
+
+                const response =
+                    await fetch(
+                        "{% url 'pos:menu_items_api' %}",
+                        {
+                            method: "GET",
+
+                            headers: {
+                                "X-Requested-With":
+                                    "XMLHttpRequest",
+
+                                "Accept":
+                                    "application/json",
+                            },
+                        }
+                    );
 
 
-            document.getElementById(
-                "add-item-modal"
-            ).classList.add(
-                "open"
-            );
+                const result =
+                    await response.json();
+
+
+                if (
+                    !response.ok ||
+                    !result.success
+                ) {
+
+                    alert(
+                        result.error ||
+                        "Could not load the latest menu."
+                    );
+
+                    return;
+
+                }
+
+
+                /*
+                * Replace the menu list
+                * with the latest database data.
+                */
+
+                renderLatestMenuItems(
+                    result.items
+                );
+
+
+                /*
+                * Apply the search/filter.
+                */
+
+                filterMenuItems();
+
+
+                /*
+                * Open the popup only after
+                * the latest menu has loaded.
+                */
+
+                document.getElementById(
+                    "add-item-modal"
+                ).classList.add(
+                    "open"
+                );
+
+
+            } catch (error) {
+
+                console.error(
+                    "Could not load latest menu:",
+                    error
+                );
+
+                alert(
+                    "Could not connect to the server."
+                );
+
+            }
 
         }
 
@@ -2191,7 +2423,6 @@
                     }
                 );
 
-
                 temporaryOrder = {};
 
                 resetTemporaryQuantities();
@@ -2206,20 +2437,10 @@
 
                 renderCurrentOrder();
 
-
-                temporaryOrder = {};
-
-                resetTemporaryQuantities();
-
-
-                document.getElementById(
-                    "add-item-modal"
-                ).classList.remove(
-                    "open"
+                updateTableStatus(
+                    currentTableId,
+                    "OCCUPIED"
                 );
-
-
-                renderCurrentOrder();
 
 
             } catch (error) {
@@ -2748,20 +2969,20 @@
 
                     const html = `
 
-                <div class="bill-preview-row">
+                        <div class="bill-preview-row">
 
-                    <span>
-                        ${item.name}
-                        × ${item.quantity}
-                    </span>
+                            <span>
+                                ${item.name}
+                                × ${item.quantity}
+                            </span>
 
-                    <span>
-                        ₹${lineTotal.toFixed(2)}
-                    </span>
+                            <span>
+                                ₹${lineTotal.toFixed(2)}
+                            </span>
 
-                </div>
+                        </div>
 
-            `;
+                    `;
 
 
                     if (
@@ -2787,10 +3008,10 @@
 
 
             /*
-             * -------------------------
-             * Subtotal
-             * -------------------------
-             */
+            * -------------------------
+            * Subtotal
+            * -------------------------
+            */
 
             const subtotal =
                 foodSubtotal
@@ -2798,67 +3019,81 @@
 
 
             /*
-             * -------------------------
-             * Tax
-             * -------------------------
-             */
-            const taxEnabled =
-                {% if tax_enabled %} true{% else %} false{% endif %};
+            * -------------------------
+            * Tax Settings
+            * -------------------------
+            */
 
-        const taxRate =
-            Number(
-                "{{ tax_rate|default:'0' }}"
-            );
+            const taxEnabled ={% if tax_enabled %}true{% else %}false{% endif %};
 
 
-        let taxAmount = 0;
+            const taxRate =
+                Number(
+                    "{{ tax_rate|default:'0' }}"
+                );
 
 
-        if (
-            taxEnabled &&
-            taxRate > 0
-        ) {
+            /*
+            * -------------------------
+            * Default Tax
+            * -------------------------
+            *
+            * If tax is enabled in settings,
+            * checkbox starts checked.
+            */
 
-            taxAmount =
+            let includeTax =
+                taxEnabled &&
+                taxRate > 0;
+
+
+            let taxAmount = 0;
+
+
+            if (
+                includeTax
+            ) {
+
+                taxAmount =
+                    subtotal
+                    * taxRate
+                    / 100;
+
+            }
+
+
+            /*
+            * -------------------------
+            * Grand Total
+            * -------------------------
+            */
+
+            const grandTotal =
                 subtotal
-                * taxRate
-                / 100;
-
-        }
+                + taxAmount;
 
 
-        /*
-        * -------------------------
-        * Grand Total
-        * -------------------------
-        */
+            /*
+            * -------------------------
+            * Table name
+            * -------------------------
+            */
 
-        const grandTotal =
-            subtotal
-            + taxAmount;
-
-
-        /*
-        * -------------------------
-        * Table name
-        * -------------------------
-        */
-
-        document.getElementById(
-            "bill-preview-table"
-        ).textContent =
-            currentTableName;
+            document.getElementById(
+                "bill-preview-table"
+            ).textContent =
+                currentTableName;
 
 
-        /*
-        * -------------------------
-        * Bill Preview
-        * -------------------------
-        */
+            /*
+            * -------------------------
+            * Bill Preview
+            * -------------------------
+            */
 
-        document.getElementById(
-            "bill-preview-content"
-        ).innerHTML = `
+            document.getElementById(
+                "bill-preview-content"
+            ).innerHTML = `
 
                 <div class="bill-preview-section">
 
@@ -2919,22 +3154,46 @@
                 </div>
 
 
-                ${taxEnabled && taxRate > 0
-                ? `
+                ${
+                    taxEnabled && taxRate > 0
+                    ? `
+
                         <div class="bill-preview-subtotal">
 
-                            <span>
-                                Tax ${taxRate.toFixed(2)}%
-                            </span>
+                            <label
+                                style="
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 8px;
+                                    cursor: pointer;
+                                "
+                            >
 
-                            <span>
+                                <input
+                                    type="checkbox"
+                                    id="bill-tax-checkbox"
+                                    ${includeTax ? "checked" : ""}
+                                    onchange="updateBillTax()"
+                                >
+
+                                <span>
+                                    Tax ${taxRate.toFixed(2)}%
+                                </span>
+
+                            </label>
+
+
+                            <span id="bill-tax-amount">
+
                                 ₹${taxAmount.toFixed(2)}
+
                             </span>
 
                         </div>
+
                     `
-                : ""
-            }
+                    : ""
+                }
 
 
                 <div class="bill-grand-total">
@@ -2943,17 +3202,17 @@
                         Grand Total
                     </span>
 
-                    <span>
+                    <span id="bill-grand-total">
+
                         ₹${grandTotal.toFixed(2)}
+
                     </span>
 
                 </div>
 
-                `;
+            `;
 
         }
-
-
 
         /*
          * =========================
@@ -3049,16 +3308,13 @@
                  * Close the drawer.
                  */
 
+                updateTableStatus(
+                    currentTableId,
+                    "VACANT"
+                );
                 closeOrderPanel();
 
 
-                /*
-                 * Refresh the table screen so
-                 * the table changes from
-                 * OCCUPIED → VACANT.
-                 */
-
-                location.reload();
 
 
             } catch (error) {
@@ -3077,6 +3333,119 @@
 
         }
 
+
+        function updateBillTax() {
+
+            const checkbox =
+                document.getElementById(
+                    "bill-tax-checkbox"
+                );
+
+
+            if (!checkbox) {
+
+                return;
+
+            }
+
+
+            const taxAmountElement =
+                document.getElementById(
+                    "bill-tax-amount"
+                );
+
+
+            const grandTotalElement =
+                document.getElementById(
+                    "bill-grand-total"
+                );
+
+
+            const taxRate =
+                Number(
+                    "{{ tax_rate|default:'0' }}"
+                );
+
+
+            let foodSubtotal = 0;
+
+            let drinkSubtotal = 0;
+
+
+            Object.keys(
+                currentOrder
+            ).forEach(
+                function (itemId) {
+
+                    const item =
+                        currentOrder[itemId];
+
+
+                    const lineTotal =
+                        item.price
+                        * item.quantity;
+
+
+                    if (
+                        item.type === "FOOD"
+                    ) {
+
+                        foodSubtotal +=
+                            lineTotal;
+
+                    } else {
+
+                        drinkSubtotal +=
+                            lineTotal;
+
+                    }
+
+                }
+            );
+
+
+            const subtotal =
+                foodSubtotal
+                + drinkSubtotal;
+
+
+            let taxAmount = 0;
+
+
+            if (
+                checkbox.checked &&
+                taxRate > 0
+            ) {
+
+                taxAmount =
+                    subtotal
+                    * taxRate
+                    / 100;
+
+            }
+
+
+            const grandTotal =
+                subtotal
+                + taxAmount;
+
+
+            if (taxAmountElement) {
+
+                taxAmountElement.textContent =
+                    `₹${taxAmount.toFixed(2)}`;
+
+            }
+
+
+            if (grandTotalElement) {
+
+                grandTotalElement.textContent =
+                    `₹${grandTotal.toFixed(2)}`;
+
+            }
+
+        }
 
 
         /*
@@ -3175,38 +3544,34 @@
                  * Close bill preview.
                  */
 
-                document.getElementById(
-                    "bill-preview-modal"
-                ).classList.remove(
-                    "open"
+                
+                
+                /*
+                * Clear current browser order.
+                */
+               
+               currentOrder = {};
+               
+               temporaryOrder = {};
+               
+               resetTemporaryQuantities();
+               
+               updateTableStatus(
+                   currentTableId,
+                   "VACANT"
                 );
-
-
+                
                 /*
-                 * Clear current browser order.
-                 */
+                * Close drawer.
+                */
+               
+               document.getElementById(
+                   "bill-preview-modal"
+               ).classList.remove(
+                   "open"
+               );
+               closeOrderPanel();
 
-                currentOrder = {};
-
-                temporaryOrder = {};
-
-                resetTemporaryQuantities();
-
-
-                /*
-                 * Close drawer.
-                 */
-
-                closeOrderPanel();
-
-
-                /*
-                 * Refresh table screen.
-                 *
-                 * Table will now show VACANT.
-                 */
-
-                location.reload();
 
 
             } catch (error) {
@@ -3320,6 +3685,81 @@
             );
 
         }
+function updateTableStatus(
+tableId,
+status
+) {
+
+    const tableCard =
+        document.querySelector(
+            `.table-card[data-table-id="${tableId}"]`
+        );
+
+
+    if (!tableCard) {
+
+        console.warn(
+            "Table card not found:",
+            tableId
+        );
+
+        return;
+
+    }
+
+
+    const statusElement =
+        tableCard.querySelector(
+            ".table-status"
+        );
+
+
+    /*
+     * Update the text.
+     */
+
+    if (statusElement) {
+
+        if (status === "OCCUPIED") {
+
+            statusElement.textContent =
+                "OCCUPIED";
+
+        } else {
+
+            statusElement.textContent =
+                "VACANT";
+
+        }
+
+    }
+
+
+    /*
+     * Update the CSS class.
+     */
+
+    tableCard.classList.remove(
+        "vacant",
+        "occupied"
+    );
+
+
+    if (status === "OCCUPIED") {
+
+        tableCard.classList.add(
+            "occupied"
+        );
+
+    } else {
+
+        tableCard.classList.add(
+            "vacant"
+        );
+
+    }
+
+}
 
     </script>
 

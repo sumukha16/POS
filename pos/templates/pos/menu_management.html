@@ -1,0 +1,3038 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>Menu Management</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            color: #111;
+        }
+
+        .page {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 32px;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 28px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 30px;
+        }
+
+        .back-button {
+            text-decoration: none;
+            color: #111;
+            border: 1px solid #ccc;
+            background: #fff;
+            padding: 9px 15px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 360px 1fr;
+            gap: 20px;
+        }
+
+        .card {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 22px;
+        }
+
+        .card h2 {
+            margin-top: 0;
+            font-size: 18px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+        .menu-search {
+            margin-bottom: 15px;
+        }
+
+        .menu-search input {
+            width: 100%;
+            padding: 11px 13px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            font-size: 13px;
+            outline: none;
+        }
+
+        .menu-search input:focus {
+            border-color: #777;
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox-row input {
+            width: auto;
+        }
+
+        .submit-button {
+            width: 100%;
+            padding: 11px;
+            border: 0;
+            border-radius: 6px;
+            background: #111;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .menu-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .menu-row {
+            display: grid;
+            grid-template-columns: 1fr 120px 100px 100px;
+            align-items: center;
+            gap: 15px;
+            padding: 14px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .item-name {
+            font-weight: 700;
+        }
+
+        .item-category {
+            font-size: 12px;
+            color: #777;
+            margin-top: 3px;
+        }
+
+        .item-price {
+            font-weight: 700;
+            text-align: right;
+        }
+
+        .status {
+            font-size: 11px;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .active {
+            color: #16733a;
+        }
+
+        .inactive {
+            color: #b42318;
+        }
+
+        .toggle-button {
+            border: 1px solid #ccc;
+            background: #fff;
+            border-radius: 6px;
+            padding: 8px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .messages {
+            margin-bottom: 20px;
+        }
+
+        .message {
+            padding: 12px 15px;
+            background: #e8f7ed;
+            border-radius: 6px;
+            color: #16733a;
+            font-size: 13px;
+        }
+
+        .category-list {
+            margin-top: 25px;
+        }
+
+        .category-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .category-type {
+            font-size: 11px;
+            color: #777;
+        }
+
+        @media (max-width: 850px) {
+
+            .layout {
+                grid-template-columns: 1fr;
+            }
+
+            .menu-row {
+                grid-template-columns: 1fr 100px;
+            }
+
+            .item-price {
+                text-align: left;
+            }
+
+        }
+        /* ==========================================
+   MENU MANAGEMENT TABS
+   ========================================== */
+
+.tabs {
+    display: flex;
+    gap: 4px;
+    margin-top: 18px;
+    background: #eee;
+    padding: 4px;
+    border-radius: 8px;
+    width: fit-content;
+}
+
+.tab-button {
+    border: 0;
+    background: transparent;
+    padding: 9px 18px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    color: #555;
+}
+
+.tab-button.active {
+    background: #111;
+    color: #fff;
+}
+
+
+/* ==========================================
+   SECTIONS
+   ========================================== */
+
+.management-section {
+    display: none;
+}
+
+.management-section.active-section {
+    display: block;
+}
+
+
+/* ==========================================
+   SECTION HEADER
+   ========================================== */
+
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+}
+
+.section-header h2 {
+    margin: 0 0 5px;
+    font-size: 20px;
+}
+
+.section-header p {
+    margin: 0;
+    color: #777;
+    font-size: 12px;
+}
+
+
+/* ==========================================
+   BUTTONS
+   ========================================== */
+
+.primary-button {
+    border: 0;
+    background: #111;
+    color: #fff;
+    border-radius: 6px;
+    padding: 10px 15px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.primary-button:hover {
+    background: #222;
+}
+
+.secondary-button {
+    border: 1px solid #ccc;
+    background: #fff;
+    color: #111;
+    border-radius: 6px;
+    padding: 9px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.secondary-button:hover {
+    background: #f3f3f3;
+}
+
+.secondary-button.small {
+    padding: 7px 10px;
+    font-size: 11px;
+}
+
+
+/* ==========================================
+   FORM CARD
+   ========================================== */
+
+.form-card {
+    display: none;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 18px;
+}
+
+.form-card.open {
+    display: block;
+}
+
+.form-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+}
+
+.form-card-header h3 {
+    margin: 0;
+    font-size: 16px;
+}
+
+.close-button {
+    border: 0;
+    background: transparent;
+    font-size: 22px;
+    cursor: pointer;
+    color: #777;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 18px;
+}
+
+
+/* ==========================================
+   SEARCH
+   ========================================== */
+
+.search-box {
+    margin-bottom: 15px;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #ccc;
+    border-radius: 7px;
+    font-size: 13px;
+    outline: none;
+}
+
+.search-box input:focus {
+    border-color: #777;
+}
+
+
+/* ==========================================
+   LIST CARD
+   ========================================== */
+
+.list-card {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.menu-list-header,
+.menu-row {
+    display: grid;
+    grid-template-columns:
+        1.5fr
+        1.2fr
+        100px
+        90px
+        190px;
+
+    align-items: center;
+    gap: 15px;
+}
+
+.menu-list-header {
+    padding: 12px 16px;
+    background: #f7f7f7;
+    border-bottom: 1px solid #ddd;
+    font-size: 10px;
+    font-weight: 700;
+    color: #777;
+    text-transform: uppercase;
+}
+
+.menu-row {
+    padding: 15px 16px;
+    border-bottom: 1px solid #eee;
+}
+
+.menu-row:last-child {
+    border-bottom: 0;
+}
+
+.item-name {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.item-name strong {
+    font-size: 13px;
+}
+
+.item-name small,
+.item-category small {
+    color: #888;
+    font-size: 10px;
+}
+
+.item-category {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    font-size: 12px;
+}
+
+.item-price {
+    font-size: 13px;
+    font-weight: 700;
+}
+
+
+/* ==========================================
+   CATEGORY ROW
+   ========================================== */
+
+.category-row {
+    display: grid;
+    grid-template-columns: 1fr 120px 150px;
+    align-items: center;
+    gap: 15px;
+    padding: 16px;
+    border-bottom: 1px solid #eee;
+}
+
+.category-row:last-child {
+    border-bottom: 0;
+}
+
+.category-name {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.category-meta {
+    margin-top: 4px;
+    font-size: 10px;
+    color: #777;
+}
+
+.row-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 6px;
+}
+
+
+/* ==========================================
+   STATUS
+   ========================================== */
+
+.status {
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.status.active {
+    color: #16733a;
+}
+
+.status.inactive {
+    color: #b42318;
+}
+
+
+/* ==========================================
+   EMPTY STATE
+   ========================================== */
+
+.empty-state {
+    padding: 50px 20px;
+    text-align: center;
+}
+
+.empty-state h3 {
+    margin: 0 0 8px;
+    font-size: 16px;
+}
+
+.empty-state p {
+    margin: 0;
+    color: #777;
+    font-size: 13px;
+}
+
+
+/* ==========================================
+   RESPONSIVE
+   ========================================== */
+
+@media (max-width: 850px) {
+
+    .menu-list-header {
+        display: none;
+    }
+
+    .menu-row {
+        grid-template-columns: 1fr 100px;
+    }
+
+    .category-row {
+        grid-template-columns: 1fr auto;
+    }
+
+    .row-actions {
+        grid-column: 1 / -1;
+        justify-content: flex-start;
+    }
+
+}
+
+.edit-menu-item-modal {
+    width: 500px;
+    max-width: 100%;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.edit-menu-item-body {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 22px;
+}
+
+.edit-menu-item-body label {
+    font-size: 12px;
+    font-weight: bold;
+    color: #555;
+    margin-top: 5px;
+}
+
+.edit-menu-item-body input,
+.edit-menu-item-body select {
+    width: 100%;
+    padding: 11px 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.edit-menu-item-body input:focus,
+.edit-menu-item-body select:focus {
+    outline: none;
+    border-color: #111;
+}
+
+/* Edit Menu Item Modal */
+
+#edit-menu-item-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(0, 0, 0, 0.55);
+}
+
+
+/* Show modal only when open */
+
+#edit-menu-item-modal.open {
+    display: flex;
+}
+
+
+/* Modal box */
+
+.edit-menu-item-modal {
+    width: 500px;
+    max-width: calc(100vw - 40px);
+
+    background: #ffffff;
+    border-radius: 10px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 20px 50px rgba(0, 0, 0, 0.25);
+}
+
+/* ========================================
+   EDIT MENU ITEM MODAL
+   ======================================== */
+
+#edit-menu-item-modal {
+    display: none;
+
+    position: fixed;
+    inset: 0;
+
+    z-index: 1000;
+
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(0, 0, 0, 0.55);
+}
+
+#edit-menu-item-modal.open {
+    display: flex;
+}
+
+
+/* Modal box */
+
+.edit-menu-item-modal {
+    width: 520px;
+    max-width: calc(100vw - 40px);
+
+    background: #ffffff;
+
+    border-radius: 10px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.25);
+}
+
+
+/* Header */
+
+.edit-menu-item-modal .modal-header {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 20px 22px;
+
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.edit-menu-item-modal .modal-label {
+    font-size: 11px;
+
+    font-weight: 700;
+
+    letter-spacing: 0.08em;
+
+    color: #777;
+}
+
+.edit-menu-item-modal h2 {
+    margin: 4px 0 0;
+
+    font-size: 20px;
+
+    color: #111;
+}
+
+
+/* Close button */
+
+.edit-menu-item-modal .modal-close {
+    width: 32px;
+    height: 32px;
+
+    border: none;
+
+    background: transparent;
+
+    font-size: 22px;
+
+    cursor: pointer;
+
+    color: #555;
+}
+
+.edit-menu-item-modal .modal-close:hover {
+    background: #f1f1f1;
+
+    border-radius: 5px;
+}
+
+
+/* Form body */
+
+.edit-menu-item-body {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 7px;
+
+    padding: 22px;
+}
+
+.edit-menu-item-body label {
+    margin-top: 7px;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    color: #555;
+}
+
+.edit-menu-item-body input,
+.edit-menu-item-body select {
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 11px 12px;
+
+    border: 1px solid #d4d4d4;
+
+    border-radius: 5px;
+
+    background: #fff;
+
+    font-size: 14px;
+
+    color: #111;
+}
+
+.edit-menu-item-body input:focus,
+.edit-menu-item-body select:focus {
+    outline: none;
+
+    border-color: #111;
+}
+
+
+/* Footer */
+
+.edit-menu-item-modal .modal-footer {
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 10px;
+
+    padding: 15px 22px;
+
+    border-top: 1px solid #e5e5e5;
+
+    background: #fafafa;
+}
+
+
+/* Cancel */
+
+.modal-secondary-button {
+    padding: 9px 16px;
+
+    border: 1px solid #ccc;
+
+    border-radius: 5px;
+
+    background: #fff;
+
+    color: #333;
+
+    font-size: 13px;
+
+    cursor: pointer;
+}
+
+.modal-secondary-button:hover {
+    background: #f1f1f1;
+}
+
+
+/* Save */
+
+.modal-primary-button {
+    padding: 9px 16px;
+
+    border: none;
+
+    border-radius: 5px;
+
+    background: #111;
+
+    color: #fff;
+
+    font-size: 13px;
+
+    cursor: pointer;
+}
+
+.modal-primary-button:hover {
+    background: #222;
+}
+
+.modal-primary-button:disabled {
+    opacity: 0.6;
+
+    cursor: not-allowed;
+}
+
+#edit-category-modal {
+    display: none;
+
+    position: fixed;
+    inset: 0;
+
+    z-index: 1000;
+
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(0, 0, 0, 0.55);
+}
+
+#edit-category-modal.open {
+    display: flex;
+}
+
+.edit-category-modal {
+    width: 520px;
+    max-width: calc(100vw - 40px);
+
+    background: #fff;
+
+    border-radius: 10px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.25);
+}
+
+/* =========================================
+   EDIT CATEGORY MODAL
+   ========================================= */
+
+#edit-category-modal {
+    display: none;
+
+    position: fixed;
+    inset: 0;
+
+    z-index: 1000;
+
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(0, 0, 0, 0.55);
+}
+
+#edit-category-modal.open {
+    display: flex;
+}
+
+
+/* Modal container */
+
+#edit-category-modal .edit-category-modal {
+    width: 520px;
+    max-width: calc(100vw - 40px);
+
+    background: #ffffff;
+
+    border-radius: 10px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.25);
+}
+
+
+/* Header */
+
+#edit-category-modal .modal-header {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 20px 22px;
+
+    border-bottom: 1px solid #e5e5e5;
+}
+
+#edit-category-modal .modal-label {
+    font-size: 11px;
+
+    font-weight: 700;
+
+    letter-spacing: 0.08em;
+
+    color: #777;
+}
+
+#edit-category-modal .modal-header h2 {
+    margin: 4px 0 0;
+
+    font-size: 20px;
+
+    font-weight: 700;
+
+    color: #111;
+}
+
+
+/* Close button */
+
+#edit-category-modal .modal-close {
+    width: 32px;
+    height: 32px;
+
+    padding: 0;
+
+    border: none;
+
+    background: transparent;
+
+    color: #555;
+
+    font-size: 22px;
+
+    line-height: 32px;
+
+    cursor: pointer;
+}
+
+#edit-category-modal .modal-close:hover {
+    background: #f1f1f1;
+
+    border-radius: 5px;
+}
+
+
+/* Form */
+
+#edit-category-modal #edit-category-form {
+    margin: 0;
+}
+
+
+/* Form body */
+
+#edit-category-modal .edit-menu-item-body {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 7px;
+
+    padding: 22px;
+}
+
+
+/* Labels */
+
+#edit-category-modal .edit-menu-item-body label {
+    margin-top: 7px;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    color: #555;
+}
+
+
+/* Inputs */
+
+#edit-category-modal .edit-menu-item-body input,
+#edit-category-modal .edit-menu-item-body select {
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 11px 12px;
+
+    border: 1px solid #d4d4d4;
+
+    border-radius: 5px;
+
+    background: #ffffff;
+
+    color: #111;
+
+    font-size: 14px;
+}
+
+
+/* Focus */
+
+#edit-category-modal .edit-menu-item-body input:focus,
+#edit-category-modal .edit-menu-item-body select:focus {
+    outline: none;
+
+    border-color: #111;
+
+    box-shadow:
+        0 0 0 1px #111;
+}
+
+
+/* Footer */
+
+#edit-category-modal .modal-footer {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: flex-end;
+
+    gap: 10px;
+
+    padding: 15px 22px;
+
+    border-top: 1px solid #e5e5e5;
+
+    background: #fafafa;
+}
+
+
+/* Cancel */
+
+#edit-category-modal .modal-secondary-button {
+    padding: 9px 16px;
+
+    border: 1px solid #ccc;
+
+    border-radius: 5px;
+
+    background: #ffffff;
+
+    color: #333;
+
+    font-size: 13px;
+
+    cursor: pointer;
+}
+
+#edit-category-modal .modal-secondary-button:hover {
+    background: #f1f1f1;
+}
+
+
+/* Save */
+
+#edit-category-modal .modal-primary-button {
+    padding: 9px 16px;
+
+    border: none;
+
+    border-radius: 5px;
+
+    background: #111;
+
+    color: #ffffff;
+
+    font-size: 13px;
+
+    cursor: pointer;
+}
+
+#edit-category-modal .modal-primary-button:hover {
+    background: #222;
+}
+
+#edit-category-modal .modal-primary-button:disabled {
+    opacity: 0.6;
+
+    cursor: not-allowed;
+}
+    </style>
+
+</head>
+
+<body>
+
+<div class="page">
+
+    <!-- HEADER -->
+
+    <div class="header">
+
+        <div>
+            <h1>
+                Menu Management
+            </h1>
+
+            <div class="tabs">
+
+                <button
+                    type="button"
+                    class="tab-button"
+                    id="categoriesTab"
+                    onclick="showMenuSection('categories')"
+                >
+                    Categories
+                </button>
+
+                <button
+                    type="button"
+                    class="tab-button active"
+                    id="menuItemsTab"
+                    onclick="showMenuSection('menu-items')"
+                >
+                    Menu Items
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <a
+            href="{% url 'pos:table_screen' %}"
+            class="back-button"
+        >
+            Back to POS
+        </a>
+
+    </div>
+
+
+    <!-- MESSAGES -->
+
+    {% if messages %}
+
+        <div class="messages">
+
+            {% for message in messages %}
+
+                <div class="message">
+                    {{ message }}
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    {% endif %}
+
+
+    <!-- ================================================= -->
+    <!-- CATEGORY SECTION -->
+    <!-- ================================================= -->
+
+    <section
+        id="categoriesSection"
+        class="management-section"
+    >
+
+        <div class="section-header">
+
+            <div>
+                <h2>
+                    Categories
+                </h2>
+
+                <p>
+                    Manage food and drink categories.
+                </p>
+            </div>
+
+            <button
+                type="button"
+                class="primary-button"
+                onclick="openCategoryForm()"
+            >
+                + Add Category
+            </button>
+
+        </div>
+
+
+        <!-- ADD CATEGORY FORM -->
+
+        <div
+            id="categoryForm"
+            class="form-card"
+        >
+
+            <div class="form-card-header">
+
+                <h3>
+                    Add Category
+                </h3>
+
+                <button
+                    type="button"
+                    class="close-button"
+                    onclick="closeCategoryForm()"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <form
+                method="post"
+                action="{% url 'pos:create_category' %}"
+            >
+
+                {% csrf_token %}
+
+                {% for field in category_form %}
+
+                    <div class="form-group">
+
+                        {{ field.label_tag }}
+
+                        {{ field }}
+
+                        {% if field.errors %}
+
+                            <div class="form-error">
+                                {{ field.errors }}
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+                {% endfor %}
+
+
+                <div class="form-actions">
+
+                    <button
+                        type="button"
+                        class="secondary-button"
+                        onclick="closeCategoryForm()"
+                    >
+                        Cancel
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="primary-button"
+                    >
+                        Add Category
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+
+        <!-- CATEGORY LIST -->
+
+        <div class="list-card">
+
+            {% for category in categories %}
+
+                <div
+                    class="category-row"
+                    data-category-id="{{ category.id }}"
+                >
+
+                    <div class="category-info">
+
+                        <div class="category-name">
+                            {{ category.name }}
+                        </div>
+
+                        <div class="category-meta">
+
+                            {% if category.category_type == "FOOD" %}
+
+                                FOOD
+
+                            {% else %}
+
+                                DRINK
+
+                            {% endif %}
+
+                            · Order {{ category.display_order }}
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="category-status">
+
+                        {% if category.is_active %}
+
+                            <span class="status active">
+                                ACTIVE
+                            </span>
+
+                        {% else %}
+
+                            <span class="status inactive">
+                                INACTIVE
+                            </span>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="row-actions">
+
+                        <button
+                            type="button"
+                            class="secondary-button small edit-category-button"
+                            data-category-id="{{ category.id }}"
+                            data-name="{{ category.name }}"
+                            data-type="{{ category.category_type }}"
+                            data-order="{{ category.display_order }}"
+                        >
+                            Edit
+                        </button>
+
+                    </div>
+
+                    <form
+                        method="post"
+                        action="{% url 'pos:toggle_category' category.id %}"
+                        class="toggle-category-form"
+                    >
+
+                        {% csrf_token %}
+
+                        <button
+                            type="submit"
+                            class="secondary-button small"
+                        >
+
+                            {% if category.is_active %}
+                                Deactivate
+                            {% else %}
+                                Activate
+                            {% endif %}
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+            {% empty %}
+
+                <div class="empty-state">
+
+                    <h3>
+                        No categories yet
+                    </h3>
+
+                    <p>
+                        Add a category to start building your menu.
+                    </p>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    </section>
+
+
+    <!-- ================================================= -->
+    <!-- MENU ITEM SECTION -->
+    <!-- ================================================= -->
+
+    <section
+        id="menuItemsSection"
+        class="management-section active-section"
+    >
+
+        <div class="section-header">
+
+            <div>
+                <h2>
+                    Menu Items
+                </h2>
+
+                <p>
+                    Manage the items available on the POS.
+                </p>
+            </div>
+
+            <button
+                type="button"
+                class="primary-button"
+                onclick="openItemForm()"
+            >
+                + Add Item
+            </button>
+
+        </div>
+
+
+        <!-- SEARCH -->
+
+        <div class="search-box">
+
+            <input
+                type="text"
+                id="menuSearch"
+                placeholder="Search menu items..."
+                autocomplete="off"
+            >
+
+        </div>
+
+
+        <!-- ADD ITEM FORM -->
+
+        <div
+            id="itemForm"
+            class="form-card"
+        >
+
+            <div class="form-card-header">
+
+                <h3>
+                    Add Menu Item
+                </h3>
+
+                <button
+                    type="button"
+                    class="close-button"
+                    onclick="closeItemForm()"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <form
+                method="post"
+                action="{% url 'pos:create_menu_item' %}"
+            >
+
+                {% csrf_token %}
+
+                {% for field in menu_item_form %}
+
+                    <div class="form-group">
+
+                        {{ field.label_tag }}
+
+                        {{ field }}
+
+                        {% if field.errors %}
+
+                            <div class="form-error">
+                                {{ field.errors }}
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+                {% endfor %}
+
+
+                <div class="form-actions">
+
+                    <button
+                        type="button"
+                        class="secondary-button"
+                        onclick="closeItemForm()"
+                    >
+                        Cancel
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="primary-button"
+                    >
+                        Add Item
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+
+        <!-- MENU ITEM LIST -->
+
+        <div class="list-card">
+
+            <div class="menu-list-header">
+
+                <span>
+                    Item
+                </span>
+
+                <span>
+                    Category
+                </span>
+
+                <span>
+                    Price
+                </span>
+
+                <span>
+                    Status
+                </span>
+
+                <span>
+                    Actions
+                </span>
+
+            </div>
+
+
+            <div id="menuList">
+
+                {% for menu in menu_items %}
+
+                    <div
+                        class="menu-row"
+                        data-menu-item-id="{{ menu.item.id }}"
+                        data-search="
+                            {{ menu.item.name|lower }}
+                            {{ menu.item.category.name|lower }}
+                            {{ menu.item.category.category_type|lower }}
+                            {{ menu.item.code|lower }}
+                        "
+                    >
+
+                        <div class="item-name">
+
+                            <strong>
+                                {{ menu.item.name }}
+                            </strong>
+
+                            {% if menu.item.code %}
+
+                                <small>
+                                    {{ menu.item.code }}
+                                </small>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <div class="item-category">
+
+                            {{ menu.item.category.name }}
+
+                            <small>
+                                {{ menu.item.category.category_type }}
+                            </small>
+
+                        </div>
+
+
+                        <div class="item-price">
+
+                            ₹{{ menu.display_price|floatformat:2 }}
+
+                        </div>
+
+
+                        <div>
+
+                            {% if menu.item.is_active %}
+
+                                <span class="status active">
+                                    ACTIVE
+                                </span>
+
+                            {% else %}
+
+                                <span class="status inactive">
+                                    INACTIVE
+                                </span>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <div class="row-actions">
+
+                            <button
+                                type="button"
+                                class="secondary-button small edit-menu-item-button"
+                                data-item-id="{{ menu.item.id }}"
+                                data-name="{{ menu.item.name }}"
+                                data-code="{{ menu.item.code }}"
+                                data-price="{{ menu.item.price }}"
+                                data-category-id="{{ menu.item.category.id }}"
+                            >
+                                Edit
+                            </button>
+
+
+                            <form
+                                method="post"
+                                action="{% url 'pos:toggle_menu_item' menu.item.id %}"
+                                class="toggle-menu-item-form"
+                            >
+
+                                {% csrf_token %}
+
+                                <button
+                                    type="submit"
+                                    class="secondary-button small"
+                                >
+
+                                    {% if menu.item.is_active %}
+                                        Deactivate
+                                    {% else %}
+                                        Activate
+                                    {% endif %}
+
+                                </button>
+
+                            </form>
+                        </div>
+
+                    </div>
+
+                {% empty %}
+
+                    <div class="empty-state">
+
+                        <h3>
+                            No menu items yet
+                        </h3>
+
+                        <p>
+                            Add your first menu item.
+                        </p>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    </section>
+
+</div>
+<div
+    id="edit-menu-item-modal"
+    class="modal-overlay"
+    onclick="closeEditMenuItemModal(event)"
+>
+
+    <div
+        class="edit-menu-item-modal"
+        onclick="event.stopPropagation()"
+    >
+
+        <div class="modal-header">
+
+            <div>
+
+                <div class="modal-label">
+                    EDIT MENU ITEM
+                </div>
+
+                <h2>
+                    Edit Item
+                </h2>
+
+            </div>
+
+            <button
+                type="button"
+                class="modal-close"
+                onclick="closeEditMenuItemModal()"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <form
+            id="edit-menu-item-form"
+            method="post"
+        >
+
+            {% csrf_token %}
+
+
+            <div class="edit-menu-item-body">
+
+                <label>
+                    Name
+                </label>
+
+                <input
+                    type="text"
+                    id="edit-item-name"
+                    name="name"
+                    required
+                >
+
+
+                <label>
+                    Code
+                </label>
+
+                <input
+                    type="text"
+                    id="edit-item-code"
+                    name="code"
+                >
+
+
+                <label>
+                    Category
+                </label>
+
+                <select
+                    id="edit-item-category"
+                    name="category"
+                    required
+                >
+
+                    {% for category in categories %}
+
+                    <option
+                        value="{{ category.id }}"
+                    >
+                        {{ category.name }}
+                    </option>
+
+                    {% endfor %}
+
+                </select>
+
+
+                <label>
+                    Price
+                </label>
+
+                <input
+                    type="number"
+                    id="edit-item-price"
+                    name="price"
+                    min="0"
+                    step="0.01"
+                    required
+                >
+
+            </div>
+
+
+            <div class="modal-footer">
+
+                <button
+                    type="button"
+                    class="modal-secondary-button"
+                    onclick="closeEditMenuItemModal()"
+                >
+                    Cancel
+                </button>
+
+
+                <button
+                    type="submit"
+                    class="modal-primary-button"
+                >
+                    Save Changes
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<div
+    id="edit-category-modal"
+    class="modal-overlay"
+    onclick="closeEditCategoryModal(event)"
+>
+
+    <div
+        class="edit-category-modal"
+        onclick="event.stopPropagation()"
+    >
+
+        <div class="modal-header">
+
+            <div>
+
+                <div class="modal-label">
+                    EDIT CATEGORY
+                </div>
+
+                <h2>
+                    Edit Category
+                </h2>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="modal-close"
+                onclick="closeEditCategoryModal()"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <form
+            id="edit-category-form"
+            method="post"
+        >
+
+            {% csrf_token %}
+
+
+            <div class="edit-menu-item-body">
+
+                <label>
+                    Category Name
+                </label>
+
+                <input
+                    type="text"
+                    id="edit-category-name"
+                    name="name"
+                    required
+                >
+
+
+                <label>
+                    Category Type
+                </label>
+
+                <select
+                    id="edit-category-type"
+                    name="category_type"
+                    required
+                >
+
+                    <option value="FOOD">
+                        FOOD
+                    </option>
+
+                    <option value="DRINK">
+                        DRINK
+                    </option>
+
+                </select>
+
+
+                <label>
+                    Display Order
+                </label>
+
+                <input
+                    type="number"
+                    id="edit-category-order"
+                    name="display_order"
+                    min="0"
+                    required
+                >
+
+            </div>
+
+
+            <div class="modal-footer">
+
+                <button
+                    type="button"
+                    class="modal-secondary-button"
+                    onclick="closeEditCategoryModal()"
+                >
+                    Cancel
+                </button>
+
+
+                <button
+                    type="submit"
+                    class="modal-primary-button"
+                >
+                    Save Changes
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<script>
+
+/* ==========================================
+   TAB SWITCHING
+   ========================================== */
+
+function showMenuSection(section) {
+
+    const categoriesSection =
+        document.getElementById(
+            "categoriesSection"
+        );
+
+    const menuItemsSection =
+        document.getElementById(
+            "menuItemsSection"
+        );
+
+    const categoriesTab =
+        document.getElementById(
+            "categoriesTab"
+        );
+
+    const menuItemsTab =
+        document.getElementById(
+            "menuItemsTab"
+        );
+
+
+    if (section === "categories") {
+
+        categoriesSection.classList.add(
+            "active-section"
+        );
+
+        menuItemsSection.classList.remove(
+            "active-section"
+        );
+
+        categoriesTab.classList.add(
+            "active"
+        );
+
+        menuItemsTab.classList.remove(
+            "active"
+        );
+
+        closeItemForm();
+
+    } else {
+
+        menuItemsSection.classList.add(
+            "active-section"
+        );
+
+        categoriesSection.classList.remove(
+            "active-section"
+        );
+
+        menuItemsTab.classList.add(
+            "active"
+        );
+
+        categoriesTab.classList.remove(
+            "active"
+        );
+
+        closeCategoryForm();
+
+    }
+
+}
+
+
+/* ==========================================
+   CATEGORY FORM
+   ========================================== */
+
+function openCategoryForm() {
+
+    document
+        .getElementById("categoryForm")
+        .classList.add("open");
+
+}
+
+
+function closeCategoryForm() {
+
+    document
+        .getElementById("categoryForm")
+        .classList.remove("open");
+
+}
+
+
+/* ==========================================
+   ITEM FORM
+   ========================================== */
+
+function openItemForm() {
+
+    document
+        .getElementById("itemForm")
+        .classList.add("open");
+
+}
+
+
+function closeItemForm() {
+
+    document
+        .getElementById("itemForm")
+        .classList.remove("open");
+
+}
+
+
+/* ==========================================
+   MENU SEARCH
+   ========================================== */
+
+const menuSearch =
+    document.getElementById(
+        "menuSearch"
+    );
+
+
+if (menuSearch) {
+
+    menuSearch.addEventListener(
+        "input",
+        function () {
+
+            const search =
+                this.value
+                    .trim()
+                    .toLowerCase();
+
+
+            const rows =
+                document.querySelectorAll(
+                    "#menuList .menu-row"
+                );
+
+
+            rows.forEach(
+                function (row) {
+
+                    const text =
+                        row.dataset.search
+                            .toLowerCase();
+
+
+                    if (
+                        text.includes(search)
+                    ) {
+
+                        row.style.display = "";
+
+                    } else {
+
+                        row.style.display = "none";
+
+                    }
+
+                }
+            );
+
+        }
+    );
+
+}
+
+document.addEventListener(
+    "submit",
+    async function (event) {
+
+        const form =
+            event.target.closest(
+                ".toggle-menu-item-form"
+            );
+
+        if (!form) {
+            return;
+        }
+
+        event.preventDefault();
+
+
+        const button =
+            form.querySelector(
+                "button[type='submit']"
+            );
+
+
+        const csrfToken =
+            form.querySelector(
+                "[name=csrfmiddlewaretoken]"
+            ).value;
+
+
+        button.disabled = true;
+
+
+        try {
+
+            const response =
+                await fetch(
+                    form.action,
+                    {
+                        method: "POST",
+
+                        headers: {
+
+                            "X-CSRFToken":
+                                csrfToken,
+
+                            "X-Requested-With":
+                                "XMLHttpRequest",
+
+                        },
+
+                    }
+                );
+
+
+            const result =
+                await response.json();
+
+
+            if (
+                !response.ok ||
+                !result.success
+            ) {
+
+                alert(
+                    result.error ||
+                    "Could not change menu item status."
+                );
+
+                button.disabled = false;
+
+                return;
+
+            }
+
+
+            /*
+             * Find the menu row.
+             */
+
+            const row =
+                form.closest(
+                    ".menu-row"
+                );
+
+
+            if (row) {
+
+                /*
+                 * Find the status element.
+                 */
+
+                const status =
+                    row.querySelector(
+                        ".status"
+                    );
+
+
+                if (status) {
+
+                    if (
+                        result.is_active
+                    ) {
+
+                        status.textContent =
+                            "ACTIVE";
+
+                        status.classList.remove(
+                            "inactive"
+                        );
+
+                        status.classList.add(
+                            "active"
+                        );
+
+                    } else {
+
+                        status.textContent =
+                            "INACTIVE";
+
+                        status.classList.remove(
+                            "active"
+                        );
+
+                        status.classList.add(
+                            "inactive"
+                        );
+
+                    }
+
+                }
+
+            }
+
+
+            /*
+             * Update the button.
+             */
+
+            button.textContent =
+                result.is_active
+                ? "Deactivate"
+                : "Activate";
+
+
+            button.disabled = false;
+
+
+        } catch (error) {
+
+            console.error(
+                "Toggle menu item error:",
+                error
+            );
+
+
+            alert(
+                "Could not connect to the server."
+            );
+
+
+            button.disabled = false;
+
+        }
+
+    }
+);
+
+document.addEventListener(
+    "click",
+    function (event) {
+
+        const button =
+            event.target.closest(
+                ".edit-menu-item-button"
+            );
+
+        if (!button) {
+            return;
+        }
+
+
+        const itemId =
+            button.dataset.itemId;
+
+
+        document.getElementById(
+            "edit-item-name"
+        ).value =
+            button.dataset.name || "";
+
+
+        document.getElementById(
+            "edit-item-code"
+        ).value =
+            button.dataset.code || "";
+
+
+        document.getElementById(
+            "edit-item-category"
+        ).value =
+            button.dataset.categoryId;
+
+
+        /*
+         * Your database stores price in paise.
+         * Convert it to rupees for the form.
+         */
+
+        document.getElementById(
+            "edit-item-price"
+        ).value =
+            (
+                Number(
+                    button.dataset.price
+                ) / 100
+            ).toFixed(2);
+
+
+        /*
+         * Build the Django edit URL.
+         */
+
+        const editUrl =
+            "{% url 'pos:edit_menu_item' 0 %}"
+                .replace(
+                    "/0/",
+                    "/" + itemId + "/"
+                );
+
+
+        document.getElementById(
+            "edit-menu-item-form"
+        ).action =
+            editUrl;
+
+
+        document.getElementById(
+            "edit-menu-item-modal"
+        ).classList.add(
+            "open"
+        );
+
+    }
+);
+
+document.addEventListener(
+    "submit",
+    async function (event) {
+
+        const form =
+            event.target.closest(
+                "#edit-menu-item-form"
+            );
+
+        if (!form) {
+            return;
+        }
+
+
+        event.preventDefault();
+
+
+        const saveButton =
+            form.querySelector(
+                "button[type='submit']"
+            );
+
+
+        saveButton.disabled = true;
+
+
+        try {
+
+            const response =
+                await fetch(
+                    form.action,
+                    {
+                        method: "POST",
+
+                        headers: {
+
+                            "X-CSRFToken":
+                                form.querySelector(
+                                    "[name=csrfmiddlewaretoken]"
+                                ).value,
+
+                            "X-Requested-With":
+                                "XMLHttpRequest",
+
+                            "Accept":
+                                "application/json",
+
+                        },
+
+                        body:
+                            new FormData(form),
+
+                    }
+                );
+
+
+            const result =
+                await response.json();
+
+
+            if (
+                !response.ok ||
+                !result.success
+            ) {
+
+                console.error(
+                    "Edit error:",
+                    result
+                );
+
+                alert(
+                    result.error ||
+                    "Could not update menu item."
+                );
+
+                return;
+
+            }
+
+
+            const updatedItem =
+                result.item;
+
+
+            const row =
+                document.querySelector(
+                    `.menu-row[data-menu-item-id="${updatedItem.id}"]`
+                );
+
+
+            if (row) {
+
+                const nameElement =
+                    row.querySelector(
+                        ".item-name strong"
+                    );
+
+
+                if (nameElement) {
+
+                    nameElement.textContent =
+                        updatedItem.name;
+
+                }
+
+
+                const codeElement =
+                    row.querySelector(
+                        ".item-name small"
+                    );
+
+
+                if (updatedItem.code) {
+
+                    if (codeElement) {
+
+                        codeElement.textContent =
+                            updatedItem.code;
+
+                    } else {
+
+                        const nameContainer =
+                            row.querySelector(
+                                ".item-name"
+                            );
+
+
+                        const small =
+                            document.createElement(
+                                "small"
+                            );
+
+
+                        small.textContent =
+                            updatedItem.code;
+
+
+                        nameContainer.appendChild(
+                            small
+                        );
+
+                    }
+
+                } else if (codeElement) {
+
+                    codeElement.remove();
+
+                }
+
+
+                const categoryElement =
+                    row.querySelector(
+                        ".item-category"
+                    );
+
+
+                if (categoryElement) {
+
+                    categoryElement.innerHTML = `
+                        ${updatedItem.category_name}
+
+                        <small>
+                            ${updatedItem.category_type}
+                        </small>
+                    `;
+
+                }
+
+
+                const priceElement =
+                    row.querySelector(
+                        ".item-price"
+                    );
+
+
+                if (priceElement) {
+
+                    priceElement.textContent =
+                        "₹" +
+                        Number(
+                            updatedItem.price
+                        ).toFixed(2);
+
+                }
+                const statusElement =
+                    row.querySelector(
+                        ".status"
+                    );
+
+
+                const toggleButton =
+                    row.querySelector(
+                        ".toggle-menu-item-form button"
+                    );
+
+
+                if (statusElement) {
+
+                    if (updatedItem.is_active) {
+
+                        statusElement.textContent =
+                            "ACTIVE";
+
+                        statusElement.classList.remove(
+                            "inactive"
+                        );
+
+                        statusElement.classList.add(
+                            "active"
+                        );
+
+                    } else {
+
+                        statusElement.textContent =
+                            "INACTIVE";
+
+                        statusElement.classList.remove(
+                            "active"
+                        );
+
+                        statusElement.classList.add(
+                            "inactive"
+                        );
+
+                    }
+
+                }
+
+
+                if (toggleButton) {
+
+                    toggleButton.textContent =
+                        updatedItem.is_active
+                        ? "Deactivate"
+                        : "Activate";
+
+                }
+
+            }
+
+
+            closeEditMenuItemModal();
+
+
+        } catch (error) {
+
+            console.error(
+                "Edit menu item error:",
+                error
+            );
+
+            alert(
+                "Could not connect to the server."
+            );
+
+        } finally {
+
+            saveButton.disabled = false;
+
+        }
+
+    }
+);
+
+function closeEditMenuItemModal() {
+
+    document.getElementById(
+        "edit-menu-item-modal"
+    ).classList.remove(
+        "open"
+    );
+
+}
+
+document.addEventListener(
+    "click",
+    function (event) {
+
+        const button =
+            event.target.closest(
+                ".edit-category-button"
+            );
+
+        if (!button) {
+            return;
+        }
+
+
+        const categoryId =
+            button.dataset.categoryId;
+
+
+        document.getElementById(
+            "edit-category-name"
+        ).value =
+            button.dataset.name || "";
+
+
+        document.getElementById(
+            "edit-category-type"
+        ).value =
+            button.dataset.type || "FOOD";
+
+
+        document.getElementById(
+            "edit-category-order"
+        ).value =
+            button.dataset.order || "0";
+
+
+        const editUrl =
+            "{% url 'pos:edit_category' 0 %}"
+                .replace(
+                    "/0/",
+                    "/" + categoryId + "/"
+                );
+
+
+        document.getElementById(
+            "edit-category-form"
+        ).action =
+            editUrl;
+
+
+        document.getElementById(
+            "edit-category-modal"
+        ).classList.add(
+            "open"
+        );
+
+    }
+);
+
+document.addEventListener(
+    "submit",
+    async function (event) {
+
+        const form =
+            event.target.closest(
+                "#edit-category-form"
+            );
+
+        if (!form) {
+            return;
+        }
+
+
+        event.preventDefault();
+
+
+        const saveButton =
+            form.querySelector(
+                "button[type='submit']"
+            );
+
+
+        saveButton.disabled = true;
+
+
+        try {
+
+            const response =
+                await fetch(
+                    form.action,
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "X-CSRFToken":
+                                form.querySelector(
+                                    "[name=csrfmiddlewaretoken]"
+                                ).value,
+
+                            "X-Requested-With":
+                                "XMLHttpRequest",
+
+                            "Accept":
+                                "application/json",
+                        },
+
+                        body:
+                            new FormData(form),
+                    }
+                );
+
+
+            const result =
+                await response.json();
+
+
+            if (
+                !response.ok ||
+                !result.success
+            ) {
+
+                alert(
+                    result.error ||
+                    "Could not update category."
+                );
+
+                return;
+
+            }
+
+
+            const updatedCategory =
+                result.category;
+
+
+            const row =
+                document.querySelector(
+                    `.category-row[data-category-id="${updatedCategory.id}"]`
+                );
+
+
+            if (row) {
+
+                const nameElement =
+                    row.querySelector(
+                        ".category-name"
+                    );
+
+
+                if (nameElement) {
+
+                    nameElement.textContent =
+                        updatedCategory.name;
+
+                }
+
+
+                const metaElement =
+                    row.querySelector(
+                        ".category-meta"
+                    );
+
+
+                if (metaElement) {
+
+                    metaElement.textContent =
+                        updatedCategory.category_type +
+                        " · Order " +
+                        updatedCategory.display_order;
+
+                }
+
+
+                /*
+                 * Update Edit button data
+                 */
+
+                const editButton =
+                    row.querySelector(
+                        ".edit-category-button"
+                    );
+
+
+                if (editButton) {
+
+                    editButton.dataset.name =
+                        updatedCategory.name;
+
+                    editButton.dataset.type =
+                        updatedCategory.category_type;
+
+                    editButton.dataset.order =
+                        updatedCategory.display_order;
+
+                }
+
+            }
+
+
+            closeEditCategoryModal();
+
+
+        } catch (error) {
+
+            console.error(
+                "Edit category error:",
+                error
+            );
+
+
+            alert(
+                "Could not connect to the server."
+            );
+
+        } finally {
+
+            saveButton.disabled = false;
+
+        }
+
+    }
+);
+
+document.addEventListener(
+    "submit",
+    async function (event) {
+
+        const form =
+            event.target.closest(
+                ".toggle-category-form"
+            );
+
+        if (!form) {
+            return;
+        }
+
+
+        event.preventDefault();
+
+
+        const button =
+            form.querySelector(
+                "button[type='submit']"
+            );
+
+
+        button.disabled = true;
+
+
+        try {
+
+            const response =
+                await fetch(
+                    form.action,
+                    {
+                        method: "POST",
+
+                        headers: {
+
+                            "X-CSRFToken":
+                                form.querySelector(
+                                    "[name=csrfmiddlewaretoken]"
+                                ).value,
+
+                            "X-Requested-With":
+                                "XMLHttpRequest",
+
+                        },
+
+                    }
+                );
+
+
+            const result =
+                await response.json();
+
+
+            if (
+                !response.ok ||
+                !result.success
+            ) {
+
+                alert(
+                    result.error ||
+                    "Could not change category status."
+                );
+
+                return;
+
+            }
+
+
+            const row =
+                form.closest(
+                    ".category-row"
+                );
+
+
+            if (row) {
+
+                const status =
+                    row.querySelector(
+                        ".status"
+                    );
+
+
+                if (status) {
+
+                    if (result.is_active) {
+
+                        status.textContent =
+                            "ACTIVE";
+
+                        status.classList.remove(
+                            "inactive"
+                        );
+
+                        status.classList.add(
+                            "active"
+                        );
+
+                    } else {
+
+                        status.textContent =
+                            "INACTIVE";
+
+                        status.classList.remove(
+                            "active"
+                        );
+
+                        status.classList.add(
+                            "inactive"
+                        );
+
+                    }
+
+                }
+
+
+                button.textContent =
+                    result.is_active
+                    ? "Deactivate"
+                    : "Activate";
+
+            }
+
+
+        } catch (error) {
+
+            console.error(
+                "Toggle category error:",
+                error
+            );
+
+
+            alert(
+                "Could not connect to the server."
+            );
+
+        } finally {
+
+            button.disabled = false;
+
+        }
+
+    }
+);
+
+function closeEditCategoryModal() {
+
+    document.getElementById(
+        "edit-category-modal"
+    ).classList.remove(
+        "open"
+    );
+
+}
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,1957 @@
+{% load static %}
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Nexova Management
+    </title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+
+            margin: 0;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background: #f4f4f4;
+
+            color: #111;
+
+        }
+
+
+        /* =================================
+           MAIN LAYOUT
+           ================================= */
+
+        .management-layout {
+
+            display: flex;
+
+            min-height: 100vh;
+
+        }
+
+
+        /* =================================
+           SIDEBAR
+           ================================= */
+
+        .management-sidebar {
+
+            width: 250px;
+
+            min-height: 100vh;
+
+            background: #111;
+
+            color: #fff;
+
+            display: flex;
+
+            flex-direction: column;
+
+            padding: 24px 15px;
+
+            flex-shrink: 0;
+
+        }
+
+
+        .management-logo {
+
+            padding:
+                5px 12px 25px;
+
+            border-bottom:
+                1px solid #333;
+
+        }
+
+
+        .management-logo h1 {
+
+            margin: 0;
+
+            font-size: 21px;
+
+            letter-spacing: 1px;
+
+        }
+
+
+        .management-logo p {
+
+            margin:
+                5px 0 0;
+
+            color: #999;
+
+            font-size: 11px;
+
+            letter-spacing: 1.5px;
+
+        }
+
+
+        /* =================================
+           NAVIGATION
+           ================================= */
+
+        .management-navigation {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 5px;
+
+            margin-top: 25px;
+
+        }
+
+
+        .management-navigation button {
+
+            width: 100%;
+
+            border: none;
+
+            background: transparent;
+
+            color: #aaa;
+
+            padding:
+                13px 14px;
+
+            border-radius: 6px;
+
+            text-align: left;
+
+            font-size: 14px;
+
+            cursor: pointer;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+        }
+
+
+        .management-navigation button:hover {
+
+            background: #222;
+
+            color: #fff;
+
+        }
+
+
+        .management-navigation button.active {
+
+            background: #2a2a2a;
+
+            color: #fff;
+
+        }
+
+
+        .management-icon {
+
+            width: 20px;
+
+            text-align: center;
+
+            font-size: 15px;
+
+        }
+
+
+        /* =================================
+           BACK TO POS
+           ================================= */
+
+        .management-sidebar-bottom {
+
+            margin-top: auto;
+
+            padding-top: 20px;
+
+            border-top:
+                1px solid #333;
+
+        }
+
+
+        .back-to-pos {
+
+            width: 100%;
+
+            border: none;
+
+            background: transparent;
+
+            color: #aaa;
+
+            padding:
+                12px 14px;
+
+            text-align: left;
+
+            font-size: 13px;
+
+            cursor: pointer;
+
+        }
+
+
+        .back-to-pos:hover {
+
+            color: #fff;
+
+        }
+
+
+        /* =================================
+           CONTENT
+           ================================= */
+
+        .management-content {
+
+            flex: 1;
+
+            padding: 30px;
+
+            overflow-y: auto;
+
+        }
+
+
+        .management-page-header {
+
+            margin-bottom: 30px;
+
+        }
+
+
+        .management-page-header h2 {
+
+            margin: 0;
+
+            font-size: 26px;
+
+            font-weight: 700;
+
+        }
+
+
+        .management-page-header p {
+
+            margin:
+                7px 0 0;
+
+            color: #777;
+
+            font-size: 14px;
+
+        }
+
+
+        /* =================================
+           PAGE SECTIONS
+           ================================= */
+
+        .management-page {
+
+            display: none;
+
+        }
+
+
+        .management-page.active {
+
+            display: block;
+
+        }
+
+
+        /* =================================
+           REVENUE CARD
+           ================================= */
+
+        .revenue-card {
+
+            max-width: 720px;
+
+            background: #fff;
+
+            border:
+                1px solid #ddd;
+
+            border-radius: 10px;
+
+            padding: 25px;
+
+        }
+
+
+        .revenue-card-top {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 20px;
+
+        }
+
+
+        .revenue-title {
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+            color: #777;
+
+            letter-spacing: .08em;
+
+        }
+
+
+        .revenue-periods {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 15px;
+
+        }
+
+
+        .revenue-periods label {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 5px;
+
+            font-size: 13px;
+
+            cursor: pointer;
+
+            color: #555;
+
+        }
+
+
+        .revenue-amount {
+
+            margin-top: 30px;
+
+            font-size: 40px;
+
+            font-weight: 700;
+
+        }
+
+
+        .revenue-caption {
+
+            margin-top: 5px;
+
+            font-size: 13px;
+
+            color: #777;
+
+        }
+
+
+        /* =================================
+           PLACEHOLDER PAGES
+           ================================= */
+
+        .management-placeholder {
+
+            background: #fff;
+
+            border:
+                1px solid #ddd;
+
+            border-radius: 10px;
+
+            padding: 30px;
+
+            max-width: 800px;
+
+        }
+
+
+        .management-placeholder h3 {
+
+            margin:
+                0 0 8px;
+
+            font-size: 20px;
+
+        }
+
+
+        .management-placeholder p {
+
+            margin: 0;
+
+            color: #777;
+
+            font-size: 14px;
+
+        }
+
+
+        /* =================================
+           MOBILE
+           ================================= */
+
+        @media (
+            max-width: 800px
+        ) {
+
+            .management-sidebar {
+
+                width: 200px;
+
+            }
+
+
+            .management-content {
+
+                padding: 20px;
+
+            }
+
+
+            .revenue-card-top {
+
+                flex-direction: column;
+
+                align-items: flex-start;
+
+            }
+
+
+            .revenue-periods {
+
+                flex-wrap: wrap;
+
+            }
+
+        }
+        /* =================================
+            MENU MANAGEMENT
+            ================================= */
+
+            .menu-management-tabs {
+
+                display: flex;
+
+                width: fit-content;
+
+                background: #e9e9e9;
+
+                border-radius: 7px;
+
+                padding: 3px;
+
+                margin-bottom: 28px;
+
+            }
+
+
+            .menu-tab {
+
+                border: none;
+
+                background: transparent;
+
+                padding: 10px 22px;
+
+                border-radius: 6px;
+
+                font-size: 14px;
+
+                cursor: pointer;
+
+                color: #555;
+
+            }
+
+
+            .menu-tab:hover {
+
+                color: #111;
+
+            }
+
+
+            .menu-tab.active {
+
+                background: #111;
+
+                color: #fff;
+
+            }
+
+
+            .menu-tab-content {
+
+                display: none;
+
+            }
+
+
+            .menu-tab-content.active {
+
+                display: block;
+
+            }
+
+
+            /* Header */
+
+            .menu-section-header {
+
+                display: flex;
+
+                justify-content: space-between;
+
+                align-items: flex-start;
+
+                gap: 20px;
+
+                margin-bottom: 22px;
+
+            }
+
+
+            .menu-section-header h2 {
+
+                margin: 0;
+
+                font-size: 22px;
+
+            }
+
+
+            .menu-section-header p {
+
+                margin: 6px 0 0;
+
+                color: #777;
+
+                font-size: 13px;
+
+            }
+
+
+            /* Buttons */
+
+            .primary-button {
+
+                border: none;
+
+                background: #111;
+
+                color: #fff;
+
+                padding: 11px 16px;
+
+                border-radius: 6px;
+
+                cursor: pointer;
+
+                font-size: 13px;
+
+            }
+
+
+            .primary-button:hover {
+
+                background: #222;
+
+            }
+
+
+            .secondary-button {
+
+                background: #fff;
+
+                border: 1px solid #ccc;
+
+                color: #111;
+
+                padding: 9px 14px;
+
+                border-radius: 6px;
+
+                cursor: pointer;
+
+            }
+
+
+            .secondary-button:hover {
+
+                background: #f4f4f4;
+
+            }
+
+
+            .secondary-button.small {
+
+                padding: 7px 11px;
+
+                font-size: 12px;
+
+            }
+
+
+            /* Categories */
+
+            .management-category-list {
+
+                background: #fff;
+
+                border: 1px solid #ddd;
+
+                border-radius: 10px;
+
+                overflow: hidden;
+
+            }
+
+
+            .management-category-row {
+
+                display: grid;
+
+                grid-template-columns:
+                    1fr
+                    180px
+                    220px;
+
+                align-items: center;
+
+                gap: 20px;
+
+                padding: 20px;
+
+                border-bottom: 1px solid #eee;
+
+            }
+
+
+            .management-category-row:last-child {
+
+                border-bottom: none;
+
+            }
+
+
+            .management-category-info {
+
+                display: flex;
+
+                flex-direction: column;
+
+                gap: 4px;
+
+            }
+
+
+            .management-category-info strong {
+
+                font-size: 15px;
+
+            }
+
+
+            .management-category-info small {
+
+                color: #777;
+
+                font-size: 12px;
+
+            }
+
+
+            .management-category-status {
+
+                text-align: center;
+
+            }
+
+
+            .management-category-actions {
+
+                display: flex;
+
+                justify-content: flex-end;
+
+                align-items: center;
+
+                gap: 8px;
+
+            }
+
+
+            /* Status */
+
+            .management-status {
+
+                font-size: 11px;
+
+                font-weight: 700;
+
+            }
+
+
+            .management-status.active {
+
+                color: #087f3e;
+
+            }
+
+
+            .management-status.inactive {
+
+                color: #b42318;
+
+            }
+
+
+            /* Search */
+
+            .management-search {
+
+                width: 100%;
+
+                padding: 13px 14px;
+
+                border: 1px solid #ccc;
+
+                border-radius: 7px;
+
+                margin-bottom: 15px;
+
+                font-size: 13px;
+
+                outline: none;
+
+            }
+
+
+            .management-search:focus {
+
+                border-color: #999;
+
+            }
+
+
+            /* Menu items */
+
+            .management-menu-list {
+
+                background: #fff;
+
+                border: 1px solid #ddd;
+
+                border-radius: 10px;
+
+                overflow: hidden;
+
+            }
+
+
+            .management-menu-header,
+
+            .management-menu-row {
+
+                display: grid;
+
+                grid-template-columns:
+                    1.5fr
+                    1.2fr
+                    .8fr
+                    .7fr
+                    1.2fr;
+
+                align-items: center;
+
+                gap: 15px;
+
+                padding: 15px 18px;
+
+            }
+
+
+            .management-menu-header {
+
+                background: #fafafa;
+
+                border-bottom: 1px solid #ddd;
+
+                color: #777;
+
+                font-size: 10px;
+
+                font-weight: 700;
+
+            }
+
+
+            .management-menu-row {
+
+                border-bottom: 1px solid #eee;
+
+            }
+
+
+            .management-menu-row:last-child {
+
+                border-bottom: none;
+
+            }
+
+
+            .management-item-name {
+
+                display: flex;
+
+                flex-direction: column;
+
+                gap: 3px;
+
+            }
+
+
+            .management-item-name strong {
+
+                font-size: 14px;
+
+            }
+
+
+            .management-item-name small {
+
+                color: #777;
+
+                font-size: 11px;
+
+            }
+
+
+            .management-item-category {
+
+                display: flex;
+
+                flex-direction: column;
+
+                gap: 3px;
+
+                font-size: 13px;
+
+            }
+
+
+            .management-item-category small {
+
+                color: #777;
+
+                font-size: 11px;
+
+            }
+
+
+            .management-item-price {
+
+                font-weight: 700;
+
+            }
+
+
+            .management-item-actions {
+
+                display: flex;
+
+                align-items: center;
+
+                gap: 7px;
+
+            }
+
+
+            .management-empty {
+
+                padding: 35px;
+
+                text-align: center;
+
+                color: #777;
+
+            }
+
+
+            @media (
+                max-width: 900px
+            ) {
+
+                .management-category-row {
+
+                    grid-template-columns:
+                        1fr
+                        auto;
+
+                }
+
+
+                .management-category-status {
+
+                    text-align: right;
+
+                }
+
+
+                .management-category-actions {
+
+                    grid-column: 1 / -1;
+
+                    justify-content: flex-start;
+
+                }
+
+
+                .management-menu-list {
+
+                    overflow-x: auto;
+
+                }
+
+
+                .management-menu-header,
+
+                .management-menu-row {
+
+                    min-width: 800px;
+
+                }
+
+            }
+
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="management-layout">
+
+
+    <!-- =================================
+         SIDEBAR
+         ================================= -->
+
+    <aside class="management-sidebar">
+
+
+        <div class="management-logo">
+
+            <h1>
+                NEXOVA
+            </h1>
+
+            <p>
+                MANAGEMENT
+            </p>
+
+        </div>
+
+
+        <nav class="management-navigation">
+
+
+            <button
+                type="button"
+                class="management-nav-button active"
+                data-page="analytics"
+            >
+
+                <span class="management-icon">
+                    ▣
+                </span>
+
+                Analytics
+
+            </button>
+
+
+            <button
+                type="button"
+                class="management-nav-button"
+                data-page="menu"
+            >
+
+                <span class="management-icon">
+                    ▤
+                </span>
+
+                Menu Management
+
+            </button>
+
+
+            <button
+                type="button"
+                class="management-nav-button"
+                data-page="tax"
+            >
+
+                <span class="management-icon">
+                    %
+                </span>
+
+                Tax Settings
+
+            </button>
+
+
+            <button
+                type="button"
+                class="management-nav-button"
+                data-page="tables"
+            >
+
+                <span class="management-icon">
+                    ▦
+                </span>
+
+                Table Settings
+
+            </button>
+
+
+        </nav>
+
+
+        <div class="management-sidebar-bottom">
+
+            <button
+                type="button"
+                class="back-to-pos"
+                onclick="goBackToPOS()"
+            >
+
+                ← Back to POS
+
+            </button>
+
+        </div>
+
+
+    </aside>
+
+
+    <!-- =================================
+         CONTENT
+         ================================= -->
+
+    <main class="management-content">
+
+
+        <!-- =================================
+             ANALYTICS
+             ================================= -->
+
+        <section
+            id="page-analytics"
+            class="management-page active"
+        >
+
+            <div class="management-page-header">
+
+                <h2>
+                    Analytics
+                </h2>
+
+                <p>
+                    Restaurant revenue overview
+                </p>
+
+            </div>
+
+
+            <div class="revenue-card">
+
+
+                <div class="revenue-card-top">
+
+
+                    <div class="revenue-title">
+
+                        TOTAL REVENUE
+
+                    </div>
+
+
+                    <div class="revenue-periods">
+
+
+                        <label>
+
+                            <input
+                                type="radio"
+                                name="revenue-period"
+                                value="week"
+                                checked
+                            >
+
+                            This Week
+
+                        </label>
+
+
+                        <label>
+
+                            <input
+                                type="radio"
+                                name="revenue-period"
+                                value="month"
+                            >
+
+                            This Month
+
+                        </label>
+
+
+                        <label>
+
+                            <input
+                                type="radio"
+                                name="revenue-period"
+                                value="year"
+                            >
+
+                            This Year
+
+                        </label>
+
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="revenue-amount"
+                    class="revenue-amount"
+                >
+
+                    ₹0.00
+
+                </div>
+
+
+                <div class="revenue-caption">
+
+                    Revenue
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================
+     MENU MANAGEMENT
+     ================================= -->
+
+<section
+    id="page-menu"
+    class="management-page"
+>
+
+    <!-- ==============================
+         MENU TABS
+         ============================== -->
+
+    <div class="menu-management-tabs">
+
+        <button
+            type="button"
+            class="menu-tab active"
+            data-menu-tab="categories"
+        >
+            Categories
+        </button>
+
+        <button
+            type="button"
+            class="menu-tab"
+            data-menu-tab="items"
+        >
+            Menu Items
+        </button>
+
+    </div>
+
+
+    <!-- ==============================
+         CATEGORIES
+         ============================== -->
+
+    <div
+        id="menu-tab-categories"
+        class="menu-tab-content active"
+    >
+
+        <div class="menu-section-header">
+
+            <div>
+
+                <h2>
+                    Categories
+                </h2>
+
+                <p>
+                    Manage food and drink categories.
+                </p>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="primary-button"
+                onclick="openManagementAddCategory()"
+            >
+                + Add Category
+            </button>
+
+        </div>
+
+
+        <div class="management-category-list">
+
+
+            {% for category in management_categories %}
+
+                <div class="management-category-row">
+
+
+                    <div class="management-category-info">
+
+                        <strong>
+                            {{ category.name }}
+                        </strong>
+
+                        <small>
+
+                            {{ category.category_type }}
+
+                            · Order
+                            {{ category.display_order }}
+
+                        </small>
+
+                    </div>
+
+
+                    <div class="management-category-status">
+
+                        {% if category.is_active %}
+
+                            <span class="management-status active">
+                                ACTIVE
+                            </span>
+
+                        {% else %}
+
+                            <span class="management-status inactive">
+                                INACTIVE
+                            </span>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="management-category-actions">
+
+
+                        <button
+                            type="button"
+                            class="secondary-button small"
+                            onclick="openManagementEditCategory(
+                                '{{ category.id }}',
+                                '{{ category.name|escapejs }}',
+                                '{{ category.category_type }}',
+                                '{{ category.display_order }}'
+                            )"
+                        >
+                            Edit
+                        </button>
+
+
+                        <form
+                            method="post"
+                            action="{% url 'pos:management_toggle_category' category.id %}"
+                        >
+
+                            {% csrf_token %}
+
+                            <button
+                                type="submit"
+                                class="secondary-button small"
+                            >
+
+                                {% if category.is_active %}
+                                    Deactivate
+                                {% else %}
+                                    Activate
+                                {% endif %}
+
+                            </button>
+
+                        </form>
+
+
+                    </div>
+
+
+                </div>
+
+            {% empty %}
+
+                <div class="management-empty">
+
+                    No categories found.
+
+                </div>
+
+            {% endfor %}
+
+
+        </div>
+
+    </div>
+
+
+    <!-- ==============================
+         MENU ITEMS
+         ============================== -->
+
+    <div
+        id="menu-tab-items"
+        class="menu-tab-content"
+    >
+
+        <div class="menu-section-header">
+
+            <div>
+
+                <h2>
+                    Menu Items
+                </h2>
+
+                <p>
+                    Manage the items available on the POS.
+                </p>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="primary-button"
+                onclick="openManagementAddItem()"
+            >
+                + Add Item
+            </button>
+
+        </div>
+
+
+        <!-- SEARCH -->
+
+        <input
+            type="text"
+            id="management-menu-search"
+            class="management-search"
+            placeholder="Search menu items..."
+        >
+
+
+        <!-- MENU ITEM TABLE -->
+
+        <div class="management-menu-list">
+
+
+            <div class="management-menu-header">
+
+                <span>
+                    ITEM
+                </span>
+
+                <span>
+                    CATEGORY
+                </span>
+
+                <span>
+                    PRICE
+                </span>
+
+                <span>
+                    STATUS
+                </span>
+
+                <span>
+                    ACTIONS
+                </span>
+
+            </div>
+
+
+            {% for item in management_menu_items %}
+
+                <div
+                    class="management-menu-row"
+                    data-search="
+                        {{ item.name|lower }}
+                        {{ item.code|lower }}
+                        {{ item.category.name|lower }}
+                    "
+                >
+
+
+                    <div class="management-item-name">
+
+                        <strong>
+                            {{ item.name }}
+                        </strong>
+
+                        {% if item.code %}
+
+                            <small>
+                                {{ item.code }}
+                            </small>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="management-item-category">
+
+                        {{ item.category.name }}
+
+                        <small>
+                            {{ item.category.category_type }}
+                        </small>
+
+                    </div>
+
+
+                    <div class="management-item-price">
+
+                        ₹{{ item.price|floatformat:2 }}
+
+                    </div>
+
+
+                    <div>
+
+                        {% if item.is_active %}
+
+                            <span class="management-status active">
+                                ACTIVE
+                            </span>
+
+                        {% else %}
+
+                            <span class="management-status inactive">
+                                INACTIVE
+                            </span>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="management-item-actions">
+
+
+                        <button
+                            type="button"
+                            class="secondary-button small"
+                            onclick="openManagementEditItem(
+                                '{{ item.id }}'
+                            )"
+                        >
+                            Edit
+                        </button>
+
+
+                        <form
+                            method="post"
+                            action="{% url 'pos:management_toggle_menu_item' item.id %}"
+                        >
+
+                            {% csrf_token %}
+
+                            <button
+                                type="submit"
+                                class="secondary-button small"
+                            >
+
+                                {% if item.is_active %}
+                                    Deactivate
+                                {% else %}
+                                    Activate
+                                {% endif %}
+
+                            </button>
+
+                        </form>
+
+
+                    </div>
+
+
+                </div>
+
+            {% empty %}
+
+                <div class="management-empty">
+
+                    No menu items found.
+
+                </div>
+
+            {% endfor %}
+
+
+        </div>
+
+    </div>
+
+
+</section>
+
+
+        <!-- =================================
+             TAX SETTINGS
+             ================================= -->
+
+        <section
+            id="page-tax"
+            class="management-page"
+        >
+
+            <div class="management-page-header">
+
+                <h2>
+                    Tax Settings
+                </h2>
+
+                <p>
+                    Configure restaurant tax settings.
+                </p>
+
+            </div>
+
+
+            <div class="management-placeholder">
+
+                <h3>
+                    Tax Settings
+                </h3>
+
+                <p>
+                    Tax settings will be added here.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================
+             TABLE SETTINGS
+             ================================= -->
+
+        <section
+            id="page-tables"
+            class="management-page"
+        >
+
+            <div class="management-page-header">
+
+                <h2>
+                    Table Settings
+                </h2>
+
+                <p>
+                    Manage restaurant sections and tables.
+                </p>
+
+            </div>
+
+
+            <div class="management-placeholder">
+
+                <h3>
+                    Sections & Tables
+                </h3>
+
+                <p>
+                    Section and table management
+                    will be added here.
+                </p>
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+
+</div>
+
+
+<script>
+
+
+    /* =================================
+       SIDEBAR NAVIGATION
+       ================================= */
+
+    document
+        .querySelectorAll(
+            ".management-nav-button"
+        )
+        .forEach(
+            function (button) {
+
+                button.addEventListener(
+                    "click",
+                    function () {
+
+
+                        /*
+                         * Remove active state
+                         * from all buttons.
+                         */
+
+                        document
+                            .querySelectorAll(
+                                ".management-nav-button"
+                            )
+                            .forEach(
+                                function (navButton) {
+
+                                    navButton.classList.remove(
+                                        "active"
+                                    );
+
+                                }
+                            );
+
+
+                        /*
+                         * Activate clicked button.
+                         */
+
+                        button.classList.add(
+                            "active"
+                        );
+
+
+                        /*
+                         * Hide all pages.
+                         */
+
+                        document
+                            .querySelectorAll(
+                                ".management-page"
+                            )
+                            .forEach(
+                                function (page) {
+
+                                    page.classList.remove(
+                                        "active"
+                                    );
+
+                                }
+                            );
+
+
+                        /*
+                         * Show selected page.
+                         */
+
+                        const pageName =
+                            button.dataset.page;
+
+
+                        const selectedPage =
+                            document.getElementById(
+                                "page-" + pageName
+                            );
+
+
+                        if (
+                            selectedPage
+                        ) {
+
+                            selectedPage.classList.add(
+                                "active"
+                            );
+
+                        }
+
+                    }
+                );
+
+            }
+        );
+
+
+    /* =================================
+       BACK TO POS
+       ================================= */
+
+    function goBackToPOS() {
+
+        window.location.href =
+            "{% url 'pos:table_screen' %}";
+
+    }
+
+
+    /* =================================
+       REVENUE PERIOD
+       ================================= */
+
+    document
+        .querySelectorAll(
+            'input[name="revenue-period"]'
+        )
+        .forEach(
+            function (radio) {
+
+                radio.addEventListener(
+                    "change",
+                    function () {
+
+                        /*
+                         * Database revenue
+                         * will be connected next.
+                         */
+
+                        console.log(
+                            "Selected revenue period:",
+                            this.value
+                        );
+
+                    }
+                );
+
+            }
+        );
+    /* =================================
+    MENU MANAGEMENT TABS
+    ================================= */
+
+    document
+        .querySelectorAll(".menu-tab")
+        .forEach(
+            function (tab) {
+
+                tab.addEventListener(
+                    "click",
+                    function () {
+
+                        /*
+                        * Remove active state
+                        * from tabs.
+                        */
+
+                        document
+                            .querySelectorAll(".menu-tab")
+                            .forEach(
+                                function (button) {
+
+                                    button.classList.remove(
+                                        "active"
+                                    );
+
+                                }
+                            );
+
+
+                        /*
+                        * Activate clicked tab.
+                        */
+
+                        tab.classList.add(
+                            "active"
+                        );
+
+
+                        /*
+                        * Hide all menu
+                        * tab contents.
+                        */
+
+                        document
+                            .querySelectorAll(
+                                ".menu-tab-content"
+                            )
+                            .forEach(
+                                function (content) {
+
+                                    content.classList.remove(
+                                        "active"
+                                    );
+
+                                }
+                            );
+
+
+                        /*
+                        * Show selected content.
+                        */
+
+                        const tabName =
+                            tab.dataset.menuTab;
+
+
+                        const selectedContent =
+                            document.getElementById(
+                                "menu-tab-" + tabName
+                            );
+
+
+                        if (
+                            selectedContent
+                        ) {
+
+                            selectedContent.classList.add(
+                                "active"
+                            );
+
+                        }
+
+                    }
+                );
+
+            }
+        );
+
+
+    /* =================================
+    MENU SEARCH
+    ================================= */
+
+    const managementMenuSearch =
+        document.getElementById(
+            "management-menu-search"
+        );
+
+
+    if (
+        managementMenuSearch
+    ) {
+
+        managementMenuSearch.addEventListener(
+            "input",
+            function () {
+
+                const search =
+                    this.value
+                        .toLowerCase()
+                        .trim();
+
+
+                document
+                    .querySelectorAll(
+                        ".management-menu-row"
+                    )
+                    .forEach(
+                        function (row) {
+
+                            const data =
+                                row.dataset.search
+                                    .toLowerCase();
+
+
+                            if (
+                                data.includes(search)
+                            ) {
+
+                                row.style.display =
+                                    "";
+
+                            } else {
+
+                                row.style.display =
+                                    "none";
+
+                            }
+
+                        }
+                    );
+
+            }
+        );
+
+    }
+
+</script>
+
+
+</body>
+
+</html>
