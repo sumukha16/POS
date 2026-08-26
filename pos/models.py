@@ -133,7 +133,7 @@ class Bill(models.Model):
         PAID = "PAID", "Paid"
         CANCELLED = "CANCELLED", "Cancelled"
 
-    bill_number = models.PositiveIntegerField(
+    bill_number = models.BigIntegerField(
         editable=False,
     )
 

@@ -246,10 +246,105 @@
             background: #111;
             color: #fff;
         }
-
-    
-
     }
+
+.bill-history-search {
+    margin-bottom: 24px;
+}
+
+.bill-history-search form {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.bill-history-search input {
+    flex: 0 0 auto;
+    min-width: 350px;
+    padding: 12px 14px;
+
+    border: 1px solid #d6d6d6;
+    border-radius: 8px;
+
+    font-size: 15px;
+    outline: none;
+}
+
+.bill-history-search input:focus {
+    border-color: #999;
+}
+
+.bill-search-button {
+    padding: 12px 18px;
+
+    border: none;
+    border-radius: 8px;
+
+    cursor: pointer;
+}
+
+.bill-search-clear {
+    padding: 12px 14px;
+
+    text-decoration: none;
+
+    border-radius: 8px;
+}
+
+.bill-date-group {
+    margin-bottom: 20px;
+}
+
+
+.bill-date-header {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 16px 18px;
+
+    border: none;
+    border-radius: 10px;
+
+    background: #f3f3f3;
+
+    cursor: pointer;
+
+    text-align: left;
+
+    font-size: 16px;
+}
+
+
+.bill-date-title {
+    font-weight: 600;
+}
+
+
+.bill-date-arrow {
+    transition: transform 0.2s ease;
+    position: relative;
+    right: 1100px;
+}
+
+
+.bill-date-header.collapsed
+.bill-date-arrow {
+    transform: rotate(-90deg);
+
+}
+
+
+.bill-date-bills {
+    margin-top: 10px;
+}
+
+
+.bill-date-bills.hidden {
+    display: none;
+}
 </style>
 <div class="bill-history-page">
 
@@ -272,94 +367,208 @@
     </div>
 
 </header>
+<div class="bill-history-search">
 
+    <form
+        method="get"
+        action="{% url 'pos:bill_history' %}"
+    >
+
+        <input
+            type="search"
+            name="search"
+            value="{{ search_query }}"
+            placeholder="Search bill number, table or date..."
+            autocomplete="off"
+        >
+
+        <button
+            type="submit"
+            class="bill-search-button"
+        >
+            Search
+        </button>
+
+        {% if search_query %}
+
+            <a
+                href="{% url 'pos:bill_history' %}"
+                class="bill-search-clear"
+            >
+                Clear
+            </a>
+
+        {% endif %}
+
+    </form>
+
+</div>
 
     <div class="bill-history-list">
 
-        {% for item in bills %}
+    {% for group in bill_groups %}
 
-        <div class="bill-history-card">
-
-            <div class="bill-history-main">
-
-                <div class="bill-number">
-                    #{{ item.bill.bill_number }}
-                </div>
-
-                <div class="bill-table">
-                    {{ item.bill.table.name }}
-                </div>
-
-                <div class="bill-date">
-                    {{ item.bill.paid_at|date:"d M Y, h:i A" }}
-                </div>
-
-            </div>
+        <div class="bill-date-group">
 
 
-            <div class="bill-history-amount">
+            <button
+                type="button"
+                class="bill-date-header"
+                onclick="toggleBillDate(this)"
+            >
 
-                <span>
-                    Total
+                <span class="bill-date-title">
+
+                    {{ group.date|date:"d F Y" }}
+
                 </span>
 
-                <strong>
-                   ₹{{ item.display_total|floatformat:2 }}
-                </strong>
 
-            </div>
-
-
-            <div class="bill-history-status">
-
-                {% if item.bill.status == "PAID" %}
-
-                <span class="status-badge paid">
-                    PAID
+                <span class="bill-date-arrow">
+                    ▼
                 </span>
 
-                {% else %}
-
-                <span class="status-badge cancelled">
-                    CANCELLED
-                </span>
-
-                {% endif %}
-
-            </div>
+            </button>
 
 
-            <div class="bill-history-actions">
+            <div class="bill-date-bills">
 
-                <a href="{% url 'pos:bill_detail' item.bill.id %}" class="bill-action-button">
-                    View
-                </a>
+                {% for item in group.bills %}
+
+                    <div class="bill-history-card">
+
+                        <div class="bill-history-main">
+
+                            <div class="bill-number">
+
+                                #{{ item.bill.bill_number }}
+
+                            </div>
 
 
-                <a href="{% url 'pos:bill_detail' item.bill.id %}?print=1" class="bill-action-button">
-                    Print / Duplicate
-                </a>
+                            <div class="bill-table">
+
+                                {{ item.bill.table.name }}
+
+                            </div>
+
+
+                            <div class="bill-date">
+
+                                {{ item.bill.paid_at|date:"h:i A" }}
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="bill-history-amount">
+
+                            <span>
+                                Total
+                            </span>
+
+                            <strong>
+
+                                ₹{{ item.display_total|floatformat:2 }}
+
+                            </strong>
+
+                        </div>
+
+
+                        <div class="bill-history-status">
+
+                            {% if item.bill.status == "PAID" %}
+
+                                <span class="status-badge paid">
+                                    PAID
+                                </span>
+
+                            {% else %}
+
+                                <span class="status-badge cancelled">
+                                    CANCELLED
+                                </span>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <div class="bill-history-actions">
+
+                            <a
+                                href="{% url 'pos:bill_detail' item.bill.id %}"
+                                class="bill-action-button"
+                            >
+                                View
+                            </a>
+
+
+                            <a
+                                href="{% url 'pos:bill_detail' item.bill.id %}?print=1"
+                                class="bill-action-button"
+                            >
+                                Print / Duplicate
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                {% endfor %}
 
             </div>
 
         </div>
 
-        {% empty %}
+
+    {% empty %}
 
         <div class="empty-state">
 
             <h3>
-                No bills yet
+                No bills found
             </h3>
 
             <p>
-                Generated bills will appear here.
+                No bills match your search.
             </p>
 
         </div>
 
-        {% endfor %}
-
-    </div>
+    {% endfor %}
 
 </div>
+
+</div>
+
+<script>
+
+function toggleBillDate(button) {
+
+    const bills =
+        button
+            .nextElementSibling;
+
+
+    if (!bills) {
+
+        return;
+
+    }
+
+
+    bills.classList.toggle(
+        "hidden"
+    );
+
+
+    button.classList.toggle(
+        "collapsed"
+    );
+
+}
+
+</script>

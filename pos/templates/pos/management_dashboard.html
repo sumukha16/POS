@@ -600,6 +600,25 @@
                 font-size: 13px;
 
             }
+            .primary-button-tax-save{
+
+                border: none;
+                position: relative;
+                right: 1050px;
+
+                background: #111;
+
+                color: #fff;
+
+                padding: 11px 16px;
+
+                border-radius: 6px;
+
+                cursor: pointer;
+
+                font-size: 13px;
+
+            }
 
 
             .primary-button:hover {
@@ -973,6 +992,377 @@
                 }
 
             }
+            /* =================================
+   MANAGEMENT EDIT MODALS
+   ================================= */
+
+.management-modal {
+    display: none;
+
+    position: fixed;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    background: rgba(0, 0, 0, 0.55);
+
+    align-items: center;
+    justify-content: center;
+
+    z-index: 9999;
+}
+
+
+.management-modal.open {
+    display: flex;
+}
+
+
+.management-modal-content {
+    width: 500px;
+    max-width: calc(100% - 40px);
+
+    background: #ffffff;
+
+    border-radius: 12px;
+
+    padding: 24px;
+
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.25);
+}
+
+
+.management-modal-header {
+    display: flex;
+
+    align-items: flex-start;
+
+    justify-content: space-between;
+
+    margin-bottom: 24px;
+}
+
+
+.management-modal-label {
+    display: block;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    letter-spacing: 0.08em;
+
+    color: #777;
+}
+
+
+.management-modal-header h2 {
+    margin: 5px 0 0;
+
+    font-size: 22px;
+}
+
+
+.management-modal-close {
+    border: none;
+
+    background: transparent;
+
+    font-size: 24px;
+
+    line-height: 1;
+
+    cursor: pointer;
+
+    color: #666;
+}
+
+
+.management-form-group {
+    margin-bottom: 18px;
+}
+
+
+.management-form-group label {
+    display: block;
+
+    margin-bottom: 7px;
+
+    font-size: 13px;
+
+    font-weight: 600;
+}
+
+
+.management-form-group input,
+.management-form-group select {
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 11px 12px;
+
+    border: 1px solid #ccc;
+
+    border-radius: 6px;
+
+    background: #fff;
+
+    font-size: 14px;
+}
+
+
+.management-form-group input:focus,
+.management-form-group select:focus {
+    outline: none;
+
+    border-color: #111;
+}
+
+
+.management-modal-actions {
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 10px;
+
+    margin-top: 25px;
+}
+
+#management-tax-rate {
+    width: 150px;
+    max-width: 150px;
+}
+
+.management-settings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+    margin-top: 30px;
+}
+
+.management-settings-header h3 {
+    margin: 0 0 5px;
+}
+
+.management-settings-header p {
+    margin: 0;
+    color: #666;
+}
+
+.management-section-list,
+.management-table-list {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.management-section-row,
+.management-table-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 2fr;
+    align-items: center;
+    gap: 20px;
+    padding: 18px;
+    border-bottom: 1px solid #eee;
+}
+
+.management-table-row {
+    grid-template-columns: 2fr 1fr 1fr 2fr;
+}
+
+.management-section-row:last-child,
+.management-table-row:last-child {
+    border-bottom: none;
+}
+
+.management-section-info,
+.management-table-row > div:first-child {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.management-section-info small,
+.management-table-row small {
+    color: #777;
+}
+
+.management-status.occupied {
+    color: #b00020;
+}
+
+.management-status.vacant {
+    color: #16803c;
+}
+
+.management-table-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.management-table-search {
+    width: 220px;
+    max-width: 220px;
+    height: 38px;
+    padding: 0 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
+}
+
+.management-table-search:focus {
+    outline: none;
+    border-color: #888;
+}
+
+.management-section-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.management-section-search {
+    width: 220px;
+    max-width: 220px;
+    height: 38px;
+    padding: 0 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
+}
+
+.management-section-search:focus {
+    outline: none;
+    border-color: #888;
+}
+
+.analytics-period-selector {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin: 20px 0;
+}
+
+.analytics-period-selector label {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    cursor: pointer;
+}
+
+
+.analytics-cards {
+    display: grid;
+    grid-template-columns: repeat(
+        2,
+        minmax(0, 1fr)
+    );
+
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+
+.analytics-card {
+    padding: 24px;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    background: #fff;
+}
+
+
+.analytics-card-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    margin-bottom: 10px;
+}
+
+
+.analytics-card strong {
+    display: block;
+    font-size: 30px;
+}
+
+
+.analytics-drinks-section {
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    background: #fff;
+    overflow: hidden;
+}
+
+
+.analytics-section-header {
+    padding: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+
+.analytics-section-header h3 {
+    margin: 0 0 5px;
+}
+
+
+.analytics-section-header p {
+    margin: 0;
+    color: #777;
+}
+
+
+.analytics-drink-header,
+.analytics-drink-row {
+    display: grid;
+    grid-template-columns:
+        2fr
+        1fr
+        1fr;
+
+    gap: 20px;
+    align-items: center;
+}
+
+
+.analytics-drink-header {
+    padding: 14px 20px;
+    font-size: 12px;
+    font-weight: 600;
+    border-bottom: 1px solid #eee;
+}
+
+
+.analytics-drink-row {
+    padding: 16px 20px;
+    border-bottom: 1px solid #eee;
+}
+
+
+.analytics-drink-row:last-child {
+    border-bottom: none;
+}
+
+
+@media (
+    max-width: 700px
+) {
+
+    .analytics-cards {
+        grid-template-columns: 1fr;
+    }
+
+
+    .analytics-period-selector {
+        flex-wrap: wrap;
+    }
+
+}
 
 
     </style>
@@ -1108,96 +1498,157 @@
 
             <div class="management-page-header">
 
-                <h2>
-                    Analytics
-                </h2>
+    <h2>
+        Analytics
+    </h2>
 
-                <p>
-                    Restaurant revenue overview
-                </p>
+    <p>
+        Revenue and drinks sales analytics.
+    </p>
 
+</div>
+
+
+<!-- =========================
+     PERIOD SELECTOR
+     ========================= -->
+
+<div class="analytics-period-selector">
+
+    <label>
+        <input
+            type="radio"
+            name="analytics-period"
+            value="week"
+            checked
+            onchange="loadManagementAnalytics('week')"
+        >
+
+        This Week
+    </label>
+
+
+    <label>
+        <input
+            type="radio"
+            name="analytics-period"
+            value="month"
+            onchange="loadManagementAnalytics('month')"
+        >
+
+        This Month
+    </label>
+
+
+    <label>
+        <input
+            type="radio"
+            name="analytics-period"
+            value="year"
+            onchange="loadManagementAnalytics('year')"
+        >
+
+        This Year
+    </label>
+
+</div>
+
+
+<!-- =========================
+     REVENUE CARDS
+     ========================= -->
+
+<div class="analytics-cards">
+
+
+    <div class="analytics-card">
+
+        <span class="analytics-card-label">
+            TOTAL REVENUE
+        </span>
+
+        <strong
+            id="analytics-total-revenue"
+        >
+            ₹0.00
+        </strong>
+
+    </div>
+
+
+    <div class="analytics-card">
+
+        <span class="analytics-card-label">
+            DRINKS REVENUE
+        </span>
+
+        <strong
+            id="analytics-drinks-revenue"
+        >
+            ₹0.00
+        </strong>
+
+    </div>
+
+
+</div>
+
+
+<!-- =========================
+     DRINK ITEM SALES
+     ========================= -->
+
+<div class="analytics-drinks-section">
+
+    <div class="analytics-section-header">
+
+        <div>
+
+            <h3>
+                Drinks Item-wise Sales
+            </h3>
+
+            <p>
+                Sales by individual drink item.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="analytics-drink-table">
+
+        <div class="analytics-drink-header">
+
+            <span>
+                ITEM
+            </span>
+
+            <span>
+                QUANTITY SOLD
+            </span>
+
+            <span>
+                REVENUE
+            </span>
+
+        </div>
+
+
+        <div
+            id="analytics-drink-items"
+        >
+
+            <div class="management-empty">
+                Loading...
             </div>
 
+        </div>
 
-            <div class="revenue-card">
+    </div>
 
-
-                <div class="revenue-card-top">
-
-
-                    <div class="revenue-title">
-
-                        TOTAL REVENUE
-
-                    </div>
-
-
-                    <div class="revenue-periods">
-
-
-                        <label>
-
-                            <input
-                                type="radio"
-                                name="revenue-period"
-                                value="week"
-                                checked
-                            >
-
-                            This Week
-
-                        </label>
-
-
-                        <label>
-
-                            <input
-                                type="radio"
-                                name="revenue-period"
-                                value="month"
-                            >
-
-                            This Month
-
-                        </label>
-
-
-                        <label>
-
-                            <input
-                                type="radio"
-                                name="revenue-period"
-                                value="year"
-                            >
-
-                            This Year
-
-                        </label>
-
-
-                    </div>
-
-                </div>
-
-
-                <div
-                    id="revenue-amount"
-                    class="revenue-amount"
-                >
-
-                    ₹0.00
-
-                </div>
-
-
-                <div class="revenue-caption">
-
-                    Revenue
-
-                </div>
-
-
-            </div>
+</div>
 
         </section>
 
@@ -1454,15 +1905,25 @@
 
             {% for item in management_menu_items %}
 
-                <div
+               <div
                     class="management-menu-row"
+
+                    data-item-id="{{ item.id }}"
+
+                    data-name="{{ item.name|escapejs }}"
+
+                    data-code="{{ item.code|default:''|escapejs }}"
+
+                    data-category-id="{{ item.category.id }}"
+
+                    data-price="{{ item.price|floatformat:2 }}"
+
                     data-search="
                         {{ item.name|lower }}
                         {{ item.code|lower }}
                         {{ item.category.name|lower }}
                     "
                 >
-
 
                     <div class="management-item-name">
 
@@ -1472,7 +1933,7 @@
 
                         {% if item.code %}
 
-                            <small>
+                            <small class="management-item-code">
                                 {{ item.code }}
                             </small>
 
@@ -1532,24 +1993,22 @@
                         </button>
 
 
-                        <form
+                       <form
                             method="post"
                             action="{% url 'pos:management_toggle_menu_item' item.id %}"
+                            onsubmit="toggleManagementMenuItem(event, this)"
                         >
-
                             {% csrf_token %}
 
                             <button
                                 type="submit"
                                 class="secondary-button small"
                             >
-
                                 {% if item.is_active %}
                                     Deactivate
                                 {% else %}
                                     Activate
                                 {% endif %}
-
                             </button>
 
                         </form>
@@ -1601,17 +2060,66 @@
             </div>
 
 
-            <div class="management-placeholder">
+            <div class="management-tax-card">
 
-                <h3>
-                    Tax Settings
-                </h3>
+    <div class="management-tax-header">
 
-                <p>
-                    Tax settings will be added here.
-                </p>
+        <div>
 
-            </div>
+            <h3>
+                Tax Rate
+            </h3>
+
+            <p>
+                Set the percentage used when tax is included in a bill.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <form
+        id="management-tax-form"
+        onsubmit="saveManagementTax(event)"
+    >
+
+        {% csrf_token %}
+
+        <div class="management-form-group">
+
+            <label for="management-tax-rate">
+                Tax Rate (%)
+            </label>
+
+            <input
+                type="number"
+                id="management-tax-rate"
+                name="tax_rate"
+                min="0"
+                max="100"
+                step="0.01"
+                value="{{ tax_rate|default:'5' }}"
+                required
+            >
+
+        </div>
+
+
+        <div class="management-modal-actions">
+
+            <button
+                type="submit"
+                class="primary-button-tax-save"
+            >
+                Save Changes
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
 
         </section>
 
@@ -1625,31 +2133,312 @@
             class="management-page"
         >
 
-            <div class="management-page-header">
+            <div class="management-table-settings">
 
-                <h2>
-                    Table Settings
-                </h2>
+    <!-- =========================
+         SECTIONS
+         ========================= -->
 
-                <p>
-                    Manage restaurant sections and tables.
-                </p>
+   <div class="management-settings-header">
+
+    <div>
+
+        <h3>
+            Sections
+        </h3>
+
+        <p>
+            Manage areas such as Ground Floor, Garden,
+            Indoor and Outdoor.
+        </p>
+
+    </div>
+
+
+    <div class="management-section-header-actions">
+
+        <input
+            type="search"
+            id="management-section-search"
+            class="management-section-search"
+            placeholder="Search sections..."
+            oninput="filterManagementSections()"
+        >
+
+        <button
+            type="button"
+            class="primary-button"
+            onclick="openManagementAddSection()"
+        >
+            + Add Section
+        </button>
+
+    </div>
+
+</div>
+
+
+    <div class="management-section-list">
+
+        {% for section in management_sections %}
+
+            <div
+    class="management-section-row"
+    data-section-id="{{ section.id }}"
+    data-search="{{ section.name|lower }}"
+>
+
+                <div class="management-section-info">
+
+                    <strong>
+                        {{ section.name }}
+                    </strong>
+
+                    <small>
+                        Order {{ section.display_order }}
+                    </small>
+
+                </div>
+
+
+                <div>
+
+                    {% if section.is_active %}
+
+                        <span class="management-status active">
+                            ACTIVE
+                        </span>
+
+                    {% else %}
+
+                        <span class="management-status inactive">
+                            INACTIVE
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="management-item-actions">
+
+                    <button
+                        type="button"
+                        class="secondary-button small"
+                        onclick="openManagementEditSection(
+                            '{{ section.id }}',
+                            '{{ section.name|escapejs }}',
+                            '{{ section.display_order }}'
+                        )"
+                    >
+                        Edit
+                    </button>
+
+
+                    <form
+                        method="post"
+                        action="{% url 'pos:management_toggle_section' section.id %}"
+                        onsubmit="toggleManagementSection(
+                            event,
+                            this
+                        )"
+                    >
+
+                        {% csrf_token %}
+
+                        <button
+                            type="submit"
+                            class="secondary-button small"
+                        >
+
+                            {% if section.is_active %}
+                                Deactivate
+                            {% else %}
+                                Activate
+                            {% endif %}
+
+                        </button>
+
+                    </form>
+
+                </div>
 
             </div>
 
+        {% empty %}
 
-            <div class="management-placeholder">
+            <div class="management-empty">
+                No sections found.
+            </div>
 
-                <h3>
-                    Sections & Tables
-                </h3>
+        {% endfor %}
 
-                <p>
-                    Section and table management
-                    will be added here.
-                </p>
+    </div>
+
+
+    <!-- =========================
+         TABLES
+         ========================= -->
+
+  <div class="management-settings-header">
+
+    <div>
+
+        <h3>
+            Tables
+        </h3>
+
+        <p>
+            Manage tables inside each section.
+        </p>
+
+    </div>
+
+    <div class="management-table-header-actions">
+
+        <input
+            type="search"
+            id="management-table-search"
+            class="management-table-search"
+            placeholder="Search tables..."
+            oninput="filterManagementTables()"
+        >
+
+        <button
+            type="button"
+            class="primary-button"
+            onclick="openManagementAddTable()"
+        >
+            + Add Table
+        </button>
+
+    </div>
+
+</div>
+
+
+    <div class="management-table-list">
+
+        {% for table in management_tables %}
+
+            <div
+    class="management-table-row"
+    data-table-id="{{ table.id }}"
+    data-search="
+        {{ table.name|lower }}
+        {{ table.section.name|lower }}
+    "
+>
+
+                <div>
+
+                    <strong>
+                        {{ table.name }}
+                    </strong>
+
+                    <small>
+                        {{ table.section.name }}
+                        · Order {{ table.display_order }}
+                    </small>
+
+                </div>
+
+
+                <div>
+
+                    {% if table.status == "OCCUPIED" %}
+
+                        <span class="management-status occupied">
+                            OCCUPIED
+                        </span>
+
+                    {% else %}
+
+                        <span class="management-status vacant">
+                            VACANT
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+
+                <div>
+
+                    {% if table.is_active %}
+
+                        <span class="management-status active">
+                            ACTIVE
+                        </span>
+
+                    {% else %}
+
+                        <span class="management-status inactive">
+                            INACTIVE
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="management-item-actions">
+
+                    <button
+                        type="button"
+                        class="secondary-button small"
+                        onclick="openManagementEditTable(
+                            '{{ table.id }}',
+                            '{{ table.name|escapejs }}',
+                            '{{ table.section_id }}',
+                            '{{ table.display_order }}'
+                        )"
+                    >
+                        Edit
+                    </button>
+
+
+                    <form
+                        method="post"
+                        action="{% url 'pos:management_toggle_table' table.id %}"
+                        onsubmit="toggleManagementTable(
+                            event,
+                            this
+                        )"
+                    >
+
+                        {% csrf_token %}
+
+                        <button
+                            type="submit"
+                            class="secondary-button small"
+                        >
+
+                            {% if table.is_active %}
+                                Deactivate
+                            {% else %}
+                                Activate
+                            {% endif %}
+
+                        </button>
+
+                    </form>
+
+                </div>
 
             </div>
+
+        {% empty %}
+
+            <div class="management-empty">
+                No tables found.
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
 
         </section>
 
@@ -1658,7 +2447,957 @@
 
 
 </div>
+<!-- Edit Menu Item Modal -->
 
+<div
+    id="management-edit-item-modal"
+    class="management-modal"
+>
+
+    <div class="management-modal-content">
+
+        <div class="management-modal-header">
+
+            <div>
+
+                <span class="management-modal-label">
+                    EDIT MENU ITEM
+                </span>
+
+                <h2>Edit Item</h2>
+
+            </div>
+
+            <button
+                type="button"
+                class="management-modal-close"
+                onclick="closeManagementEditItem()"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <form
+            id="management-edit-item-form"
+            method="post"
+            onsubmit="saveManagementEditItem(event)"
+        >
+
+            {% csrf_token %}
+
+            <div class="management-form-group">
+
+                <label for="management-edit-name">
+                    Name
+                </label>
+
+                <input
+                    type="text"
+                    id="management-edit-name"
+                    name="name"
+                    required
+                >
+
+            </div>
+
+
+            <div class="management-form-group">
+
+                <label for="management-edit-code">
+                    Code
+                </label>
+
+                <input
+                    type="text"
+                    id="management-edit-code"
+                    name="code"
+                >
+
+            </div>
+
+
+            <div class="management-form-group">
+
+                <label for="management-edit-category">
+                    Category
+                </label>
+
+                <select
+                    id="management-edit-category"
+                    name="category"
+                    required
+                >
+
+                    {% for category in management_categories %}
+
+                        <option value="{{ category.id }}">
+                            {{ category.name }}
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+
+            <div class="management-form-group">
+
+                <label for="management-edit-price">
+                    Price
+                </label>
+
+                <input
+                    type="number"
+                    id="management-edit-price"
+                    name="price"
+                    min="0"
+                    step="1"
+                    required
+                >
+
+            </div>
+
+
+            <div class="management-modal-actions">
+
+                <button
+                    type="button"
+                    class="secondary-button"
+                    onclick="closeManagementEditItem()"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="primary-button"
+                >
+                    Save Changes
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+<!-- =================================
+     EDIT CATEGORY MODAL
+     ================================= -->
+
+<div
+    id="management-edit-category-modal"
+    class="management-modal"
+>
+
+    <div class="management-modal-content">
+
+        <div class="management-modal-header">
+
+            <div>
+
+                <span class="management-modal-label">
+                    EDIT CATEGORY
+                </span>
+
+                <h2>
+                    Edit Category
+                </h2>
+
+            </div>
+
+            <button
+                type="button"
+                class="management-modal-close"
+                onclick="closeManagementEditCategory()"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <form
+            id="management-edit-category-form"
+            method="post"
+            onsubmit="saveManagementEditCategory(event)"
+        >
+
+            {% csrf_token %}
+
+
+            <div class="management-form-group">
+
+                <label
+                    for="management-edit-category-name"
+                >
+                    Category Name
+                </label>
+
+                <input
+                    type="text"
+                    id="management-edit-category-name"
+                    name="name"
+                    required
+                >
+
+            </div>
+
+
+            <div class="management-form-group">
+
+                <label
+                    for="management-edit-category-type"
+                >
+                    Category Type
+                </label>
+
+                <select
+                    id="management-edit-category-type"
+                    name="category_type"
+                    required
+                >
+
+                    <option value="FOOD">
+                        FOOD
+                    </option>
+
+                    <option value="DRINK">
+                        DRINK
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="management-form-group">
+
+                <label
+                    for="management-edit-category-order"
+                >
+                    Display Order
+                </label>
+
+                <input
+                    type="number"
+                    id="management-edit-category-order"
+                    name="display_order"
+                    min="0"
+                    required
+                >
+
+            </div>
+
+
+            <div class="management-modal-actions">
+
+                <button
+                    type="button"
+                    class="secondary-button"
+                    onclick="closeManagementEditCategory()"
+                >
+                    Cancel
+                </button>
+
+
+                <button
+                    type="submit"
+                    class="primary-button"
+                >
+                    Save Changes
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<!-- =================================
+     ADD CATEGORY MODAL
+     ================================= -->
+
+<div
+    id="management-add-category-modal"
+    class="management-modal"
+>
+
+    <div class="management-modal-content">
+
+        <div class="management-modal-header">
+
+            <div>
+
+                <span class="management-modal-label">
+                    NEW CATEGORY
+                </span>
+
+                <h2>
+                    Add Category
+                </h2>
+
+            </div>
+
+            <button
+                type="button"
+                class="management-modal-close"
+                onclick="closeManagementAddCategory()"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <form
+            id="management-add-category-form"
+            method="post"
+            onsubmit="saveManagementAddCategory(event)"
+        >
+
+            {% csrf_token %}
+
+
+            <div class="management-form-group">
+
+                <label>
+                    Category Name
+                </label>
+
+                <input
+                    type="text"
+                    name="name"
+                    required
+                >
+
+            </div>
+
+
+            <div class="management-form-group">
+
+                <label>
+                    Category Type
+                </label>
+
+                <select
+                    name="category_type"
+                    required
+                >
+
+                    <option value="FOOD">
+                        FOOD
+                    </option>
+
+                    <option value="DRINK">
+                        DRINK
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="management-form-group">
+
+                <label>
+                    Display Order
+                </label>
+
+                <input
+                    type="number"
+                    name="display_order"
+                    value="0"
+                    min="0"
+                    required
+                >
+
+            </div>
+
+
+            <div class="management-modal-actions">
+
+                <button
+                    type="button"
+                    class="secondary-button"
+                    onclick="closeManagementAddCategory()"
+                >
+                    Cancel
+                </button>
+
+
+                <button
+                    type="submit"
+                    class="primary-button"
+                >
+                    Add Category
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<!-- =================================
+     ADD MENU ITEM MODAL
+     ================================= -->
+
+<div
+    id="management-add-item-modal"
+    class="management-modal"
+>
+
+    <div class="management-modal-content">
+
+        <div class="management-modal-header">
+
+            <div>
+
+                <span class="management-modal-label">
+                    NEW MENU ITEM
+                </span>
+
+                <h2>
+                    Add Menu Item
+                </h2>
+
+            </div>
+
+            <button
+                type="button"
+                class="management-modal-close"
+                onclick="closeManagementAddItem()"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <form
+            id="management-add-item-form"
+            method="post"
+            onsubmit="saveManagementAddItem(event)"
+        >
+
+            {% csrf_token %}
+
+
+            <div class="management-form-group">
+
+                <label>
+                    Name
+                </label>
+
+                <input
+                    type="text"
+                    name="name"
+                    required
+                >
+
+            </div>
+
+
+            <div class="management-form-group">
+
+                <label>
+                    Code
+                </label>
+
+                <input
+                    type="text"
+                    name="code"
+                >
+
+            </div>
+
+
+            <div class="management-form-group">
+
+                <label>
+                    Category
+                </label>
+
+                <select
+                    name="category"
+                    required
+                >
+
+                    {% for category in management_categories %}
+
+                        <option
+                            value="{{ category.id }}"
+                        >
+                            {{ category.name }}
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+
+            <div class="management-form-group">
+
+                <label>
+                    Price
+                </label>
+
+                <input
+                    type="number"
+                    name="price"
+                    min="0"
+                    step="1"
+                    required
+                >
+
+            </div>
+
+
+            <div class="management-modal-actions">
+
+                <button
+                    type="button"
+                    class="secondary-button"
+                    onclick="closeManagementAddItem()"
+                >
+                    Cancel
+                </button>
+
+
+                <button
+                    type="submit"
+                    class="primary-button"
+                >
+                    Add Item
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<div
+    id="management-add-section-modal"
+    class="management-modal"
+>
+
+    <div class="management-modal-content">
+
+        <div class="management-modal-header">
+
+            <h2>
+                Add Section
+            </h2>
+
+            <button
+                type="button"
+                class="management-modal-close"
+                onclick="closeManagementAddSection()"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <form
+            id="management-add-section-form"
+            onsubmit="saveManagementAddSection(event)"
+        >
+
+            {% csrf_token %}
+
+            <div class="management-form-group">
+
+                <label>
+                    Section Name
+                </label>
+
+                <input
+                    type="text"
+                    name="name"
+                    required
+                >
+
+            </div>
+
+
+            <div class="management-form-group">
+
+                <label>
+                    Display Order
+                </label>
+
+                <input
+                    type="number"
+                    name="display_order"
+                    value="0"
+                    min="0"
+                    required
+                >
+
+            </div>
+
+
+            <div class="management-modal-actions">
+
+                <button
+                    type="button"
+                    class="secondary-button"
+                    onclick="closeManagementAddSection()"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="primary-button"
+                >
+                    Add Section
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+<div
+    id="management-edit-section-modal"
+    class="management-modal"
+>
+
+    <div class="management-modal-content">
+
+        <div class="management-modal-header">
+
+            <h2>
+                Edit Section
+            </h2>
+
+            <button
+                type="button"
+                class="management-modal-close"
+                onclick="closeManagementEditSection()"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <form
+            id="management-edit-section-form"
+            onsubmit="saveManagementEditSection(event)"
+        >
+
+            {% csrf_token %}
+
+
+            <div class="management-form-group">
+
+                <label>
+                    Section Name
+                </label>
+
+                <input
+                    type="text"
+                    id="management-edit-section-name"
+                    name="name"
+                    required
+                >
+
+            </div>
+
+
+            <div class="management-form-group">
+
+                <label>
+                    Display Order
+                </label>
+
+                <input
+                    type="number"
+                    id="management-edit-section-order"
+                    name="display_order"
+                    min="0"
+                    required
+                >
+
+            </div>
+
+
+            <div class="management-modal-actions">
+
+                <button
+                    type="button"
+                    class="secondary-button"
+                    onclick="closeManagementEditSection()"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="primary-button"
+                >
+                    Save Changes
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+<div
+    id="management-add-table-modal"
+    class="management-modal"
+>
+
+    <div class="management-modal-content">
+
+        <div class="management-modal-header">
+
+            <h2>
+                Add Table
+            </h2>
+
+            <button
+                type="button"
+                class="management-modal-close"
+                onclick="closeManagementAddTable()"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <form
+            id="management-add-table-form"
+            onsubmit="saveManagementAddTable(event)"
+        >
+
+            {% csrf_token %}
+
+
+            <div class="management-form-group">
+
+                <label>
+                    Table Name
+                </label>
+
+                <input
+                    type="text"
+                    name="name"
+                    placeholder="Table 1"
+                    required
+                >
+
+            </div>
+
+
+            <div class="management-form-group">
+
+                <label>
+                    Section
+                </label>
+
+                <select
+                    name="section"
+                    required
+                >
+
+                    {% for section in management_sections %}
+
+                        {% if section.is_active %}
+
+                            <option value="{{ section.id }}">
+                                {{ section.name }}
+                            </option>
+
+                        {% endif %}
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+
+            <div class="management-form-group">
+
+                <label>
+                    Display Order
+                </label>
+
+                <input
+                    type="number"
+                    name="display_order"
+                    value="0"
+                    min="0"
+                    required
+                >
+
+            </div>
+
+
+            <div class="management-modal-actions">
+
+                <button
+                    type="button"
+                    class="secondary-button"
+                    onclick="closeManagementAddTable()"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="primary-button"
+                >
+                    Add Table
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<div
+    id="management-edit-table-modal"
+    class="management-modal"
+>
+
+    <div class="management-modal-content">
+
+        <div class="management-modal-header">
+
+            <h2>
+                Edit Table
+            </h2>
+
+            <button
+                type="button"
+                class="management-modal-close"
+                onclick="closeManagementEditTable()"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <form
+            id="management-edit-table-form"
+            onsubmit="saveManagementEditTable(event)"
+        >
+
+            {% csrf_token %}
+
+
+            <div class="management-form-group">
+
+                <label>
+                    Table Name
+                </label>
+
+                <input
+                    type="text"
+                    id="management-edit-table-name"
+                    name="name"
+                    required
+                >
+
+            </div>
+
+
+            <div class="management-form-group">
+
+                <label>
+                    Section
+                </label>
+
+                <select
+                    id="management-edit-table-section"
+                    name="section"
+                    required
+                >
+
+                    {% for section in management_sections %}
+
+                        <option value="{{ section.id }}">
+                            {{ section.name }}
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+
+            <div class="management-form-group">
+
+                <label>
+                    Display Order
+                </label>
+
+                <input
+                    type="number"
+                    id="management-edit-table-order"
+                    name="display_order"
+                    min="0"
+                    required
+                >
+
+            </div>
+
+
+            <div class="management-modal-actions">
+
+                <button
+                    type="button"
+                    class="secondary-button"
+                    onclick="closeManagementEditTable()"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="primary-button"
+                >
+                    Save Changes
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
 
 <script>
 
@@ -1667,96 +3406,145 @@
        SIDEBAR NAVIGATION
        ================================= */
 
-    document
-        .querySelectorAll(
-            ".management-nav-button"
-        )
-        .forEach(
-            function (button) {
+const managementNavButtons =
+    document.querySelectorAll(
+        ".management-nav-button"
+    );
 
-                button.addEventListener(
-                    "click",
-                    function () {
-
-
-                        /*
-                         * Remove active state
-                         * from all buttons.
-                         */
-
-                        document
-                            .querySelectorAll(
-                                ".management-nav-button"
-                            )
-                            .forEach(
-                                function (navButton) {
-
-                                    navButton.classList.remove(
-                                        "active"
-                                    );
-
-                                }
-                            );
+const managementPages =
+    document.querySelectorAll(
+        ".management-page"
+    );
 
 
-                        /*
-                         * Activate clicked button.
-                         */
+function showManagementPage(
+    pageName
+) {
 
-                        button.classList.add(
-                            "active"
-                        );
+    /*
+     * Remove active state
+     * from navigation buttons.
+     */
 
+    managementNavButtons.forEach(
+        function (button) {
 
-                        /*
-                         * Hide all pages.
-                         */
+            button.classList.remove(
+                "active"
+            );
 
-                        document
-                            .querySelectorAll(
-                                ".management-page"
-                            )
-                            .forEach(
-                                function (page) {
-
-                                    page.classList.remove(
-                                        "active"
-                                    );
-
-                                }
-                            );
+        }
+    );
 
 
-                        /*
-                         * Show selected page.
-                         */
+    /*
+     * Remove active state
+     * from pages.
+     */
 
-                        const pageName =
-                            button.dataset.page;
+    managementPages.forEach(
+        function (page) {
+
+            page.classList.remove(
+                "active"
+            );
+
+        }
+    );
 
 
-                        const selectedPage =
-                            document.getElementById(
-                                "page-" + pageName
-                            );
+    /*
+     * Activate selected button.
+     */
+
+    const selectedButton =
+        document.querySelector(
+            `.management-nav-button[data-page="${pageName}"]`
+        );
 
 
-                        if (
-                            selectedPage
-                        ) {
+    if (selectedButton) {
 
-                            selectedPage.classList.add(
-                                "active"
-                            );
+        selectedButton.classList.add(
+            "active"
+        );
 
-                        }
+    }
 
-                    }
+
+    /*
+     * Activate selected page.
+     */
+
+    const selectedPage =
+        document.getElementById(
+            "page-" + pageName
+        );
+
+
+    if (selectedPage) {
+
+        selectedPage.classList.add(
+            "active"
+        );
+
+    }
+
+
+    /*
+     * Remember the current section.
+     */
+
+    sessionStorage.setItem(
+        "managementActivePage",
+        pageName
+    );
+
+}
+
+
+managementNavButtons.forEach(
+    function (button) {
+
+        button.addEventListener(
+            "click",
+            function () {
+
+                showManagementPage(
+                    this.dataset.page
                 );
 
             }
         );
 
+    }
+);
+
+
+/*
+ * Restore the section after
+ * a page reload.
+ */
+
+const savedManagementPage =
+    sessionStorage.getItem(
+        "managementActivePage"
+    );
+
+
+if (savedManagementPage) {
+
+    showManagementPage(
+        savedManagementPage
+    );
+
+} else {
+
+    showManagementPage(
+        "analytics"
+    );
+
+}
 
     /* =================================
        BACK TO POS
@@ -1948,6 +3736,1858 @@
         );
 
     }
+
+    async function toggleManagementMenuItem(
+    event,
+    form
+) {
+
+    event.preventDefault();
+
+
+    try {
+
+        const response = await fetch(
+            form.action,
+            {
+                method: "POST",
+
+                headers: {
+                    "X-Requested-With":
+                        "XMLHttpRequest",
+
+                    "Accept":
+                        "application/json",
+                },
+
+                body:
+                    new FormData(form),
+            }
+        );
+
+
+        const result =
+            await response.json();
+
+
+        if (
+            !response.ok ||
+            !result.success
+        ) {
+
+            alert(
+                "Could not update menu item."
+            );
+
+            return;
+
+        }
+
+
+        /*
+         * Find the row containing
+         * this form.
+         */
+        const row =
+            form.closest(
+                ".management-menu-row"
+            );
+
+
+        if (!row) {
+            return;
+        }
+
+
+        /*
+         * Update status text.
+         */
+        const status =
+            row.querySelector(
+                ".management-status"
+            );
+
+
+        if (status) {
+
+            status.textContent =
+                result.is_active
+                    ? "ACTIVE"
+                    : "INACTIVE";
+
+
+            status.classList.remove(
+                "active",
+                "inactive"
+            );
+
+
+            status.classList.add(
+                result.is_active
+                    ? "active"
+                    : "inactive"
+            );
+
+        }
+
+
+        /*
+         * Update button text.
+         */
+        const button =
+            form.querySelector(
+                "button[type='submit']"
+            );
+
+
+        if (button) {
+
+            button.textContent =
+                result.is_active
+                    ? "Deactivate"
+                    : "Activate";
+
+        }
+
+    }
+
+    catch (error) {
+
+        console.error(
+            error
+        );
+
+        alert(
+            "Could not connect to the server."
+        );
+
+    }
+
+}
+
+
+let managementEditingItemId = null;
+
+
+function openManagementEditItem(itemId) {
+
+    managementEditingItemId = itemId;
+
+
+    /*
+     * Find the menu item row.
+     */
+    const row =
+        document.querySelector(
+            `[data-item-id="${itemId}"]`
+        );
+
+
+    if (!row) {
+
+        alert(
+            "Could not find the menu item."
+        );
+
+        return;
+
+    }
+
+
+    /*
+     * Read values from the row.
+     */
+    const name =
+        row.dataset.name || "";
+
+    const code =
+        row.dataset.code || "";
+
+    const categoryId =
+        row.dataset.categoryId || "";
+
+    const price =
+        row.dataset.price || "";
+
+
+    /*
+     * Fill the modal.
+     */
+    document.getElementById(
+        "management-edit-name"
+    ).value = name;
+
+
+    document.getElementById(
+        "management-edit-code"
+    ).value = code;
+
+
+    document.getElementById(
+        "management-edit-category"
+    ).value = categoryId;
+
+
+    document.getElementById(
+        "management-edit-price"
+    ).value = price;
+
+
+    /*
+     * Set the form URL.
+     */
+    document.getElementById(
+        "management-edit-item-form"
+    ).action =
+        `/pos/management/menu/item/${itemId}/edit/`;
+
+
+    /*
+     * Open modal.
+     */
+    document.getElementById(
+        "management-edit-item-modal"
+    ).classList.add(
+        "open"
+    );
+
+}
+
+
+function closeManagementEditItem() {
+
+    document.getElementById(
+        "management-edit-item-modal"
+    ).classList.remove(
+        "open"
+    );
+
+    managementEditingItemId = null;
+
+}
+
+
+async function saveManagementEditItem(
+    event
+) {
+
+    event.preventDefault();
+
+
+    const form =
+        document.getElementById(
+            "management-edit-item-form"
+        );
+
+
+    try {
+
+        const response =
+            await fetch(
+                form.action,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "X-Requested-With":
+                            "XMLHttpRequest",
+
+                        "Accept":
+                            "application/json",
+                    },
+
+                    body:
+                        new FormData(form),
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (
+            !response.ok ||
+            !result.success
+        ) {
+
+            alert(
+                result.error ||
+                "Could not update menu item."
+            );
+
+            return;
+
+        }
+
+
+        /*
+         * Update the row immediately.
+         */
+        const row =
+            document.querySelector(
+                `[data-item-id="${result.item.id}"]`
+            );
+
+
+        if (row) {
+
+            const name =
+                row.querySelector(
+                    ".management-item-name"
+                );
+
+            const code =
+                row.querySelector(
+                    ".management-item-code"
+                );
+
+            const price =
+                row.querySelector(
+                    ".management-item-price"
+                );
+
+
+            if (name) {
+
+                name.textContent =
+                    result.item.name;
+
+            }
+
+
+            if (code) {
+
+                code.textContent =
+                    result.item.code;
+
+            }
+
+
+            if (price) {
+
+                price.textContent =
+                    `₹${Number(
+                        result.item.price
+                    ).toFixed(2)}`;
+
+            }
+
+
+/*
+ * Update status.
+ */
+
+            const status =
+                row.querySelector(
+                    ".management-status"
+                );
+
+
+            if (status) {
+
+                status.textContent =
+                    result.item.is_active
+                        ? "ACTIVE"
+                        : "INACTIVE";
+
+
+                status.classList.remove(
+                    "active",
+                    "inactive"
+                );
+
+
+                status.classList.add(
+                    result.item.is_active
+                        ? "active"
+                        : "inactive"
+                );
+
+            }
+
+
+            /*
+             * Update data attributes
+             * for the next edit.
+             */
+            row.dataset.name =
+                result.item.name;
+
+            row.dataset.code =
+                result.item.code;
+
+            row.dataset.price =
+                result.item.price;
+
+            row.dataset.categoryId =
+                result.item.category_id;
+
+        }
+
+
+        closeManagementEditItem();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            error
+        );
+
+        alert(
+            "Could not connect to the server."
+        );
+
+    }
+
+}
+
+let managementEditingCategoryId = null;
+
+
+
+
+
+
+function openManagementEditCategory(
+    categoryId,
+    name,
+    categoryType,
+    displayOrder
+) {
+
+    document.getElementById(
+        "management-edit-category-name"
+    ).value = name;
+
+
+    document.getElementById(
+        "management-edit-category-type"
+    ).value = categoryType;
+
+
+    document.getElementById(
+        "management-edit-category-order"
+    ).value = displayOrder;
+
+
+    document.getElementById(
+        "management-edit-category-form"
+    ).action =
+        `/pos/management/menu/category/${categoryId}/edit/`;
+
+
+    document.getElementById(
+        "management-edit-category-modal"
+    ).classList.add(
+        "open"
+    );
+
+}
+
+
+function closeManagementEditCategory() {
+
+    document.getElementById(
+        "management-edit-category-modal"
+    ).classList.remove(
+        "open"
+    );
+
+}
+
+
+async function saveManagementEditCategory(
+    event
+) {
+
+    event.preventDefault();
+
+
+    const form =
+        document.getElementById(
+            "management-edit-category-form"
+        );
+
+
+    try {
+
+        const response =
+            await fetch(
+                form.action,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "X-Requested-With":
+                            "XMLHttpRequest",
+
+                        "Accept":
+                            "application/json",
+                    },
+
+                    body:
+                        new FormData(form),
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (
+            !response.ok ||
+            !result.success
+        ) {
+
+            alert(
+                result.error ||
+                "Could not update category."
+            );
+
+            return;
+
+        }
+
+
+        const category =
+            result.category;
+
+
+        /*
+         * Find the category row.
+         */
+
+       const row =
+    document.querySelector(
+        `.management-category-row[data-category-id="${category.id}"]`
+    );
+
+        /*
+         * Update visible category.
+         */
+
+        if (row) {
+
+            const info =
+                row.querySelector(
+                    ".management-category-info"
+                );
+
+
+            if (info) {
+
+                const nameElement =
+                    info.querySelector(
+                        "strong"
+                    );
+
+
+                const metaElement =
+                    info.querySelector(
+                        "small"
+                    );
+
+
+                if (nameElement) {
+
+                    nameElement.textContent =
+                        category.name;
+
+                }
+
+
+                if (metaElement) {
+
+                    metaElement.textContent =
+                        category.category_type
+                        + " · Order "
+                        + category.display_order;
+
+                }
+
+            }
+
+
+            /*
+             * Update Edit button
+             * with new values.
+             */
+
+            const editButton =
+                row.querySelector(
+                    ".secondary-button.small"
+                );
+
+
+            if (editButton) {
+
+                editButton.setAttribute(
+                    "onclick",
+
+                    `openManagementEditCategory(
+                        '${category.id}',
+                        '${category.name.replace(
+                            /'/g,
+                            "\\'"
+                        )}',
+                        '${category.category_type}',
+                        '${category.display_order}'
+                    )`
+                );
+
+            }
+
+        }
+
+
+        closeManagementEditCategory();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Category edit error:",
+            error
+        );
+
+        alert(
+            "Could not connect to the server."
+        );
+
+    }
+
+}
+
+
+function openManagementAddCategory() {
+
+    const modal =
+        document.getElementById(
+            "management-add-category-modal"
+        );
+
+    const form =
+        document.getElementById(
+            "management-add-category-form"
+        );
+
+
+    if (!modal) {
+
+        console.error(
+            "management-add-category-modal not found"
+        );
+
+        return;
+
+    }
+
+
+    if (form) {
+
+        form.reset();
+
+    }
+
+
+    modal.classList.add(
+        "open"
+    );
+
+}
+
+
+function closeManagementAddCategory() {
+
+    const modal =
+        document.getElementById(
+            "management-add-category-modal"
+        );
+
+
+    if (modal) {
+
+        modal.classList.remove(
+            "open"
+        );
+
+    }
+
+}
+
+
+async function saveManagementAddCategory(
+    event
+) {
+
+    event.preventDefault();
+
+
+    const form =
+        document.getElementById(
+            "management-add-category-form"
+        );
+
+
+    if (!form) {
+
+        console.error(
+            "management-add-category-form not found"
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                "{% url 'pos:management_create_category' %}",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "X-Requested-With":
+                            "XMLHttpRequest",
+
+                        "Accept":
+                            "application/json",
+                    },
+
+                    body:
+                        new FormData(form),
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (
+            !response.ok ||
+            !result.success
+        ) {
+
+            alert(
+                result.error ||
+                "Could not create category."
+            );
+
+            return;
+
+        }
+
+
+        closeManagementAddCategory();
+
+        location.reload();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            error
+        );
+
+        alert(
+            "Could not connect to the server."
+        );
+
+    }
+
+}
+
+function openManagementAddItem() {
+
+    const modal =
+        document.getElementById(
+            "management-add-item-modal"
+        );
+
+    const form =
+        document.getElementById(
+            "management-add-item-form"
+        );
+
+
+    if (!modal) {
+
+        console.error(
+            "management-add-item-modal not found"
+        );
+
+        return;
+
+    }
+
+
+    if (form) {
+
+        form.reset();
+
+    }
+
+
+    modal.classList.add(
+        "open"
+    );
+
+}
+
+
+function closeManagementAddItem() {
+
+    const modal =
+        document.getElementById(
+            "management-add-item-modal"
+        );
+
+
+    if (modal) {
+
+        modal.classList.remove(
+            "open"
+        );
+
+    }
+
+}
+
+
+async function saveManagementAddItem(
+    event
+) {
+
+    event.preventDefault();
+
+
+    const form =
+        document.getElementById(
+            "management-add-item-form"
+        );
+
+
+    if (!form) {
+
+        console.error(
+            "management-add-item-form not found"
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                "{% url 'pos:management_create_menu_item' %}",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "X-Requested-With":
+                            "XMLHttpRequest",
+
+                        "Accept":
+                            "application/json",
+                    },
+
+                    body:
+                        new FormData(form),
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (
+            !response.ok ||
+            !result.success
+        ) {
+
+            alert(
+                result.error ||
+                "Could not create menu item."
+            );
+
+            return;
+
+        }
+
+
+        closeManagementAddItem();
+
+        location.reload();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            error
+        );
+
+        alert(
+            "Could not connect to the server."
+        );
+
+    }
+
+}
+
+async function saveManagementTax(event) {
+
+    event.preventDefault();
+
+
+    const form =
+        document.getElementById(
+            "management-tax-form"
+        );
+
+
+    try {
+
+        const response =
+            await fetch(
+                "{% url 'pos:management_save_tax' %}",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "X-Requested-With":
+                            "XMLHttpRequest",
+
+                        "Accept":
+                            "application/json",
+                    },
+
+                    body:
+                        new FormData(form),
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (
+            !response.ok ||
+            !result.success
+        ) {
+
+            alert(
+                result.error ||
+                "Could not save tax rate."
+            );
+
+            return;
+
+        }
+
+
+        alert(
+            `Tax rate saved: ${result.tax_rate}%`
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Could not connect to the server."
+        );
+
+    }
+
+}
+
+function openManagementAddSection() {
+
+    document
+        .getElementById(
+            "management-add-section-modal"
+        )
+        .classList.add("open");
+
+}
+
+
+function closeManagementAddSection() {
+
+    document
+        .getElementById(
+            "management-add-section-modal"
+        )
+        .classList.remove("open");
+
+}
+
+
+async function saveManagementAddSection(
+    event
+) {
+
+    event.preventDefault();
+
+    const form =
+        document.getElementById(
+            "management-add-section-form"
+        );
+
+
+    const response =
+        await fetch(
+            "{% url 'pos:management_create_section' %}",
+            {
+                method: "POST",
+
+                headers: {
+                    "X-Requested-With":
+                        "XMLHttpRequest",
+
+                    "Accept":
+                        "application/json",
+                },
+
+                body:
+                    new FormData(form),
+            }
+        );
+
+
+    const result =
+        await response.json();
+
+
+    if (
+        !response.ok ||
+        !result.success
+    ) {
+
+        alert(
+            result.error ||
+            "Could not create section."
+        );
+
+        return;
+
+    }
+
+
+    closeManagementAddSection();
+
+    location.reload();
+
+}
+
+function openManagementEditSection(
+    id,
+    name,
+    displayOrder
+) {
+
+    document.getElementById(
+        "management-edit-section-name"
+    ).value = name;
+
+
+    document.getElementById(
+        "management-edit-section-order"
+    ).value = displayOrder;
+
+
+    const form =
+        document.getElementById(
+            "management-edit-section-form"
+        );
+
+
+    form.dataset.sectionId = id;
+
+
+    document
+        .getElementById(
+            "management-edit-section-modal"
+        )
+        .classList.add("open");
+
+}
+
+
+function closeManagementEditSection() {
+
+    document
+        .getElementById(
+            "management-edit-section-modal"
+        )
+        .classList.remove("open");
+
+}
+
+
+async function saveManagementEditSection(
+    event
+) {
+
+    event.preventDefault();
+
+
+    const form =
+        document.getElementById(
+            "management-edit-section-form"
+        );
+
+
+    const id =
+        form.dataset.sectionId;
+
+
+    const response =
+        await fetch(
+            `/pos/management/table/section/${id}/edit/`,
+            {
+                method: "POST",
+
+                headers: {
+                    "X-Requested-With":
+                        "XMLHttpRequest",
+
+                    "Accept":
+                        "application/json",
+                },
+
+                body:
+                    new FormData(form),
+            }
+        );
+
+
+    const result =
+        await response.json();
+
+
+    if (
+        !response.ok ||
+        !result.success
+    ) {
+
+        alert(
+            result.error ||
+            "Could not update section."
+        );
+
+        return;
+
+    }
+
+
+    closeManagementEditSection();
+
+    location.reload();
+
+}
+
+async function toggleManagementSection(
+    event,
+    form
+) {
+
+    event.preventDefault();
+
+
+    const response =
+        await fetch(
+            form.action,
+            {
+                method: "POST",
+
+                headers: {
+                    "X-Requested-With":
+                        "XMLHttpRequest",
+
+                    "Accept":
+                        "application/json",
+                },
+
+                body:
+                    new FormData(form),
+            }
+        );
+
+
+    const result =
+        await response.json();
+
+
+    if (
+        !response.ok ||
+        !result.success
+    ) {
+
+        alert(
+            result.error ||
+            "Could not update section."
+        );
+
+        return;
+
+    }
+
+
+    location.reload();
+
+}
+
+function openManagementAddTable() {
+
+    document
+        .getElementById(
+            "management-add-table-modal"
+        )
+        .classList.add("open");
+
+}
+
+
+function closeManagementAddTable() {
+
+    document
+        .getElementById(
+            "management-add-table-modal"
+        )
+        .classList.remove("open");
+
+}
+
+
+async function saveManagementAddTable(
+    event
+) {
+
+    event.preventDefault();
+
+
+    const form =
+        document.getElementById(
+            "management-add-table-form"
+        );
+
+
+    const response =
+        await fetch(
+            "{% url 'pos:management_create_table' %}",
+            {
+                method: "POST",
+
+                headers: {
+                    "X-Requested-With":
+                        "XMLHttpRequest",
+
+                    "Accept":
+                        "application/json",
+                },
+
+                body:
+                    new FormData(form),
+            }
+        );
+
+
+    const result =
+        await response.json();
+
+
+    if (
+        !response.ok ||
+        !result.success
+    ) {
+
+        alert(
+            result.error ||
+            "Could not create table."
+        );
+
+        return;
+
+    }
+
+
+    closeManagementAddTable();
+
+    location.reload();
+
+}
+
+async function toggleManagementTable(
+    event,
+    form
+) {
+
+    event.preventDefault();
+
+
+    const response =
+        await fetch(
+            form.action,
+            {
+                method: "POST",
+
+                headers: {
+                    "X-Requested-With":
+                        "XMLHttpRequest",
+
+                    "Accept":
+                        "application/json",
+                },
+
+                body:
+                    new FormData(form),
+            }
+        );
+
+
+    const result =
+        await response.json();
+
+
+    if (
+        !response.ok ||
+        !result.success
+    ) {
+
+        alert(
+            result.error ||
+            "Could not update table."
+        );
+
+        return;
+
+    }
+
+
+    location.reload();
+
+}
+
+function filterManagementTables() {
+
+    const input =
+        document.getElementById(
+            "management-table-search"
+        );
+
+
+    const search =
+        input.value
+            .toLowerCase()
+            .trim();
+
+
+    const rows =
+        document.querySelectorAll(
+            ".management-table-row"
+        );
+
+
+    rows.forEach(
+        function (row) {
+
+            const searchableText =
+                row.dataset.search ||
+                "";
+
+
+            if (
+                searchableText
+                    .toLowerCase()
+                    .includes(search)
+            ) {
+
+                row.style.display = "";
+
+            } else {
+
+                row.style.display = "none";
+
+            }
+
+        }
+    );
+
+}
+
+function filterManagementSections() {
+
+    const input =
+        document.getElementById(
+            "management-section-search"
+        );
+
+
+    const search =
+        input.value
+            .toLowerCase()
+            .trim();
+
+
+    const rows =
+        document.querySelectorAll(
+            ".management-section-row"
+        );
+
+
+    rows.forEach(
+        function (row) {
+
+            const searchableText =
+                row.dataset.search ||
+                "";
+
+
+            if (
+                searchableText
+                    .toLowerCase()
+                    .includes(search)
+            ) {
+
+                row.style.display = "";
+
+            } else {
+
+                row.style.display = "none";
+
+            }
+
+        }
+    );
+
+}
+
+
+
+async function loadManagementAnalytics(
+    period
+) {
+
+    const container =
+        document.getElementById(
+            "analytics-drink-items"
+        );
+
+
+    try {
+
+        const response =
+            await fetch(
+                `{% url 'pos:management_analytics' %}?period=${period}`,
+                {
+                    headers: {
+                        "X-Requested-With":
+                            "XMLHttpRequest",
+
+                        "Accept":
+                            "application/json",
+                    },
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (
+            !response.ok ||
+            !result.success
+        ) {
+
+            throw new Error(
+                result.error ||
+                "Could not load analytics."
+            );
+
+        }
+
+
+        /*
+         * Total revenue
+         */
+
+        document.getElementById(
+            "analytics-total-revenue"
+        ).textContent =
+            `₹${Number(
+                result.revenue
+            ).toLocaleString(
+                "en-IN",
+                {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                }
+            )}`;
+
+
+        /*
+         * Drinks revenue
+         */
+
+        document.getElementById(
+            "analytics-drinks-revenue"
+        ).textContent =
+            `₹${Number(
+                result.drinks_revenue
+            ).toLocaleString(
+                "en-IN",
+                {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                }
+            )}`;
+
+
+        /*
+         * Drink items
+         */
+
+        if (
+            !result.drink_items ||
+            result.drink_items.length === 0
+        ) {
+
+            container.innerHTML = `
+                <div class="management-empty">
+                    No drink sales for this period.
+                </div>
+            `;
+
+            return;
+
+        }
+
+
+        container.innerHTML =
+            result.drink_items
+                .map(
+                    function (item) {
+
+                        return `
+
+                            <div
+                                class="analytics-drink-row"
+                            >
+
+                                <span>
+                                    ${item.name}
+                                </span>
+
+                                <span>
+                                    ${item.quantity}
+                                </span>
+
+                                <span>
+                                    ₹${Number(
+                                        item.revenue
+                                    ).toLocaleString(
+                                        "en-IN",
+                                        {
+                                            minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2,
+                                        }
+                                    )}
+                                </span>
+
+                            </div>
+
+                        `;
+
+                    }
+                )
+                .join("");
+
+    }
+
+    catch (error) {
+
+        console.error(
+            error
+        );
+
+
+        container.innerHTML = `
+            <div class="management-empty">
+                Could not load analytics.
+            </div>
+        `;
+
+    }
+
+}
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        loadManagementAnalytics(
+            "week"
+        );
+
+    }
+);
+
+function openManagementEditTable(
+    id,
+    name,
+    sectionId,
+    displayOrder
+) {
+
+    const nameInput =
+        document.getElementById(
+            "management-edit-table-name"
+        );
+
+    const sectionInput =
+        document.getElementById(
+            "management-edit-table-section"
+        );
+
+    const orderInput =
+        document.getElementById(
+            "management-edit-table-order"
+        );
+
+    const modal =
+        document.getElementById(
+            "management-edit-table-modal"
+        );
+
+    const form =
+        document.getElementById(
+            "management-edit-table-form"
+        );
+
+
+    if (!nameInput) {
+
+        console.error(
+            "management-edit-table-name not found"
+        );
+
+        return;
+
+    }
+
+
+    if (!sectionInput) {
+
+        console.error(
+            "management-edit-table-section not found"
+        );
+
+        return;
+
+    }
+
+
+    if (!orderInput) {
+
+        console.error(
+            "management-edit-table-order not found"
+        );
+
+        return;
+
+    }
+
+
+    if (!modal) {
+
+        console.error(
+            "management-edit-table-modal not found"
+        );
+
+        return;
+
+    }
+
+
+    if (!form) {
+
+        console.error(
+            "management-edit-table-form not found"
+        );
+
+        return;
+
+    }
+
+
+    nameInput.value =
+        name;
+
+
+    sectionInput.value =
+        sectionId;
+
+
+    orderInput.value =
+        displayOrder;
+
+
+    form.dataset.tableId =
+        id;
+
+
+    modal.classList.add(
+        "open"
+    );
+
+}
+
+function closeManagementEditTable() {
+
+    const modal =
+        document.getElementById(
+            "management-edit-table-modal"
+        );
+
+
+    if (!modal) {
+
+        console.error(
+            "management-edit-table-modal not found"
+        );
+
+        return;
+
+    }
+
+
+    modal.classList.remove(
+        "open"
+    );
+
+}
+
+async function saveManagementEditTable(event) {
+
+    event.preventDefault();
+
+
+    const form =
+        document.getElementById(
+            "management-edit-table-form"
+        );
+
+
+    if (!form) {
+
+        console.error(
+            "management-edit-table-form not found"
+        );
+
+        return;
+
+    }
+
+
+    const tableId =
+        form.dataset.tableId;
+
+
+    if (!tableId) {
+
+        console.error(
+            "Table ID not found"
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                `/pos/management/table/${tableId}/edit/`,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "X-Requested-With":
+                            "XMLHttpRequest",
+
+                        "Accept":
+                            "application/json",
+                    },
+
+                    body:
+                        new FormData(form),
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (
+            !response.ok ||
+            !result.success
+        ) {
+
+            alert(
+                result.error ||
+                "Could not update table."
+            );
+
+            return;
+
+        }
+
+
+        closeManagementEditTable();
+
+
+        /*
+         * Reload the management page so
+         * the new section/order is reflected.
+         */
+        location.reload();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            error
+        );
+
+        alert(
+            "Could not connect to the server."
+        );
+
+    }
+
+}
 
 </script>
 

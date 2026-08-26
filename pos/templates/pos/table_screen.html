@@ -916,7 +916,7 @@
 
         .modal-secondary-button {
             position: relative;
-            left: -650px;
+            left: -600px;
             border: none;
 
             padding: 11px 18px;
@@ -927,6 +927,8 @@
 
             cursor: pointer;
         }
+
+        
 
         .modal-primary-button,
         .generate-final-button {
@@ -941,6 +943,31 @@
             cursor: pointer;
         }
 
+        .modal-secondary-button-bill {
+            position: relative;
+            left: -300px;
+            border: none;
+
+            padding: 11px 18px;
+
+            border-radius: 5px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+        .modal-primary-button-bill {
+            border: none;
+
+            padding: 11px 18px;
+
+            border-radius: 5px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+        }
 
         .modal-secondary-button {
             background: #eee;
@@ -1074,6 +1101,40 @@
         .admin-button:hover {
             background: #222;
         }
+        .table-search {
+    margin-bottom: 20px;
+}
+
+.table-search input {
+    width: 320px;
+    max-width: 100%;
+
+    padding: 11px 14px;
+
+    border: 1px solid #ccc;
+    border-radius: 6px;
+
+    font-size: 14px;
+    outline: none;
+}
+
+.table-search input:focus {
+    border-color: #111;
+}
+
+.no-table-results {
+    display: none;
+
+    background: white;
+
+    padding: 30px;
+
+    border-radius: 8px;
+
+    text-align: center;
+
+    color: #777;
+}
     </style>
     <link rel="manifest" href="{% static 'pos/manifest.json' %}">
 
@@ -1141,9 +1202,19 @@
                 {{ section.name }}
 
             </button>
-
+            
             {% endfor %}
+            
+            
+        </div>
+        <div class="table-search">
 
+            <input
+                type="text"
+                id="table-search-input"
+                placeholder="Search tables..."
+                oninput="searchTables()"
+            >
 
         </div>
 
@@ -1176,6 +1247,7 @@
                     href="#"
                     class="table-card {% if table.status == 'VACANT' %}vacant{% else %}occupied{% endif %}"
                     data-table-id="{{ table.id }}"
+                    data-table-name="{{ table.name|lower }}"
                     onclick="openOrderPanel(event, '{{ table.id }}', '{{ table.name|escapejs }}')"
                 >
 
@@ -1577,18 +1649,35 @@
             </div>
 
 
-            <div class="bill-preview-footer">
+           <div class="bill-preview-footer">
 
-                <button type="button" class="modal-secondary-button" onclick="closeBillPreview()">
-                    Back
-                </button>
+    <button
+        type="button"
+        class="modal-secondary-button-bill"
+        onclick="openAddItemModal('BILL')"
+    >
+        + Add Item
+    </button>
 
 
-                <button type="button" class="generate-final-button" onclick="generateBill()">
-                    Generate Bill
-                </button>
+    <button
+        type="button"
+        class="modal-secondary-button-bill"
+        onclick="closeBillPreview()"
+    >
+        Back
+    </button>
 
-            </div>
+
+    <button
+        type="button"
+        class="generate-final-button"
+        onclick="generateBill()"
+    >
+        Generate Bill
+    </button>
+
+</div>
 
         </div>
 
@@ -1604,55 +1693,63 @@
 
         function showSection(sectionId) {
 
-            const sections =
-                document.querySelectorAll(
-                    ".section-content"
-                );
+    const sections =
+        document.querySelectorAll(
+            ".section-content"
+        );
 
-            const buttons =
-                document.querySelectorAll(
-                    ".section-button"
-                );
-
-
-            sections.forEach(
-                function (section) {
-
-                    section.classList.remove(
-                        "active"
-                    );
-
-                }
-            );
+    const buttons =
+        document.querySelectorAll(
+            ".section-button"
+        );
 
 
-            buttons.forEach(
-                function (button) {
+    sections.forEach(
+        function (section) {
 
-                    button.classList.remove(
-                        "active"
-                    );
-
-                }
-            );
-
-
-            const selectedSection =
-                document.getElementById(
-                    "section-" + sectionId
-                );
-
-
-            selectedSection.classList.add(
-                "active"
-            );
-
-
-            event.currentTarget.classList.add(
+            section.classList.remove(
                 "active"
             );
 
         }
+    );
+
+
+    buttons.forEach(
+        function (button) {
+
+            button.classList.remove(
+                "active"
+            );
+
+        }
+    );
+
+
+    const selectedSection =
+        document.getElementById(
+            "section-" + sectionId
+        );
+
+
+    selectedSection.classList.add(
+        "active"
+    );
+
+
+    event.currentTarget.classList.add(
+        "active"
+    );
+
+
+    document.getElementById(
+        "table-search-input"
+    ).value = "";
+
+
+    searchTables();
+
+}
 
 
 
@@ -1668,7 +1765,11 @@
 
         let currentOrder = {};
 
+        let billOnlyItems = {};
+
         let temporaryOrder = {};
+
+        let addItemMode = "KITCHEN";
 
 
 
@@ -2027,12 +2128,30 @@
          * =========================
          */
 
-        async function openAddItemModal() {
+        async function openAddItemModal(
+            mode = "KITCHEN"
+        ) {
 
-            /*
-            * Start with a clean
-            * temporary selection.
-            */
+                if (mode === "BILL") {
+
+                    const billPreview =
+                        document.getElementById(
+                            "bill-preview-modal"
+                        );
+
+                    if (billPreview) {
+
+                        billPreview.classList.remove(
+                            "open"
+                        );
+
+                    }
+
+                }
+
+            addItemMode =
+                mode;
+
 
             temporaryOrder = {};
 
@@ -2082,27 +2201,44 @@
                 }
 
 
-                /*
-                * Replace the menu list
-                * with the latest database data.
-                */
-
                 renderLatestMenuItems(
                     result.items
                 );
 
 
-                /*
-                * Apply the search/filter.
-                */
-
                 filterMenuItems();
 
 
-                /*
-                * Open the popup only after
-                * the latest menu has loaded.
-                */
+                const actionButton =
+                    document.querySelector(
+                        "#add-item-modal .modal-primary-button"
+                    );
+
+
+                if (actionButton) {
+
+                    if (
+                        addItemMode === "BILL"
+                    ) {
+
+                        actionButton.textContent =
+                            "Add to Bill";
+
+                        actionButton.onclick =
+                            addTemporaryItemsToBill;
+
+                    } else {
+
+                        actionButton.textContent =
+                            "Send to Kitchen";
+
+                        actionButton.onclick =
+                            sendTemporaryItemsToOrder;
+
+                    }
+
+                }
+
 
                 document.getElementById(
                     "add-item-modal"
@@ -2117,6 +2253,7 @@
                     "Could not load latest menu:",
                     error
                 );
+
 
                 alert(
                     "Could not connect to the server."
@@ -3509,14 +3646,52 @@
 
                             },
 
+                            body:
+                            JSON.stringify({
+
+                                /*
+                                * Save the tax decision made
+                                * in the Bill Preview.
+                                */
+                                include_tax:
+                                    document.getElementById(
+                                        "bill-tax-checkbox"
+                                    )?.checked ?? false,
+
+
+                                bill_only_items:
+                                    Object.values(
+                                        billOnlyItems
+                                    ).map(
+                                        function (item) {
+
+                                            return {
+
+                                                menu_item_id:
+                                                    Number(
+                                                        item.id
+                                                    ),
+
+                                                quantity:
+                                                    Number(
+                                                        item.quantity
+                                                    ),
+
+                                            };
+
+                                        }
+                                    )
+
+                            })
+
                         }
                     );
 
-
+                        
                 const result =
-                    await response.json();
+                await response.json();
 
-
+                
                 if (!response.ok) {
 
                     alert(
@@ -3550,11 +3725,17 @@
                 * Clear current browser order.
                 */
                
-               currentOrder = {};
-               
-               temporaryOrder = {};
-               
-               resetTemporaryQuantities();
+               /*
+                * Clear current browser order.
+                */
+
+                currentOrder = {};
+
+                billOnlyItems = {};
+
+                temporaryOrder = {};
+
+                resetTemporaryQuantities();
                
                updateTableStatus(
                    currentTableId,
@@ -3761,6 +3942,227 @@ status
 
 }
 
+function searchTables() {
+
+    const input =
+        document.getElementById(
+            "table-search-input"
+        );
+
+    const search =
+        input.value
+            .toLowerCase()
+            .trim();
+
+
+    const activeSection =
+        document.querySelector(
+            ".section-content.active"
+        );
+
+
+    if (!activeSection) {
+
+        return;
+
+    }
+
+
+    const tables =
+        activeSection.querySelectorAll(
+            ".table-card"
+        );
+
+
+    let visibleCount = 0;
+
+
+    tables.forEach(
+        function (table) {
+
+            const name =
+                table.dataset.tableName || "";
+
+
+            const matches =
+                name.includes(search);
+
+
+            table.style.display =
+                matches
+                    ? "flex"
+                    : "none";
+
+
+            if (matches) {
+
+                visibleCount++;
+
+            }
+
+        }
+    );
+
+
+    let noResults =
+        activeSection.querySelector(
+            ".no-table-results"
+        );
+
+
+    if (!noResults) {
+
+        noResults =
+            document.createElement(
+                "div"
+            );
+
+        noResults.className =
+            "no-table-results";
+
+        noResults.textContent =
+            "No tables found.";
+
+        activeSection
+            .querySelector(".table-grid")
+            .appendChild(
+                noResults
+            );
+
+    }
+
+
+    noResults.style.display =
+        visibleCount === 0
+        ? "block"
+        : "none";
+
+}
+
+
+function addTemporaryItemsToBill() {
+
+    Object.keys(
+        temporaryOrder
+    ).forEach(
+        function (itemId) {
+
+            const quantity =
+                temporaryOrder[itemId].quantity;
+
+
+            if (quantity <= 0) {
+
+                return;
+
+            }
+
+
+            const menuRow =
+                document.querySelector(
+                    `.menu-list-row[data-item-id="${itemId}"]`
+                );
+
+
+            if (!menuRow) {
+
+                return;
+
+            }
+
+
+            const name =
+                menuRow.querySelector(
+                    ".item-name strong"
+                ).textContent.trim();
+
+
+            const price =
+                parseFloat(
+                    menuRow
+                        .querySelector(
+                            ".item-price"
+                        )
+                        .textContent
+                        .replace("₹", "")
+                        .trim()
+                );
+
+
+            const type =
+                menuRow.dataset.type;
+
+
+           if (!currentOrder[itemId]) {
+
+                currentOrder[itemId] = {
+
+                    id: itemId,
+
+                    name: name,
+
+                    price: price,
+
+                    type: type,
+
+                    quantity: quantity,
+
+                };
+
+            } else {
+
+                currentOrder[itemId].quantity +=
+                    quantity;
+
+            }
+
+
+            /*
+            * Keep track of items added
+            * directly from the bill screen.
+            */
+            if (!billOnlyItems[itemId]) {
+
+                billOnlyItems[itemId] = {
+
+                    id: itemId,
+
+                    quantity: quantity,
+
+                };
+
+            } else {
+
+                billOnlyItems[itemId].quantity +=
+                    quantity;
+
+            }
+
+        }
+    );
+
+
+    temporaryOrder = {};
+
+    resetTemporaryQuantities();
+
+
+    document.getElementById(
+        "add-item-modal"
+    ).classList.remove(
+        "open"
+    );
+
+    
+    
+    /*
+    * Rebuild the bill preview
+    * with the newly added items.
+    */
+   buildBillPreview();
+   
+   openBillPreview();
+}
     </script>
 
 </body>

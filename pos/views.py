@@ -1,12 +1,18 @@
 import json
-from django.utils import timezone
 from django.db import transaction
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import require_GET
 from django.views.decorators.http import require_POST
 from decimal import Decimal, InvalidOperation
-from django.db.models import Sum, Count
+from django.db.models import Sum
+
+from django.db.models import Q
+
+from datetime import timedelta
+from django.utils import timezone
+from datetime import datetime
+
 from django.contrib import messages
 from .forms import CategoryForm, MenuItemForm
 
@@ -608,6 +614,106 @@ def generate_bill(request, table_id):
         is_active=True,
     )
 
+        # --------------------------------
+    # Items added directly from
+    # Bill Preview.
+    #
+    # These are NOT sent to kitchen.
+    # --------------------------------
+
+    try:
+
+        data = json.loads(
+            request.body
+        )
+
+    except json.JSONDecodeError:
+
+        data = {}
+
+
+    bill_only_items_data = (
+        data.get(
+            "bill_only_items",
+            []
+        )
+    )
+    include_tax = bool(
+    data.get(
+        "include_tax",
+        False
+    )
+)
+
+
+    bill_only_items = []
+
+
+    for item_data in bill_only_items_data:
+
+        try:
+
+            menu_item_id = int(
+                item_data["menu_item_id"]
+            )
+
+            quantity = int(
+                item_data["quantity"]
+            )
+
+        except (
+            KeyError,
+            TypeError,
+            ValueError,
+        ):
+
+            continue
+
+
+        if quantity <= 0:
+            continue
+
+
+        menu_item = get_object_or_404(
+            MenuItem.objects.select_related(
+                "category"
+            ),
+            id=menu_item_id,
+            is_active=True,
+        )
+
+
+        line_total = (
+            menu_item.price
+            * quantity
+        )
+
+
+        bill_only_items.append({
+
+            "menu_item":
+                menu_item,
+
+            "item_name":
+                menu_item.name,
+
+            "category_name":
+                menu_item.category.name,
+
+            "category_type":
+                menu_item.category.category_type,
+
+            "unit_price":
+                menu_item.price,
+
+            "quantity":
+                quantity,
+
+            "line_total":
+                line_total,
+
+        })
+
     # --------------------------------
     # Find latest completed bill
     # --------------------------------
@@ -670,12 +776,17 @@ def generate_bill(request, table_id):
     # --------------------------------
     # Calculate subtotal
     # --------------------------------
-
     subtotal = 0
+
 
     for item in round_items:
 
         subtotal += item.line_total
+
+
+    for item in bill_only_items:
+
+        subtotal += item["line_total"]
 
 
     # --------------------------------
@@ -754,7 +865,10 @@ def generate_bill(request, table_id):
     tax_amount = 0
 
 
-    if tax_enabled and tax_rate > 0:
+    tax_amount = 0
+
+
+    if include_tax and tax_rate > 0:
 
         tax_amount = int(
             Decimal(subtotal)
@@ -779,6 +893,11 @@ def generate_bill(request, table_id):
 
     today = timezone.localdate()
 
+    date_prefix = int(
+        today.strftime("%d%m%y")
+    )
+
+
     last_bill_today = (
         Bill.objects
         .filter(
@@ -789,15 +908,37 @@ def generate_bill(request, table_id):
     )
 
 
-    if last_bill_today:
+    if (
+        last_bill_today
+        and last_bill_today.bill_number >=
+            date_prefix * 10000
+    ):
 
-        next_bill_number = (
-            last_bill_today.bill_number + 1
-        )
+        sequence_number = (
+            last_bill_today.bill_number
+            % 10000
+        ) + 1
 
     else:
 
-        next_bill_number = 1
+        sequence_number = 1
+
+
+    if sequence_number > 9999:
+
+        return JsonResponse(
+            {
+                "error":
+                    "Daily bill number limit reached."
+            },
+            status=400,
+        )
+
+
+    next_bill_number = (
+        date_prefix * 10000
+        + sequence_number
+    )
 
 
     # --------------------------------
@@ -819,7 +960,7 @@ def generate_bill(request, table_id):
             subtotal,
 
         tax_enabled=
-            tax_enabled,
+            include_tax,
 
         tax_rate=
             tax_rate,
@@ -867,6 +1008,43 @@ def generate_bill(request, table_id):
 
             line_total=
                 item.line_total,
+
+        )
+
+                # --------------------------------
+    # Bill Preview items
+    #
+    # These go directly to the bill.
+    # They do NOT go to kitchen.
+    # --------------------------------
+
+    for item in bill_only_items:
+
+        BillItem.objects.create(
+
+            bill=
+                bill,
+
+            menu_item=
+                item["menu_item"],
+
+            item_name=
+                item["item_name"],
+
+            category_name=
+                item["category_name"],
+
+            category_type=
+                item["category_type"],
+
+            unit_price=
+                item["unit_price"],
+
+            quantity=
+                item["quantity"],
+
+            line_total=
+                item["line_total"],
 
         )
 
@@ -925,37 +1103,164 @@ def generate_bill(request, table_id):
 
 def bill_history(request):
 
+    search_query = (
+        request.GET.get(
+            "search",
+            ""
+        )
+        .strip()
+    )
+
+
     bills = (
         Bill.objects
         .select_related("table")
-        .order_by("-bill_number")
+        .order_by(
+            "-bill_date",
+            "-bill_number",
+        )
     )
 
-    bill_list = []
+
+    if search_query:
+
+        filters = Q(
+            table__name__icontains=
+                search_query
+        )
+
+
+        # -------------------------
+        # Bill number search
+        # -------------------------
+
+        if search_query.isdigit():
+
+            filters |= Q(
+                bill_number=
+                    int(search_query)
+            )
+
+
+        # -------------------------
+        # Date search
+        # -------------------------
+
+        date_formats = [
+            "%d %b %Y",
+            "%d %B %Y",
+            "%d %b",
+            "%d %B",
+            "%Y-%m-%d",
+        ]
+
+
+        parsed_date = None
+
+
+        for date_format in date_formats:
+
+            try:
+
+                if "%Y" not in date_format:
+
+                    parsed_date = datetime.strptime(
+                        search_query,
+                        date_format
+                    ).replace(
+                        year=timezone.localdate().year
+                    ).date()
+
+                else:
+
+                    parsed_date = datetime.strptime(
+                        search_query,
+                        date_format
+                    ).date()
+
+
+                break
+
+            except ValueError:
+
+                continue
+
+
+        if parsed_date:
+
+            filters |= Q(
+                bill_date=
+                    parsed_date
+            )
+
+
+        bills = bills.filter(
+            filters
+        )
+
+
+    # --------------------------------
+    # Group bills by date
+    # --------------------------------
+
+    grouped_bills = []
+
+
+    current_date = None
+    current_group = None
+
 
     for bill in bills:
 
-        bill_list.append({
+        if bill.bill_date != current_date:
+
+            current_date = bill.bill_date
+
+
+            current_group = {
+
+                "date":
+                    bill.bill_date,
+
+                "bills":
+                    [],
+
+            }
+
+
+            grouped_bills.append(
+                current_group
+            )
+
+
+        current_group["bills"].append({
+
             "bill": bill,
 
-            # Database stores paise.
-            # Convert to rupees only for display.
-
             "display_total":
-                Decimal(bill.total) / Decimal("100"),
+                Decimal(bill.total)
+                / Decimal("100"),
 
             "display_subtotal":
-                Decimal(bill.subtotal) / Decimal("100"),
+                Decimal(bill.subtotal)
+                / Decimal("100"),
 
             "display_tax":
-                Decimal(bill.tax_amount) / Decimal("100"),
+                Decimal(bill.tax_amount)
+                / Decimal("100"),
+
         })
+
 
     return render(
         request,
         "pos/bill_history.html",
         {
-            "bills": bill_list,
+            "bill_groups":
+                grouped_bills,
+
+            "search_query":
+                search_query,
         },
     )
 
@@ -1063,6 +1368,7 @@ def management_dashboard(request):
         )
     )
 
+
     menu_queryset = (
         MenuItem.objects
         .select_related("category")
@@ -1073,39 +1379,113 @@ def management_dashboard(request):
         )
     )
 
+
     management_menu_items = []
+
 
     for item in menu_queryset:
 
         management_menu_items.append({
 
-            "item": item,
+            "id":
+                item.id,
 
-            "display_price":
+            "name":
+                item.name,
+
+            "code":
+                item.code or "",
+
+            "price":
                 Decimal(item.price)
                 / Decimal("100"),
 
+            "is_active":
+                item.is_active,
+
+            "category":
+                item.category,
+
         })
+
 
     category_form = CategoryForm()
 
     menu_item_form = MenuItemForm()
 
-    return render(
+
+    tax_rate_setting = (
+        Setting.objects
+        .filter(
+            key="tax_rate"
+        )
+        .first()
+    )
+
+
+    tax_rate = Decimal("0")
+
+
+    if tax_rate_setting:
+
+        try:
+
+            tax_rate = Decimal(
+                tax_rate_setting.value
+            )
+
+        except (
+            TypeError,
+            ValueError,
+            ArithmeticError,
+        ):
+
+            tax_rate = Decimal("0")
+
+        sections = (
+            Section.objects
+            .order_by(
+                "display_order",
+                "id",
+            )
+        )
+
+
+        management_tables = (
+            Table.objects
+            .select_related("section")
+            .order_by(
+                "section__display_order",
+                "section__id",
+                "display_order",
+                "id",
+            )
+        )
+
+        return render(
         request,
         "pos/management_dashboard.html",
         {
-            "categories":
+            "management_categories":
                 categories,
 
-            "menu_items":
+            "management_menu_items":
                 management_menu_items,
+
+            "management_sections":
+                sections,
+
+            "management_tables":
+                management_tables,
 
             "category_form":
                 category_form,
 
             "menu_item_form":
                 menu_item_form,
+
+            "tax_rate":
+                tax_rate,
         },
     )
 
@@ -1172,27 +1552,936 @@ def management_edit_category(
         id=category_id,
     )
 
+
+    data = request.POST.copy()
+
+
+    # Keep the existing active/inactive status.
+    data["is_active"] = (
+        "on"
+        if category.is_active
+        else ""
+    )
+
+
     form = CategoryForm(
-        request.POST,
+        data,
         instance=category,
     )
 
-    if form.is_valid():
 
-        form.save()
+    if not form.is_valid():
 
-        messages.success(
-            request,
-            "Category updated successfully.",
+        return JsonResponse(
+            {
+                "success": False,
+
+                "error":
+                    "Could not update category.",
+
+                "errors":
+                    form.errors.get_json_data(),
+            },
+            status=400,
+        )
+
+
+    updated_category = form.save()
+
+
+    return JsonResponse(
+        {
+            "success": True,
+
+            "category": {
+
+                "id":
+                    updated_category.id,
+
+                "name":
+                    updated_category.name,
+
+                "category_type":
+                    updated_category.category_type,
+
+                "display_order":
+                    updated_category.display_order,
+
+                "is_active":
+                    updated_category.is_active,
+            },
+        }
+    )
+
+@require_POST
+def management_create_menu_item(request):
+
+    data = request.POST.copy()
+
+    try:
+
+        price_rupees = Decimal(
+            str(
+                data.get(
+                    "price",
+                    "0"
+                )
+            )
+        )
+
+        if price_rupees < 0:
+            raise ValueError
+
+        data["price"] = str(
+            int(
+                price_rupees
+                * Decimal("100")
+            )
+        )
+
+    except (
+        TypeError,
+        ValueError,
+        ArithmeticError,
+    ):
+
+        return JsonResponse(
+            {
+                "success": False,
+                "error": "Invalid price.",
+            },
+            status=400,
+        )
+
+
+    # New menu items are active by default.
+
+    data["is_active"] = "on"
+
+
+    form = MenuItemForm(
+        data
+    )
+
+
+    if not form.is_valid():
+
+        return JsonResponse(
+            {
+                "success": False,
+
+                "error":
+                    "Could not create menu item.",
+
+                "errors":
+                    form.errors.get_json_data(),
+            },
+            status=400,
+        )
+
+
+    item = form.save()
+
+
+    return JsonResponse(
+        {
+            "success": True,
+
+            "item": {
+
+                "id":
+                    item.id,
+
+                "name":
+                    item.name,
+
+                "code":
+                    item.code or "",
+
+                "price":
+                    float(
+                        Decimal(
+                            item.price
+                        )
+                        / Decimal("100")
+                    ),
+
+                "category_id":
+                    item.category_id,
+
+                "category_name":
+                    item.category.name,
+
+                "is_active":
+                    item.is_active,
+            },
+        }
+    )
+
+@require_POST
+def management_toggle_menu_item(
+    request,
+    item_id,
+):
+
+    item = get_object_or_404(
+        MenuItem,
+        id=item_id,
+    )
+
+    item.is_active = not item.is_active
+
+    item.save(
+        update_fields=["is_active"]
+    )
+
+    return JsonResponse({
+        "success": True,
+        "is_active": item.is_active,
+    })
+
+@require_POST
+def management_edit_menu_item(
+    request,
+    item_id,
+):
+
+    item = get_object_or_404(
+        MenuItem,
+        id=item_id,
+    )
+
+
+    data = request.POST.copy()
+
+
+    try:
+
+        price_rupees = Decimal(
+            str(
+                data.get(
+                    "price",
+                    "0"
+                )
+            )
+        )
+
+        if price_rupees < 0:
+            raise ValueError
+
+        data["price"] = str(
+            int(
+                price_rupees
+                * Decimal("100")
+            )
+        )
+
+    except (
+        TypeError,
+        ValueError,
+        ArithmeticError,
+    ):
+
+        return JsonResponse(
+            {
+                "success": False,
+                "error": "Invalid price.",
+            },
+            status=400,
+        )
+
+
+   # Keep the existing active/inactive status
+    # when editing the menu item.
+    data["is_active"] = (
+        "on"
+        if item.is_active
+        else ""
+    )
+
+
+    form = MenuItemForm(
+        data,
+        instance=item,
+    )
+
+
+    if not form.is_valid():
+
+        return JsonResponse(
+            {
+                "success": False,
+
+                "error":
+                    "Could not update menu item.",
+
+                "errors":
+                    form.errors.get_json_data(),
+            },
+            status=400,
+        )
+
+
+    updated_item = form.save()
+
+
+    return JsonResponse(
+        {
+            "success": True,
+
+            "item": {
+                "id":
+                    updated_item.id,
+
+                "name":
+                    updated_item.name,
+
+                "code":
+                    updated_item.code or "",
+
+                "price":
+                    float(
+                        Decimal(
+                            updated_item.price
+                        )
+                        / Decimal("100")
+                    ),
+
+                "category_id":
+                    updated_item.category_id,
+
+                "category_name":
+                    updated_item.category.name,
+
+                "is_active":
+                    updated_item.is_active,
+            },
+        }
+    )
+
+@require_POST
+def management_save_tax(request):
+
+    setting, created = Setting.objects.get_or_create(
+        key="tax_rate",
+        defaults={
+            "value": "5",
+        },
+    )
+
+    try:
+
+        tax_rate = Decimal(
+            str(
+                request.POST.get(
+                    "tax_rate",
+                    "0"
+                )
+            )
+        )
+
+        if tax_rate < 0 or tax_rate > 100:
+            raise ValueError
+
+    except (
+        TypeError,
+        ValueError,
+        ArithmeticError,
+    ):
+
+        return JsonResponse(
+            {
+                "success": False,
+                "error": "Enter a valid tax rate between 0 and 100.",
+            },
+            status=400,
+        )
+
+
+    setting.value = str(tax_rate)
+    setting.save()
+
+
+    return JsonResponse(
+        {
+            "success": True,
+            "tax_rate": float(tax_rate),
+        }
+    )
+
+@require_POST
+def management_create_section(request):
+
+    name = request.POST.get(
+        "name",
+        ""
+    ).strip()
+
+    display_order = request.POST.get(
+        "display_order",
+        "0"
+    )
+
+
+    if not name:
+
+        return JsonResponse(
+            {
+                "success": False,
+                "error": "Section name is required.",
+            },
+            status=400,
+        )
+
+
+    try:
+
+        display_order = int(
+            display_order
+        )
+
+        if display_order < 0:
+            raise ValueError
+
+    except (
+        TypeError,
+        ValueError,
+    ):
+
+        return JsonResponse(
+            {
+                "success": False,
+                "error": "Invalid display order.",
+            },
+            status=400,
+        )
+
+
+    section = Section.objects.create(
+        name=name,
+        display_order=display_order,
+        is_active=True,
+    )
+
+
+    return JsonResponse(
+        {
+            "success": True,
+
+            "section": {
+                "id":
+                    section.id,
+
+                "name":
+                    section.name,
+
+                "display_order":
+                    section.display_order,
+
+                "is_active":
+                    section.is_active,
+            },
+        }
+    )
+
+@require_POST
+def management_edit_section(
+    request,
+    section_id,
+):
+
+    section = get_object_or_404(
+        Section,
+        id=section_id,
+    )
+
+
+    name = request.POST.get(
+        "name",
+        ""
+    ).strip()
+
+    display_order = request.POST.get(
+        "display_order",
+        "0"
+    )
+
+
+    if not name:
+
+        return JsonResponse(
+            {
+                "success": False,
+                "error": "Section name is required.",
+            },
+            status=400,
+        )
+
+
+    try:
+
+        display_order = int(
+            display_order
+        )
+
+        if display_order < 0:
+            raise ValueError
+
+    except (
+        TypeError,
+        ValueError,
+    ):
+
+        return JsonResponse(
+            {
+                "success": False,
+                "error": "Invalid display order.",
+            },
+            status=400,
+        )
+
+
+    section.name = name
+    section.display_order = display_order
+
+    section.save(
+        update_fields=[
+            "name",
+            "display_order",
+        ]
+    )
+
+
+    return JsonResponse(
+        {
+            "success": True,
+
+            "section": {
+                "id":
+                    section.id,
+
+                "name":
+                    section.name,
+
+                "display_order":
+                    section.display_order,
+
+                "is_active":
+                    section.is_active,
+            },
+        }
+    )
+
+
+@require_POST
+def management_toggle_section(
+    request,
+    section_id,
+):
+
+    section = get_object_or_404(
+        Section,
+        id=section_id,
+    )
+
+
+    section.is_active = (
+        not section.is_active
+    )
+
+
+    section.save(
+        update_fields=[
+            "is_active",
+        ]
+    )
+
+
+    return JsonResponse(
+        {
+            "success": True,
+
+            "is_active":
+                section.is_active,
+        }
+    )
+
+
+@require_POST
+def management_create_table(request):
+
+    name = request.POST.get(
+        "name",
+        ""
+    ).strip()
+
+    section_id = request.POST.get(
+        "section"
+    )
+
+    display_order = request.POST.get(
+        "display_order",
+        "0"
+    )
+
+
+    if not name:
+
+        return JsonResponse(
+            {
+                "success": False,
+                "error": "Table name is required.",
+            },
+            status=400,
+        )
+
+
+    section = get_object_or_404(
+        Section,
+        id=section_id,
+    )
+
+
+    try:
+
+        display_order = int(
+            display_order
+        )
+
+        if display_order < 0:
+            raise ValueError
+
+    except (
+        TypeError,
+        ValueError,
+    ):
+
+        return JsonResponse(
+            {
+                "success": False,
+                "error": "Invalid display order.",
+            },
+            status=400,
+        )
+
+
+    table = Table.objects.create(
+        section=section,
+        name=name,
+        display_order=display_order,
+        status=Table.Status.VACANT,
+        is_active=True,
+    )
+
+
+    return JsonResponse(
+        {
+            "success": True,
+
+            "table": {
+                "id":
+                    table.id,
+
+                "name":
+                    table.name,
+
+                "section_id":
+                    table.section_id,
+
+                "section_name":
+                    table.section.name,
+
+                "display_order":
+                    table.display_order,
+
+                "status":
+                    table.status,
+
+                "is_active":
+                    table.is_active,
+            },
+        }
+    )
+
+@require_POST
+def management_edit_table(
+    request,
+    table_id,
+):
+
+    table = get_object_or_404(
+        Table,
+        id=table_id,
+    )
+
+
+    name = request.POST.get(
+        "name",
+        ""
+    ).strip()
+
+    section_id = request.POST.get(
+        "section"
+    )
+
+    display_order = request.POST.get(
+        "display_order",
+        "0"
+    )
+
+
+    if not name:
+
+        return JsonResponse(
+            {
+                "success": False,
+                "error": "Table name is required.",
+            },
+            status=400,
+        )
+
+
+    section = get_object_or_404(
+        Section,
+        id=section_id,
+    )
+
+
+    try:
+
+        display_order = int(
+            display_order
+        )
+
+        if display_order < 0:
+            raise ValueError
+
+    except (
+        TypeError,
+        ValueError,
+    ):
+
+        return JsonResponse(
+            {
+                "success": False,
+                "error": "Invalid display order.",
+            },
+            status=400,
+        )
+
+
+    table.name = name
+    table.section = section
+    table.display_order = display_order
+
+
+    table.save(
+        update_fields=[
+            "name",
+            "section",
+            "display_order",
+        ]
+    )
+
+
+    return JsonResponse(
+        {
+            "success": True,
+
+            "table": {
+                "id":
+                    table.id,
+
+                "name":
+                    table.name,
+
+                "section_id":
+                    table.section_id,
+
+                "section_name":
+                    table.section.name,
+
+                "display_order":
+                    table.display_order,
+
+                "status":
+                    table.status,
+
+                "is_active":
+                    table.is_active,
+            },
+        }
+    )
+
+@require_POST
+def management_toggle_table(
+    request,
+    table_id,
+):
+
+    table = get_object_or_404(
+        Table,
+        id=table_id,
+    )
+
+
+    table.is_active = (
+        not table.is_active
+    )
+
+
+    table.save(
+        update_fields=[
+            "is_active",
+        ]
+    )
+
+
+    return JsonResponse(
+        {
+            "success": True,
+
+            "is_active":
+                table.is_active,
+        }
+    )
+
+
+def management_analytics(request):
+
+    today = timezone.localdate()
+
+    period = request.GET.get(
+        "period",
+        "week",
+    )
+
+
+    if period == "month":
+
+        start_date = today.replace(
+            day=1
+        )
+
+    elif period == "year":
+
+        start_date = today.replace(
+            month=1,
+            day=1,
         )
 
     else:
 
-        messages.error(
-            request,
-            "Could not update category.",
+        period = "week"
+
+        start_date = (
+            today
+            - timedelta(
+                days=today.weekday()
+            )
         )
 
-    return redirect(
-        "pos:management_dashboard"
+
+    bills = Bill.objects.filter(
+        status=Bill.Status.PAID,
+        bill_date__gte=start_date,
+        bill_date__lte=today,
+    )
+
+
+    # ---------------------------------
+    # TOTAL REVENUE
+    # ---------------------------------
+
+    revenue_paise = bills.aggregate(
+            total=Sum("total")
+        )["total"] or 0
+
+
+    # ---------------------------------
+    # DRINKS REVENUE
+    # ---------------------------------
+
+    drinks_revenue_paise = (
+        BillItem.objects
+        .filter(
+            bill__in=bills,
+            category_type="DRINK",
+        )
+        .aggregate(
+            total=Sum("line_total")
+        )["total"] or 0
+    )
+
+
+    # ---------------------------------
+    # DRINK ITEM-WISE SALES
+    # ---------------------------------
+
+    drink_items = (
+        BillItem.objects
+        .filter(
+            bill__in=bills,
+            category_type="DRINK",
+        )
+        .values(
+            "menu_item_id",
+            "item_name",
+        )
+        .annotate(
+            quantity_sold=Sum(
+                "quantity"
+            ),
+            revenue=Sum(
+                "line_total"
+            ),
+        )
+        .order_by(
+            "-quantity_sold",
+            "item_name",
+        )
+    )
+
+
+    management_drink_items = []
+
+    for item in drink_items:
+
+        management_drink_items.append({
+
+            "name":
+                item["item_name"],
+
+            "quantity":
+                item["quantity_sold"] or 0,
+
+            "revenue":
+                (item["revenue"] or 0)
+                / 100,
+
+        })
+
+
+    return JsonResponse(
+        {
+            "success": True,
+
+            "period":
+                period,
+
+            "revenue":
+                float(
+                    revenue_paise
+                    / 100
+                ),
+
+            "drinks_revenue":
+                float(
+                    drinks_revenue_paise
+                    / 100
+                ),
+
+            "drink_items":
+                management_drink_items,
+        }
     )
