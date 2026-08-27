@@ -1442,27 +1442,27 @@ def management_dashboard(request):
 
             tax_rate = Decimal("0")
 
-        sections = (
-            Section.objects
-            .order_by(
-                "display_order",
-                "id",
-            )
+    sections = (
+        Section.objects
+        .order_by(
+            "display_order",
+            "id",
         )
+    )
 
 
-        management_tables = (
-            Table.objects
-            .select_related("section")
-            .order_by(
-                "section__display_order",
-                "section__id",
-                "display_order",
-                "id",
-            )
+    management_tables = (
+        Table.objects
+        .select_related("section")
+        .order_by(
+            "section__display_order",
+            "section__id",
+            "display_order",
+            "id",
         )
+    )
 
-        return render(
+    return render(
         request,
         "pos/management_dashboard.html",
         {

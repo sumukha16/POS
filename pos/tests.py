@@ -26,3 +26,13 @@ class POSAccessTests(TestCase):
         response = self.client.get(reverse("pos:table_screen"))
 
         self.assertEqual(response.status_code, 200)
+
+    def test_management_dashboard_works_without_tax_setting(self):
+        self.client.force_login(self.user)
+        session = self.client.session
+        session["pos_server_instance_id"] = SERVER_INSTANCE_ID
+        session.save()
+
+        response = self.client.get(reverse("pos:management_dashboard"))
+
+        self.assertEqual(response.status_code, 200)
