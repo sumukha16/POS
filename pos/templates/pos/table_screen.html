@@ -1136,7 +1136,7 @@
     color: #777;
 }
     </style>
-    <link rel="manifest" href="{% static 'pos/manifest.json' %}">
+    <link rel="manifest" href="{% static 'manifest.json' %}">
 
     <meta name="theme-color" content="#111111">
 
@@ -1167,6 +1167,12 @@
             <a href="{% url 'pos:bill_history' %}" class="header-link">
                 Bill History
             </a>
+
+            {% if request.user.is_superuser %}
+            <a href="{% url 'admin_panel:user_management' %}" class="header-link">
+                Users
+            </a>
+            {% endif %}
 
             <span class="header-date">
                 {% now "d M Y" %}
@@ -1771,6 +1777,14 @@
 
         let addItemMode = "KITCHEN";
 
+        // Values returned by the API can originate from menu management.
+        // Escape them before using template strings with innerHTML.
+        function escapeHtml(value) {
+            const element = document.createElement("div");
+            element.textContent = String(value ?? "");
+            return element.innerHTML;
+        }
+
 
 
         /*
@@ -2039,18 +2053,18 @@
                     row.innerHTML = `
 
                         <div class="item-code">
-                            ${item.code}
+                            ${escapeHtml(item.code)}
                         </div>
 
 
                         <div class="item-name">
 
                             <strong>
-                                ${item.name}
+                                ${escapeHtml(item.name)}
                             </strong>
 
                             <small>
-                                ${item.category_name}
+                                ${escapeHtml(item.category_name)}
                             </small>
 
                         </div>
@@ -2670,7 +2684,7 @@
                     <div class="current-order-top">
 
                         <span class="current-item-name">
-                            ${item.name}
+                            ${escapeHtml(item.name)}
                         </span>
 
                         <span class="current-line-total">
@@ -2686,6 +2700,8 @@
 
                             <button
                                 type="button"
+                                disabled
+                                title="Sent items cannot be changed. Cancel the order to start again."
                                 onclick="changeCurrentQuantity('${itemId}', -1)"
                             >
                                 −
@@ -2699,6 +2715,8 @@
 
                             <button
                                 type="button"
+                                disabled
+                                title="Sent items cannot be changed. Cancel the order to start again."
                                 onclick="changeCurrentQuantity('${itemId}', 1)"
                             >
                                 +
@@ -2710,6 +2728,8 @@
                         <button
                             type="button"
                             class="remove-item"
+                            disabled
+                            title="Sent items cannot be changed. Cancel the order to start again."
                             onclick="removeCurrentItem('${itemId}')"
                         >
                             Remove
@@ -3109,7 +3129,7 @@
                         <div class="bill-preview-row">
 
                             <span>
-                                ${item.name}
+                                ${escapeHtml(item.name)}
                                 × ${item.quantity}
                             </span>
 

@@ -1,6 +1,9 @@
 from django.core.files.storage import filesystem
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import UserCreationForm
+from django.core.exceptions import PermissionDenied
+from functools import wraps
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from decimal import Decimal
@@ -17,6 +20,18 @@ from django.contrib.auth import authenticate, login
 from django.shortcuts import redirect, render
 
 from pos.middleware import SERVER_INSTANCE_ID
+
+
+def superuser_required(view):
+    """Restrict account administration to the business owner/admin."""
+    @wraps(view)
+    def wrapped_view(request, *args, **kwargs):
+        if not request.user.is_superuser:
+            raise PermissionDenied
+
+        return view(request, *args, **kwargs)
+
+    return wrapped_view
 
 
 def admin_login(request):
@@ -70,6 +85,35 @@ def admin_login(request):
         "admin_panel/login.html",
         {
             "error": error,
+        },
+    )
+
+
+@login_required
+@superuser_required
+def user_management(request):
+    """Create POS cashier accounts without using the command line."""
+    User = get_user_model()
+
+    if request.method == "POST":
+        form = UserCreationForm(request.POST)
+
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.is_staff = request.POST.get("is_staff") == "on"
+            user.save()
+            return redirect("admin_panel:user_management")
+    else:
+        form = UserCreationForm()
+
+    users = User.objects.order_by("username")
+
+    return render(
+        request,
+        "admin_panel/user_management.html",
+        {
+            "form": form,
+            "users": users,
         },
     )
 

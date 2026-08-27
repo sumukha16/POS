@@ -11,3 +11,6 @@ config.json
 
 # Ignore all logs
 *.log   
+
+db.sqlite3
+.env.expample

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management · NEXOVA POS</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; background: #f5f5f5; color: #111; font-family: Arial, sans-serif; }
+        header { display: flex; align-items: center; justify-content: space-between; min-height: 64px; padding: 0 22px; background: #111; color: #fff; }
+        a { color: inherit; }
+        main { display: grid; grid-template-columns: minmax(280px, 380px) minmax(0, 1fr); gap: 24px; max-width: 1100px; margin: 0 auto; padding: 30px; }
+        .card { padding: 24px; border-radius: 10px; background: #fff; box-shadow: 0 3px 10px rgba(0, 0, 0, .08); }
+        h1, h2 { margin-top: 0; }
+        h1 { font-size: 22px; }
+        h2 { font-size: 17px; }
+        label { display: block; margin: 14px 0 6px; font-size: 13px; font-weight: 700; }
+        input[type="text"], input[type="password"] { width: 100%; padding: 11px; border: 1px solid #ccc; border-radius: 6px; }
+        .helptext { display: block; margin-top: 5px; color: #666; font-size: 12px; }
+        ul.errorlist { padding-left: 18px; color: #b91c1c; font-size: 13px; }
+        button { width: 100%; margin-top: 20px; padding: 12px; border: 0; border-radius: 6px; background: #111; color: #fff; font-weight: 700; cursor: pointer; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px 8px; border-bottom: 1px solid #e5e5e5; text-align: left; font-size: 14px; }
+        th { color: #666; font-size: 12px; text-transform: uppercase; }
+        @media (max-width: 700px) { main { grid-template-columns: 1fr; padding: 16px; } }
+    </style>
+</head>
+<body>
+    <header>
+        <strong>NEXOVA POS</strong>
+        <a href="{% url 'pos:table_screen' %}">Back to POS</a>
+    </header>
+    <main>
+        <section class="card">
+            <h1>Create user</h1>
+            <p>New users can sign in to the POS. Enable Django admin only for trusted administrators.</p>
+            <form method="post">
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+                {% for field in form %}
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {{ field.errors }}
+                    {% if field.help_text %}<small class="helptext">{{ field.help_text }}</small>{% endif %}
+                {% endfor %}
+                <label><input type="checkbox" name="is_staff"> Allow Django admin access</label>
+                <button type="submit">Create user</button>
+            </form>
+        </section>
+        <section class="card">
+            <h2>Existing users</h2>
+            <table>
+                <thead><tr><th>Username</th><th>Active</th><th>Admin</th></tr></thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr><td>{{ user.username }}</td><td>{{ user.is_active|yesno:"Yes,No" }}</td><td>{{ user.is_staff|yesno:"Yes,No" }}</td></tr>
+                    {% empty %}
+                    <tr><td colspan="3">No users found.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    </main>
+</body>
+</html>

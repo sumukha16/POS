@@ -334,7 +334,7 @@ def order_screen(request, table_id):
     rounds = (
         Round.objects
         .filter(table=table)
-        .prefetch_related("rounditem_set")
+        .prefetch_related("items")
         .order_by("created_at", "id")
     )
 
@@ -342,7 +342,7 @@ def order_screen(request, table_id):
 
     for current_round in rounds:
 
-        for item in current_round.rounditem_set.all():
+        for item in current_round.items.all():
 
             existing_items.append(
                 {

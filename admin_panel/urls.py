@@ -20,6 +20,12 @@ urlpatterns = [
     ),
 
     path(
+        "users/",
+        views.user_management,
+        name="user_management",
+    ),
+
+    path(
         "logout/",
         views.admin_logout,
         name="logout",

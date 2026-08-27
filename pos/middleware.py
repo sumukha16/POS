@@ -17,6 +17,13 @@ class POSServerSessionMiddleware:
         # Only apply this to the POS area.
         if request.path.startswith("/pos/"):
 
+            # Every POS route can read or change operational and financial
+            # data.  Keep the access rule here so a newly added POS view is
+            # protected by default rather than relying on each view author to
+            # remember a decorator.
+            if not request.user.is_authenticated:
+                return redirect("admin_panel:login")
+
             stored_server_id = request.session.get(
                 "pos_server_instance_id"
             )
